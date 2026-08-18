@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1f4e4a">
+  <title>若昭 · 个人成长工作台</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon-512.png">
+<style>
+  :root{
+    --teal:#1f4e4a; --teal-soft:#2f6b64; --silver:#c9d1d0; --silver-deep:#8a9a98;
+    --bg:#faf8f5; --card:#ffffff; --ink:#2b2b2b; --muted:#7a7a7a; --line:#ece8e1;
+    --gold:#b89b6e; --warn:#c2703f; --ok:#3f8a6d;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.5; padding:0 0 76px; -webkit-font-smoothing:antialiased;
+  }
+  .topbar{
+    position:sticky; top:0; z-index:30; background:var(--teal); color:#fff;
+    padding:14px 16px 12px; padding-top:calc(14px + env(safe-area-inset-top));
+    box-shadow:0 2px 10px rgba(0,0,0,.12);
+  }
+  .topbar h1{margin:0;font-size:17px;font-weight:600;letter-spacing:.5px;}
+  .topbar .sub{font-size:11px;color:var(--silver);margin-top:2px;}
+  .page{display:none;padding:14px 14px 0;}
+  .page.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;}
+  .goal-row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .goal-big{font-size:26px;font-weight:700;color:var(--teal);}
+  .goal-arrow{color:var(--muted);font-size:14px;}
+  .goal-target{font-size:18px;font-weight:600;color:var(--gold);}
+  .goal-note{font-size:12px;color:var(--muted);margin-top:6px;}
+  .checkin{display:flex;gap:9px;flex-wrap:wrap;}
+  .checkin .btn{flex:1 1 calc(50% - 5px);min-width:calc(50% - 5px);border:1px solid var(--line);background:#fff;border-radius:12px;padding:14px 8px;text-align:center;font-size:13px;color:var(--ink);transition:.15s;}
+  .checkin .btn.done{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .checkin .btn:active{transform:scale(.97);}
+  .streak{margin-top:10px;font-size:13px;color:var(--warn);font-weight:600;}
+  .streak b{font-size:20px;}
+  .fin-sub{font-size:12px;font-weight:700;color:var(--ink);margin:4px 2px 9px;}
+  .fin-add{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap;}
+  .fin-add select{border:1px solid var(--line);border-radius:10px;padding:9px 8px;font-size:13px;font-family:inherit;background:#fff;}
+  .fin-add input{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;outline:none;font-family:inherit;}
+  .fin-add #finAmt{width:74px;}
+  .fin-add #finNote{flex:1;min-width:88px;}
+  .fin-add .add{background:var(--teal);color:#fff;border:none;border-radius:50%;width:38px;height:38px;font-size:17px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+  .fin-add .add:active{transform:scale(.92);}
+  .fin-balance{margin-top:11px;font-size:12.5px;font-weight:700;color:var(--teal);line-height:1.6;}
+  .fin-balance .neg{color:var(--warn);}
+  /* ===== 今日读物（银简 · 每日一段+三选一打卡） ===== */
+  .rd-book{font-size:11px;color:var(--gold);font-weight:700;margin-top:6px;letter-spacing:.3px;}
+  .rd-passage{font-size:13px;line-height:1.85;color:#3a3a3a;background:#fafaf7;border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-top:8px;white-space:pre-wrap;word-break:break-word;}
+  .rd-actions{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
+  .rd-act{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;transition:.15s;}
+  .rd-act:active{transform:scale(.985);}
+  .rd-act.done{background:#eef3f2;border-color:#cfe0db;}
+  .rd-act .rd-cb{width:18px;height:18px;border-radius:5px;border:2px solid var(--silver-deep);flex:0 0 auto;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;font-weight:700;}
+  .rd-act.done .rd-cb{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .rd-act .rd-t{font-size:12.5px;line-height:1.55;color:var(--ink);flex:1;}
+  .rd-foot{margin-top:10px;font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .rd-foot .rd-stat{font-weight:700;color:var(--teal);}
+  .rd-divider{height:1px;background:var(--line);margin:18px 0 14px;}
+  .rd-meta{font-size:10.5px;color:var(--silver-deep);margin-top:8px;letter-spacing:.2px;}
+  .sec-title{font-size:13px;font-weight:700;color:var(--teal);margin:6px 2px 8px;letter-spacing:.5px;display:flex;align-items:center;gap:6px;}
+  .sec-title::before{content:"";width:4px;height:13px;background:var(--gold);border-radius:2px;}
+  .agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .agent-card{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;}
+  .agent-card:active{transform:scale(.97);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .agent-card .t{font-size:13px;font-weight:700;color:var(--teal);}
+  .agent-card .d{font-size:11px;color:var(--muted);margin-top:3px;}
+  .agent-card .time{font-size:10px;color:var(--gold);margin-top:5px;}
+  /* ===== 司辰入口（主页） ===== */
+  .sichen-entry{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;}
+  .sichen-entry:active{transform:scale(.985);box-shadow:0 2px 10px rgba(0,0,0,.07);}
+  .sichen-prev{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
+  .sp-row{display:flex;align-items:center;font-size:12.5px;color:var(--ink);}
+  .sp-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:9px;flex:0 0 auto;}
+  .sp-t{margin-left:auto;font-size:10px;color:var(--silver-deep);}
+  .sichen-go{margin-top:10px;font-size:12px;font-weight:700;color:var(--teal);text-align:right;}
+  /* ===== 司辰页面 ===== */
+  #page-sichen{background:#f6f5f1;}
+  .sc-head{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;}
+  .sc-back{border:1px solid var(--line);background:#fff;border-radius:50%;width:34px;height:34px;font-size:18px;color:var(--teal);flex:0 0 auto;}
+  .sc-back:active{transform:scale(.92);}
+  .sc-title{font-size:18px;font-weight:800;color:var(--teal);letter-spacing:1px;}
+  .sc-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+  .sc-body{padding:14px 14px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;}
+  .sc-block{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;}
+  .sc-bt{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:11px;display:flex;align-items:center;gap:6px;}
+  .sc-bt::before{content:"";width:4px;height:13px;background:var(--gold);border-radius:2px;}
+  .sc-prog{display:flex;align-items:flex-end;gap:8px;height:96px;padding:0 2px;}
+  .sc-bar{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:5px;}
+  .sc-bar-fill{width:100%;max-width:18px;height:14px;background:var(--line);border-radius:5px 5px 2px 2px;transition:height .3s ease;}
+  .sc-bar-fill.on{height:78px;background:linear-gradient(180deg,#2f6b64,#1f4e4a);}
+  .sc-bar-l{font-size:9px;color:var(--silver-deep);}
+  .sc-prog-note{margin-top:10px;font-size:11px;color:var(--muted);text-align:center;}
+  /* ===== 打卡日历（司辰页内） ===== */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .cal-nav{display:flex;gap:8px;}
+  .cal-nav button{border:1px solid var(--line);background:#fff;border-radius:8px;width:32px;height:32px;font-size:17px;color:var(--teal);flex:0 0 auto;}
+  .cal-nav button:active{transform:scale(.92);}
+  .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:5px;}
+  .cal-week span{text-align:center;font-size:10px;color:var(--silver-deep);}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+  .cal-cell{border:1px solid var(--line);border-radius:7px;padding:3px 1px;min-height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:#fff;}
+  .cal-cell.empty{border:none;background:transparent;min-height:0;}
+  .cal-cell.today{border-color:var(--gold);background:#fdf8ef;}
+  .cal-d{font-size:12px;color:var(--ink);font-weight:600;line-height:1;}
+  .cal-dots{display:flex;gap:3px;}
+  .cal-dot{font-size:8px;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--line);color:transparent;line-height:1;}
+  .cal-dot.on.study{background:var(--teal);color:#fff;}
+  .cal-dot.on.sleep{background:var(--gold);color:#fff;}
+  .cal-stat-inline{font-size:11px;color:var(--muted);text-align:center;padding:7px 6px 0;line-height:1.6;border-top:1px dashed var(--line);margin-top:9px;}
+  /* 按周习惯（运动 / 阅读） */
+  .cal-wk{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:9px;font-size:12px;background:#fff;}
+  .cal-wk.ok{background:#eef3f2;border-color:#cfe0db;}
+  .cal-wk-n{flex:0 0 auto;width:42px;font-weight:700;color:var(--teal);}
+  .cal-wk-s{color:var(--ink);}
+  .cal-wk-ok{margin-left:auto;color:var(--ok);font-weight:700;font-size:11px;}
+  .cal-wk-no{margin-left:auto;color:var(--silver-deep);font-size:11px;}
+  .sc-list{display:flex;flex-direction:column;gap:10px;}
+  .sc-item{border-left:3px solid var(--teal);background:#f6f4ef;border-radius:0 8px 8px 0;padding:9px 11px;}
+  .sc-item-t{font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:4px;}
+  .sc-item-c{font-size:12.5px;line-height:1.6;color:#3a3a3a;white-space:pre-wrap;word-break:break-word;}
+  .sc-tag{font-size:9px;background:var(--gold);color:#fff;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:700;}
+  .empty{text-align:center;color:var(--muted);font-size:12px;padding:14px;line-height:1.7;}
+  /* ===== 待办任务 + 司辰复盘 ===== */
+  .plan-item{display:flex;align-items:flex-start;gap:10px;padding:9px 2px;border-bottom:1px dashed var(--line);cursor:pointer;}
+  .plan-item:last-child{border-bottom:none;}
+  .plan-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--silver-deep);flex:0 0 auto;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
+  .plan-check.on{background:var(--ok);border-color:var(--ok);}
+  .plan-txt{font-size:13px;line-height:1.5;flex:1;word-break:break-word;}
+  .plan-txt.on{color:var(--silver-deep);text-decoration:line-through;}
+  .plan-del{color:var(--silver-deep);font-size:16px;padding:0 2px;flex:0 0 auto;}
+  .plan-stat{margin-top:9px;font-size:12px;color:var(--muted);}
+  .plan-stat b{color:var(--teal);}
+  .rv-form{margin-top:12px;display:flex;flex-direction:column;gap:10px;}
+  .rv-f label{font-size:12px;font-weight:700;color:var(--teal);display:block;margin-bottom:4px;}
+  .rv-f textarea{flex:1;width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;outline:none;resize:vertical;line-height:1.5;min-height:46px;}
+  .rv-f textarea:focus{border-color:var(--teal);}
+  .rv-submit{margin-top:4px;background:var(--gold);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;}
+  .rv-submit:active{transform:scale(.98);}
+  .rv-done{margin-top:10px;text-align:center;color:var(--ok);font-size:13px;font-weight:700;}
+  /* ===== 高考倒计时 ===== */
+  .countdown-card{background:linear-gradient(135deg,#1f4e4a,#2f6b64);color:#fff;border-radius:14px;padding:16px 18px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 14px rgba(31,78,74,.18);}
+  .countdown-card .cd-left{display:flex;flex-direction:column;gap:3px;}
+  .countdown-card .cd-label{font-size:12px;opacity:.85;}
+  .countdown-card .cd-date{font-size:11px;opacity:.7;}
+  .countdown-card .cd-num{font-size:40px;font-weight:800;line-height:1;letter-spacing:1px;}
+  .countdown-card .cd-unit{font-size:12px;opacity:.85;margin-left:4px;font-weight:600;}
+  .roster{display:flex;flex-wrap:wrap;gap:8px;}
+  .role-chip{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:6px 11px;background:#fff;font-size:12px;}
+  .role-chip .dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;}
+  .role-chip .rt{color:var(--muted);font-size:10px;}
+  .agent-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;margin-left:auto;flex:0 0 auto;}
+  .sc-refresh{margin-top:10px;align-self:flex-start;font-size:12px;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:10px;padding:7px 14px;}
+  .sc-refresh:active{transform:scale(.96);}
+  .ins-block{margin-top:10px;}
+  .ins-block:first-child{margin-top:0;}
+  .ins-label{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1px;padding:2px 9px;border-radius:8px;margin-bottom:5px;}
+  .ins-label.sm{background:#eef3f2;color:var(--teal);}
+  .ins-label.fb{background:#fbf0e6;color:#c9762b;}
+  .ins-loading{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;padding:14px 2px;line-height:1.7;}
+  .ins-spin{width:15px;height:15px;border:2px solid var(--teal);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:0 0 auto;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .mat-list{font-size:13px;}
+  .mat-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);}
+  .mat-item:last-child{border-bottom:none;}
+  .tag{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;}
+  .tag.have{background:#e3f1ea;color:var(--ok);}
+  .tag.need{background:#f7ece3;color:var(--warn);}
+  .howto{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .howto code{background:#f0ece4;padding:1px 6px;border-radius:5px;color:var(--teal);font-size:11.5px;}
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));}
+  .nav button{flex:1;background:none;border:none;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;}
+  .nav button .ic{font-size:20px;line-height:1;}
+  .nav button.active{color:var(--teal);font-weight:700;}
+  /* ===== 群聊（单一大群·云端同步） ===== */
+  .group-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;}
+  .group-head .gname{font-size:16px;font-weight:700;color:var(--teal);}
+  .group-head .gmeta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .group-head .gicon{width:38px;height:38px;border-radius:12px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto;}
+  .syncbadge{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:10px;background:#eef3f2;color:var(--teal);}
+  .syncbadge.off{background:#f3eeee;color:var(--silver-deep);}
+  .chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 52px - 56px - 62px);}
+  .messages{flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px;}
+  .msg{max-width:84%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;word-break:break-word;}
+  .msg.user{align-self:flex-end;background:var(--teal);color:#fff;border-bottom-right-radius:4px;}
+  .msg.agent{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .msg .who{font-size:10px;font-weight:700;color:var(--teal);margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+  .msg .who .rd{width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;}
+  .input-bar{display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);}
+  .input-bar input{flex:1;border:1px solid var(--line);border-radius:22px;padding:11px 16px;font-size:14px;outline:none;}
+  .input-bar input:focus{border-color:var(--teal);}
+  .input-bar .send{background:var(--teal);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:18px;display:flex;align-items:center;justify-content:center;}
+  .input-bar .send:active{transform:scale(.92);}
+  .empty{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px;line-height:1.8;}
+  .footnote{font-size:10.5px;color:var(--silver-deep);text-align:center;padding:14px;line-height:1.6;}
+  /* ===== 通用弹窗（查看 Agent 详情） ===== */
+  .modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:24px;}
+  .modal.show{display:flex;}
+  .modal .box{background:#fff;border-radius:16px;padding:20px;max-width:340px;width:100%;max-height:80vh;overflow-y:auto;}
+  .modal .micon{width:42px;height:42px;border-radius:12px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;}
+  .modal h3{margin:0 0 4px;font-size:18px;color:var(--teal);}
+  .modal .msub{font-size:11px;color:var(--gold);margin-bottom:14px;font-weight:700;}
+  .modal .mbody{font-size:13px;color:var(--ink);line-height:1.75;}
+  .modal .mbody p{margin:0 0 10px;}
+  .modal .mbody .k{color:var(--teal);font-weight:700;}
+  .modal .close{margin-top:18px;width:100%;background:var(--teal);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;}
+  .modal .close:active{transform:scale(.98);}
+  /* ===== 隙光：碎碎念（自动分类整理 · 无 AI） ===== */
+  .xg-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;}
+  .xg-head .xgicon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1f4e4a,#2f6b64);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto;}
+  .xg-head .xgname{font-size:16px;font-weight:700;color:var(--teal);}
+  .xg-head .xgmeta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .xg-wrap{display:flex;flex-direction:column;height:calc(100vh - 52px - 56px - 62px);}
+  .xg-filter{display:flex;gap:6px;overflow-x:auto;padding:10px 14px 4px;background:#fff;border-bottom:1px solid var(--line);flex:0 0 auto;-webkit-overflow-scrolling:touch;}
+  .xg-filter::-webkit-scrollbar{display:none;}
+  .xg-chip{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:16px;padding:5px 11px;font-size:11.5px;font-family:inherit;white-space:nowrap;}
+  .xg-chip.active{color:#fff;border-color:transparent;font-weight:700;}
+  .xg-notes{flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:14px;}
+  .xg-group-h{font-size:12px;font-weight:700;color:var(--teal);margin:4px 2px -4px;display:flex;align-items:center;gap:6px;}
+  .xg-group-h::before{content:"";width:4px;height:12px;background:var(--gold);border-radius:2px;}
+  .xg-group-h .cnt{font-size:10px;color:var(--silver-deep);font-weight:400;}
+  .xg-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;}
+  .xg-card .you{font-size:13.5px;line-height:1.65;color:var(--ink);white-space:pre-wrap;word-break:break-word;}
+  .xg-card .meta{margin-top:9px;display:flex;align-items:center;gap:8px;}
+  .xg-tag{font-size:10.5px;padding:2px 9px;border-radius:10px;font-weight:700;color:#fff;}
+  .xg-time{font-size:10px;color:var(--silver-deep);margin-left:auto;}
+  .xg-input{flex:0 0 auto;display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);align-items:flex-end;}
+  .xg-input textarea{flex:1;border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:14px;outline:none;resize:none;font-family:inherit;max-height:120px;line-height:1.5;}
+  .xg-input textarea:focus{border-color:var(--teal);}
+  .xg-input .send{background:var(--teal);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:18px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+  .xg-input .send:active{transform:scale(.92);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>若昭 · 个人成长工作台</h1>
+  <div class="sub" id="dateSub"></div>
+</div>
+
+<!-- ============ 主页 ============ -->
+<div class="page active" id="page-home">
+  <div class="card">
+    <div class="goal-row">
+      <span class="goal-big">287</span>
+      <span class="goal-arrow">→</span>
+      <span class="goal-target">550</span>
+      <span class="goal-arrow">→</span>
+      <span class="goal-target">600</span>
+    </div>
+    <div class="goal-note">2026 高考复读目标 · 江浙沪 211/985 · 8/20 正式开干</div>
+  </div>
+
+  <div class="countdown-card">
+    <div class="cd-left">
+      <span class="cd-label">距 2027 高考</span>
+      <span class="cd-date" id="cdDate">2027 年 6 月 7 日</span>
+    </div>
+    <div><span class="cd-num" id="cdNum">—</span><span class="cd-unit">天</span></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">今日打卡</div>
+    <div class="checkin">
+      <div class="btn" id="btnStudy">📚 学习打卡</div>
+      <div class="btn" id="btnSleep">😴 睡眠达标</div>
+      <div class="btn" id="btnExercise">🏃 运动打卡</div>
+      <div class="btn" id="btnRead">📖 阅读打卡</div>
+    </div>
+    <div class="streak" id="streakLine"></div>
+    <div class="goal-note" style="margin-top:6px">已上云 · 换手机也同步 · 运动/阅读按周统计（每周 动≥3 / 读≥5）</div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">待办任务</div>
+    <div class="sc-list" id="todoList"></div>
+  </div>
+
+  <div class="card sichen-entry" onclick="goSichen()">
+    <div class="sec-title">司辰</div>
+    <div class="sichen-prev">
+      <div class="sp-row"><span class="sp-dot"></span>每日学习计划<span class="sp-t">08:00</span></div>
+      <div class="sp-row"><span class="sp-dot"></span>每日学习复盘<span class="sp-t">22:30</span></div>
+      <div class="sp-row"><span class="sp-dot"></span>每周进度检查<span class="sp-t">周日 20:00</span></div>
+    </div>
+    <div class="sichen-go">进入看进度与动态 →</div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">银简</div>
+    <div class="fin-sub">今日读物 · 读完三选一打卡</div>
+    <div id="rdToday"></div>
+    <div class="rd-divider"></div>
+    <div class="fin-sub">随手记账</div>
+    <div class="fin-add">
+      <select id="finType">
+        <option value="expense">支出</option>
+        <option value="income">收入</option>
+      </select>
+      <input id="finAmt" type="number" inputmode="decimal" placeholder="金额" autocomplete="off">
+      <input id="finNote" type="text" placeholder="备注" autocomplete="off">
+      <button class="add" id="finAddBtn">＋</button>
+    </div>
+    <div class="fin-balance" id="finBalance"></div>
+    <div class="sc-list" id="finList"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">列宿</div>
+    <div class="roster" id="roster"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">资料清单</div>
+    <div class="mat-list">
+      <div class="mat-item"><span class="tag have">已购</span> 数学：人教B版 + 天星《基础双练》</div>
+      <div class="mat-item"><span class="tag have">已购</span> 英语：FREE套装 + 星火四级 + 中国文化概况</div>
+      <div class="mat-item"><span class="tag have">已购</span> 语文：杨佳奇真题12卷(2025版)</div>
+      <div class="mat-item"><span class="tag need">待购</span> 物理：跳跳学长高考物理系列</div>
+      <div class="mat-item"><span class="tag need">待购</span> 化学：化学超人全家桶</div>
+      <div class="mat-item"><span class="tag need">待购</span> 生物：李林生物</div>
+      <div class="mat-item"><span class="tag need">待购</span> 语文：陈Sir 135</div>
+    </div>
+  </div>
+
+  <div class="footnote">个人成长系统 · 为若昭一人搭建 · 13 伙伴常驻</div>
+</div>
+
+<!-- ============ 司辰（复读节奏 · 独立页面） ============ -->
+<div class="page" id="page-sichen">
+  <div class="sc-head">
+    <button class="sc-back" id="scBack">←</button>
+    <div>
+      <div class="sc-title">司辰</div>
+      <div class="sc-sub">复读节奏 · 进度 / 复盘 / 自动化动态</div>
+    </div>
+  </div>
+  <div class="sc-body">
+    <div class="sc-block">
+      <div class="sc-bt">打卡日历</div>
+      <div class="cal-head">
+        <div class="cal-nav"><button id="calPrev">‹</button></div>
+        <div id="calHead" style="font-size:14px;font-weight:700;color:var(--teal)"></div>
+        <div class="cal-nav"><button id="calNext">›</button></div>
+      </div>
+      <div class="cal-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-stat-inline" id="calStat"></div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">运动 / 阅读 · 按周</div>
+      <div id="calWeekPanel"></div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">每日进度</div>
+      <div class="sc-prog" id="scProg"></div>
+      <div class="sc-prog-note" id="scProgNote"></div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">近期复盘</div>
+      <button class="sc-refresh" id="reviewToggle">📝 写今日复盘</button>
+      <div class="rv-form" id="reviewForm" style="display:none">
+        <div class="rv-f"><label>① 今天学了什么</label><textarea id="rv1" placeholder="科目 + 具体内容"></textarea></div>
+        <div class="rv-f"><label>② 真懂还是假懂（卡在哪）</label><textarea id="rv2" placeholder="哪个点没通、概念还是步骤"></textarea></div>
+        <div class="rv-f"><label>③ 执行率（学了多久 / 计划完成度）</label><textarea id="rv3" placeholder="大概几小时、计划做了多少"></textarea></div>
+        <div class="rv-f"><label>④ 明天微调</label><textarea id="rv4" placeholder="哪科加强、哪块重来"></textarea></div>
+        <button class="rv-submit" id="rvSubmit">提交复盘 · 存入司辰</button>
+      </div>
+      <div class="rv-done" id="rvDone" style="display:none">✓ 已存入司辰，进度柱与复盘列表已更新</div>
+      <div class="sc-list" id="scReview"></div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">自动化动态</div>
+      <div class="sc-list" id="scFeed"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 伙伴独立页（列宿成员 · 记录） ============ -->
+<div class="page" id="page-agent">
+  <div class="sc-head">
+    <button class="sc-back" id="agentBack">←</button>
+    <div>
+      <div class="sc-title" id="agentTitle">序</div>
+      <div class="sc-sub" id="agentSub">数学导师</div>
+    </div>
+    <div class="rd agent-avatar" id="agentAvatar">序</div>
+  </div>
+  <div class="sc-body">
+    <div class="sc-block">
+      <div class="sc-bt">他记录了什么</div>
+      <div class="sc-list" id="agentLog"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 隙光（碎碎念 · 自动分类整理 · 无 AI） ============ -->
+<div class="page" id="page-xiguang">
+  <div class="xg-head">
+    <div class="xgicon">✦</div>
+    <div>
+      <div class="xgname">隙光</div>
+      <div class="xgmeta">碎碎念 · 按内容自动分类整理</div>
+    </div>
+  </div>
+  <div class="xg-wrap">
+    <div class="xg-filter" id="xgFilter"></div>
+    <div class="xg-notes" id="xgNotes"></div>
+    <div class="xg-input">
+      <textarea id="xgInput" rows="1" placeholder="写点碎碎念…（自动按内容分类）" autocomplete="off"></textarea>
+      <button class="send" id="xgSendBtn">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 对话（单一大群：昭明 · 云端同步） ============ -->
+<div class="page" id="page-chat">
+  <div class="group-head">
+    <div class="gicon">🛟</div>
+    <div>
+      <div class="gname" id="groupName">昭明</div>
+      <div class="gmeta">13 伙伴常驻 · 全员都在</div>
+    </div>
+    <div class="syncbadge off" id="syncBadge">未连接</div>
+  </div>
+  <div class="chat-wrap">
+    <div class="messages" id="messages"></div>
+    <div class="input-bar">
+      <input id="msgInput" type="text" placeholder="说点什么…" autocomplete="off">
+      <button class="send" id="sendBtn">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- bottom nav -->
+<div class="nav">
+  <button class="active" data-page="home"><span class="ic">🏠</span>主页</button>
+  <button data-page="xiguang"><span class="ic">✦</span>隙光</button>
+  <button data-page="chat"><span class="ic">💬</span>对话</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+/* ---------- 角色配置 ---------- */
+const ROLES = {
+  zhao:{name:"昭",short:"昭",title:"主持·串场",color:"#1f4e4a"},
+  lv:{name:"律",short:"律",title:"督导",color:"#2f6b64"},
+  xu:{name:"序",short:"序",title:"数学导师",color:"#3a6ea5"},
+  xiang:{name:"象",short:"象",title:"物理导师",color:"#8e5aa6"},
+  bian:{name:"变",short:"变",title:"化学导师",color:"#c2703f"},
+  mai:{name:"脉",short:"脉",title:"生物导师",color:"#3f8a6d"},
+  ci:{name:"辞",short:"辞",title:"英语导师",color:"#b08a2e"},
+  wen:{name:"文",short:"文",title:"语文导师",color:"#9a5b5b"},
+  xin:{name:"心",short:"心",title:"成长教练",color:"#d08a3a"},
+  si:{name:"思",short:"思",title:"思想认知",color:"#5a6b8e"},
+  mian:{name:"眠",short:"眠",title:"作息睡眠",color:"#4a6b8a"},
+  shen:{name:"身",short:"身",title:"体态健康",color:"#6b8a4a"},
+  xing:{name:"星",short:"星",title:"愿景锚",color:"#b89b6e"}
+};
+const ORDER = ["zhao","lv","xu","xiang","bian","mai","ci","wen","xin","si","mian","shen","xing"];
+
+/* ---------- 回复引擎（前端 MVP：人设驱动） ---------- */
+const REPLIES = {
+  lv:[
+    {k:["资料","下单","到货","书","买"],t:"资料到位是开局第一关。物理跳跳学长、化学超人、生物李林、语文陈Sir都还没到——这几天先把单下了。到了计划才排得进去。"},
+    {k:["进度","落后","差距","计划","排"],t:"计划不是按章节平均排，是按你真实缺口排。开干前先摸清每科哪块是零分，再决定先啃哪。前三天只要『动起来+睡够10h』就算赢。"},
+    {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/20 第一条计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
+    {k:["default"],t:"执行的事归我。你今天动了没？没动就别想太多，先从一个最小动作开始。"}
+  ],
+  xu:[
+    {k:["数学","函数","集合","不等式","导数","算","题"],t:"数学23分，地基空。别贪多——一天一个15分钟网课+20道同类题，错题写『我哪理解偏了』不是抄题。先问自己卡在概念还是步骤，概念问题我带你从推导讲起。"},
+    {k:["错题","不懂","卡"],t:"把卡的那一步单独拎出来：是概念没懂，还是步骤不会？概念我讲为什么成立，步骤我拆成可执行链。别整题重做，专攻那一步。"},
+    {k:["default"],t:"模块A（集合+逻辑+不等式）先起步。你INTJ自己琢磨才有劲，我只在你卡住时点一下。"}
+  ],
+  xiang:[
+    {k:["物理","受力","运动","能量","图像","公式"],t:"物理14分，别急着算。先建图像——受力图、运动图、能量图，能画出来再碰公式。跳跳学长网课当主线，倍速反复是你的控制权。"},
+    {k:["default"],t:"前两周只建图像不碰计算。把『这题在描述什么物理过程』画清楚，公式自然跟着来。"}
+  ],
+  bian:[
+    {k:["化学","方程","反应","价态","氧化还原"],t:"化学59，基础还行。织一张『价态-物质-反应』转化网，别死背方程式。先问这物质里元素价态怎么变，电子怎么转移，反应机理清楚了方程式自己长出来。"},
+    {k:["default"],t:"原理推导优先于刷题。你搞懂『为什么这样反应』，题是变化的，机理不变。"}
+  ],
+  mai:[
+    {k:["生物","遗传","系谱","细胞","机制"],t:"生物44，机制链最重要：条件→过程→结果。遗传系谱先判显隐性再推基因型，别跳步。易混概念（如基因突变/染色体变异）我帮你辨析。"},
+    {k:["default"],t:"课本为王+思维导图。把每个机制的『条件-过程-结果』写顺，题就通了。"}
+  ],
+  ci:[
+    {k:["英语","长难句","阅读","词汇","单词","语法"],t:"英语54，核心是词不够+长句拆不开。长难句按『主干-修饰-逻辑』三层拆：先拎主谓宾，再看从句和非谓语，最后理逻辑连接。阅读定位靠同义替换，不是逐字翻译。"},
+    {k:["default"],t:"每天背多少词、累计多少，得有可见数。词汇量上去了阅读才不卡。"}
+  ],
+  wen:[
+    {k:["语文","文言","作文","阅读","答题"],t:"语文93是你最强项，按你的基础讲精准不降维。文言实词靠语境推断+积累；答题要有文本依据、角度闭环，别凭感觉。需要具体题直接贴。"},
+    {k:["default"],t:"维持微提即可，把时间让给短板。答题角度建个样例库，别每次从头想。"}
+  ],
+  xin:[
+    {k:["想太多","完美","焦虑","怕","不行","烦","累","丧"],t:"接收，不评判。你这股情绪我接住了——别急着解决，先喘口气。想太多做太少这关，靠的是先动一个5分钟能启动的动作，做完自然有下一个。"},
+    {k:["坚持","放弃","断","孤独","一个人"],t:"一个人住自学，孤独感是真实的。但这群『人』在，就等于有外部反馈回路，你不是真的一个人。断了一天没关系，明天从最小一科动起来。"},
+    {k:["default"],t:"心态归我。你今天状态如何？不用装好，真实说就行。"}
+  ],
+  si:[
+    {k:["毛选","技术革命","读书","认知","框架","底层","世界观"],t:"思想认知归我。每天睡前15分钟，毛选或技术革命挑一段，写一句『这跟我当下哪件事有关』。把被动刷的商业访谈转成带问题的主动研究，别让输入碎片化不沉淀。"},
+    {k:["default"],t:"底层逻辑比结论值钱。你读到的东西，逼自己问一句『它为什么成立、跟我哪件事相通』，认知才长出来。"}
+  ],
+  mian:[
+    {k:["睡","作息","熬夜","颠倒","起","几点"],t:"睡眠归我，高敏感刚需10小时，这事不让你糊弄。昼夜颠倒现在得往回拽——每天起床时间前提20分钟，别硬切。到点我就顶出来。"},
+    {k:["default"],t:"今晚几点睡？目标23:30。睡够，脑子才转得动，比多刷两题值钱。"}
+  ],
+  shen:[
+    {k:["体态","驼背","脖子","腰","坐姿","拉伸","颈"],t:"体态归我。一天坐10小时复读，上交叉综合征+驼背只会更糟。每小时起身扩胸+颈拉伸一次，坐姿别含胸。别等疼了才想起来。"},
+    {k:["default"],t:"身子是这台设备的硬件，坏了学习全停。坐一小时起来动两分钟，我盯着。"}
+  ],
+  xing:[
+    {k:["目标","意义","为什么","211","985","江浙沪","迷茫"],t:"550→600、江浙沪211——这事我钉你眼前。日常淹在题里容易忘为什么熬。你做的每道题，都是往那张门票上添一笔。"},
+    {k:["default"],t:"别忘了去哪。再小的日常动作，都连着那个更大的目标。"}
+  ],
+  zhao:[
+    {k:["default"],t:"我在，串场归纳都归我。你想聊什么、点哪个伙伴，我帮你拉出来。"}
+  ]
+};
+
+function pickReply(roleKey, text){
+  const list = REPLIES[roleKey];
+  if(!list) return "我在。";
+  for(const item of list){
+    if(item.k[0]==="default") continue;
+    if(item.k.some(k=>text.includes(k))) return item.t;
+  }
+  const def = list.find(x=>x.k[0]==="default");
+  return def ? def.t : "我在。";
+}
+
+/* ---------- 群聊：多角色响应（全员大群） ---------- */
+function groupReply(text){
+  const hits = [];
+  for(const key of ORDER){
+    const list = REPLIES[key]; if(!list) continue;
+    for(const item of list){
+      if(item.k[0]==="default") continue;
+      if(item.k.some(k=>text.includes(k))){ hits.push(key); break; }
+    }
+  }
+  if(hits.length===0){
+    const others = ORDER.filter(k=>k!=="zhao");
+    const rnd = others[Math.floor(Math.random()*others.length)];
+    return [{role:"zhao",text:"大家在，你说吧——想聊哪块，我帮你点人。"},{role:rnd,text:pickReply(rnd,text)}];
+  }
+  const top = hits.slice(0,3);
+  return top.map(k=>({role:k,text:pickReply(k,text)}));
+}
+
+/* ---------- Supabase 连接 ---------- */
+const sb = (typeof supabase!=="undefined" && typeof SUPABASE_URL!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0)
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+const syncBadge = document.getElementById("syncBadge");
+function setSync(on){ syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
+
+/* ---------- 渲染 ---------- */
+const rosterEl = document.getElementById("roster");
+ORDER.forEach(k=>{
+  const r = ROLES[k];
+  const el = document.createElement("div");
+  el.className="role-chip";
+  el.innerHTML = `<span class="dot" style="background:${r.color}">${r.short}</span><span><b>${r.name}</b> <span class="rt">${r.title}</span></span>`;
+  el.style.cursor="pointer";
+  el.onclick = ()=>showAgent(k);
+  rosterEl.appendChild(el);
+});
+
+const messagesEl = document.getElementById("messages");
+const rendered = new Set();   // 去重 key: ts|text
+
+function makeMsgEl(m){
+  const d=document.createElement("div");
+  d.className="msg "+(m.from==="user"?"user":"agent");
+  d.dataset.key = (m.ts||0)+"|"+m.text;
+  if(m.from==="user"){
+    d.textContent=m.text;
+  }else{
+    const who=document.createElement("div"); who.className="who";
+    const r=ROLES[m.role]||ROLES.zhao;
+    who.innerHTML=`<span class="rd" style="background:${r.color}">${r.short}</span>${r.name}·${r.title}`;
+    const p=document.createElement("div"); p.textContent=m.text;
+    d.appendChild(who); d.appendChild(p);
+  }
+  return d;
+}
+function appendMsg(m){
+  const key=(m.ts||0)+"|"+m.text;
+  if(rendered.has(key)) return;        // 去重（realtime 与本地 insert 可能重复）
+  rendered.add(key);
+  const e=makeMsgEl(m);
+  messagesEl.appendChild(e);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+async function renderMessages(){
+  messagesEl.innerHTML="";
+  rendered.clear();
+  if(!sb){
+    const e=document.createElement("div"); e.className="empty";
+    e.innerHTML="「昭明」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>（云端未连接，消息仅存本机）";
+    messagesEl.appendChild(e); setSync(false); return;
+  }
+  const {data,error} = await sb.from(SUPABASE_TABLE).select("*").order("ts",{ascending:true});
+  if(error){ console.error(error); setSync(false); return; }
+  setSync(true);
+  if(!data || data.length===0){
+    const e=document.createElement("div"); e.className="empty";
+    e.innerHTML="「昭明」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>比如「今天数学又卡了还睡不着」<br>或「我有点想太多，动不起来」";
+    messagesEl.appendChild(e); return;
+  }
+  data.forEach(r=>appendMsg({from:r.sender==="user"?"user":"agent", role:r.sender, text:r.text, ts:r.ts}));
+}
+
+async function send(){
+  const inp=document.getElementById("msgInput");
+  const text=inp.value.trim();
+  if(!text) return;
+  const ts=Date.now();
+  const userMsg={from:"user",role:"user",text,ts};
+  appendMsg(userMsg);
+  inp.value="";
+  if(sb){
+    await sb.from(SUPABASE_TABLE).insert({sender:"user",name:"若昭",text,ts});
+  }
+}
+
+document.getElementById("sendBtn").onclick=send;
+document.getElementById("msgInput").addEventListener("keydown",e=>{ if(e.key==="Enter") send(); });
+
+/* ---------- 实时订阅（手机/电脑近实时同步） ---------- */
+if(sb){
+  sb.channel("longming-room")
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:SUPABASE_TABLE}, payload=>{
+      const r=payload.new;
+      appendMsg({from:r.sender==="user"?"user":"agent", role:r.sender, text:r.text, ts:r.ts});
+    })
+    .subscribe();
+}
+
+/* ---------- 隙光：碎碎念（自动分类整理 · 无 AI） ---------- */
+const XG_TABLE = "xiguang_notes";
+const XG_CATS = {
+  "情绪心绪":"#d08a3a", "学习卡点":"#3a6ea5", "灵感想法":"#8e5aa6",
+  "品牌·珀缦":"#b89b6e", "生活碎片":"#6b8a4a", "目标与意义":"#9a5b5b",
+  "健康·作息":"#4a6b8a", "其他":"#8a9a98"
+};
+const XG_ORDER = Object.keys(XG_CATS);
+// 本地分类关键词（打分取最高，0 命中归「其他」）
+const XG_KEYWORDS = {
+  "品牌·珀缦":["珀缦","bomané","bomane","品牌","饰品","珍珠","缠花","丝带","订单","客户","小红书","店铺","上架","材料","设计款","耳夹","项链"],
+  "学习卡点":["数学","函数","集合","不等式","导数","物理","受力","运动","能量","化学","方程","反应","价态","生物","遗传","细胞","英语","长难句","阅读","词汇","单词","语文","文言","作文","题","错题","卡住","听不懂","网课","计划","进度","落后","复习","作业","公式","刷题","课本","考点"],
+  "情绪心绪":["想太多","完美","焦虑","怕","不行","烦","丧","孤独","一个人","心态","情绪","难过","委屈","慌","压力","崩溃","空虚","动不起来","内耗","想哭"],
+  "灵感想法":["灵感","主意","想法","念头","创意","点子","突然想到","想到","或许","设想","要是","能不能","可不可以"],
+  "目标与意义":["目标","意义","为什么","211","985","江浙沪","迷茫","未来","动机","想成为","价值","人生","方向","复读"],
+  "健康·作息":["睡","作息","熬夜","颠倒","几点起","几点睡","起床","颈","腰","体态","驼背","拉伸","运动","身体","疼","病","困","精神","10小时","十小时"],
+  "生活碎片":["吃","饭","外卖","天气","逛","电影","歌","音乐","朋友","家人","外婆","出门","快递","猫","狗","散步","奶茶","咖啡"]
+};
+function classifyXg(text){
+  const t = (text||"").toLowerCase();
+  let best = "其他", bestScore = 0;
+  for(const cat of XG_ORDER){
+    if(cat==="其他") continue;
+    const kws = XG_KEYWORDS[cat] || [];
+    let score = 0;
+    for(const k of kws){ if(t.includes(k.toLowerCase())) score++; }
+    if(score > bestScore){ bestScore = score; best = cat; }
+  }
+  return best;
+}
+const xgNotesEl = document.getElementById("xgNotes");
+const xgFilterEl = document.getElementById("xgFilter");
+let xgFilter = "全部";
+let xgLocal = [];   // 离线兜底
+
+function renderXgFilter(){
+  xgFilterEl.innerHTML = "";
+  const cats = ["全部", ...XG_ORDER];
+  cats.forEach(c=>{
+    const chip = document.createElement("button");
+    chip.className = "xg-chip" + (c===xgFilter ? " active" : "");
+    chip.textContent = c;
+    const color = c==="全部" ? "var(--teal)" : XG_CATS[c];
+    if(c===xgFilter){ chip.style.background = color; }
+    else { chip.style.color = color; chip.style.borderColor = color; }
+    chip.onclick = ()=>{ xgFilter = c; renderXgFilter(); renderXg(); };
+    xgFilterEl.appendChild(chip);
+  });
+}
+
+function makeXgCard(n){
+  const d = document.createElement("div");
+  d.className = "xg-card";
+  const you = document.createElement("div"); you.className="you"; you.textContent = n.content || "";
+  d.appendChild(you);
+  const meta = document.createElement("div"); meta.className="meta";
+  const cat = n.category && XG_CATS[n.category] ? n.category : "其他";
+  const tag = document.createElement("span");
+  tag.className="xg-tag"; tag.style.background = XG_CATS[cat]; tag.textContent = "分类 · " + cat;
+  const tm = document.createElement("span"); tm.className="xg-time";
+  tm.textContent = n.ts ? new Date(n.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "";
+  meta.appendChild(tag); meta.appendChild(tm);
+  d.appendChild(meta);
+  return d;
+}
+
+function renderXgFrom(notes){
+  xgNotesEl.innerHTML = "";
+  if(!notes || notes.length===0){
+    xgNotesEl.innerHTML = '<div class="empty">' +
+      (xgFilter==="全部"
+        ? "「隙光」——缝隙里的一点光。<br>写点碎碎念，系统按内容自动分类整理。<br><br>比如「今天又想太多没动」<br>或「突然想到珀缦可以做个书签」"
+        : "这个分类下还没有碎碎念。") + '</div>';
+    return;
+  }
+  if(xgFilter !== "全部"){
+    const list = notes.filter(n=> (n.category||"其他")===xgFilter);
+    if(list.length===0){ xgNotesEl.innerHTML = '<div class="empty">这个分类下还没有碎碎念。</div>'; return; }
+    list.forEach(n=> xgNotesEl.appendChild(makeXgCard(n)));
+    return;
+  }
+  // 「全部」：按分类整合分组，每组带条数
+  XG_ORDER.forEach(cat=>{
+    const list = notes.filter(n=> (n.category||"其他")===cat);
+    if(!list.length) return;
+    const h = document.createElement("div"); h.className="xg-group-h";
+    h.innerHTML = `${cat} <span class="cnt">${list.length} 条</span>`;
+    xgNotesEl.appendChild(h);
+    list.forEach(n=> xgNotesEl.appendChild(makeXgCard(n)));
+  });
+}
+
+async function renderXg(){
+  if(!sb){ renderXgFrom(xgLocal); return; }
+  const {data,error} = await sb.from(XG_TABLE).select("*").order("ts",{ascending:true});
+  if(error){ console.error(error); xgNotesEl.innerHTML='<div class="empty">隙光加载失败，稍后重试。</div>'; return; }
+  xgLocal = data || [];
+  renderXgFrom(xgLocal);
+}
+
+async function sendXg(){
+  const ta = document.getElementById("xgInput");
+  const text = ta.value.trim();
+  if(!text) return;
+  const ts = Date.now();
+  const cat = classifyXg(text);
+  ta.value=""; ta.style.height="auto";
+  if(sb){
+    await sb.from(XG_TABLE).insert({content:text, category:cat, ts});
+    renderXg();
+  } else {
+    xgLocal.push({content:text, category:cat, ts});
+    renderXg();
+  }
+}
+document.getElementById("xgSendBtn").onclick = sendXg;
+const xgInputEl = document.getElementById("xgInput");
+xgInputEl.addEventListener("input", ()=>{ xgInputEl.style.height="auto"; xgInputEl.style.height=Math.min(xgInputEl.scrollHeight,120)+"px"; });
+xgInputEl.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendXg(); }
+});
+
+/* 实时订阅：手机/电脑近实时同步（分类已在本地算好，云端不再调 AI） */
+if(sb){
+  sb.channel("xiguang-room")
+    .on("postgres_changes",{event:"*",schema:"public",table:XG_TABLE}, ()=>{ renderXg(); })
+    .subscribe();
+}
+
+renderXgFilter();
+
+/* ---------- 导航 ---------- */
+document.querySelectorAll(".nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    const p=b.dataset.page;
+    document.getElementById("page-home").classList.toggle("active",p==="home");
+    document.getElementById("page-xiguang").classList.toggle("active",p==="xiguang");
+    document.getElementById("page-chat").classList.toggle("active",p==="chat");
+    document.getElementById("page-sichen").classList.toggle("active",false);
+    document.getElementById("page-agent").classList.toggle("active",false);
+    if(p==="chat") renderMessages();
+    if(p==="xiguang") renderXg();
+  };
+});
+
+/* ---------- 打卡 streak（云端 + 本机兜底） ---------- */
+const CHECKIN_TABLE = "checkin";
+const FIN_TABLE = "finance_log";
+const CHECK_FIELDS = ["study","sleep","exercise","read"];
+const todayStr=()=>new Date().toISOString().slice(0,10);
+let checkinCache = {};
+function renderCheckin(){
+  const c=checkinCache; const t=todayStr();
+  CHECK_FIELDS.forEach(f=>{
+    const el=document.getElementById("btn"+f.charAt(0).toUpperCase()+f.slice(1));
+    if(el) el.classList.toggle("done",!!c[t]?.[f]);
+  });
+  let streak=0; let d=new Date();
+  while(true){
+    const key=d.toISOString().slice(0,10);
+    if(c[key]?.study){ streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  document.getElementById("streakLine").innerHTML = streak>0 ? `🔥 连续学习 <b>${streak}</b> 天` : `还没开始打卡，今天动一下`;
+}
+async function loadCheckin(){
+  try{ const l=JSON.parse(localStorage.getItem("checkin")||"{}"); if(Object.keys(l).length) checkinCache=l; }catch(e){}
+  if(!sb) return;
+  const since=new Date(Date.now()-1000*60*60*24*120).toISOString().slice(0,10);
+  try{
+    const {data,error}=await sb.from(CHECKIN_TABLE).select("*").gte("date",since);
+    if(!error && data){
+      const m={};
+      data.forEach(r=>{ m[r.date]={study:!!r.study,sleep:!!r.sleep,exercise:!!r.exercise,read:!!r.read}; });
+      checkinCache=m; localStorage.setItem("checkin",JSON.stringify(m));
+    }
+  }catch(e){}
+}
+async function saveCheckin(date,rec){
+  checkinCache[date]=rec;
+  try{ localStorage.setItem("checkin",JSON.stringify(checkinCache)); }catch(e){}
+  if(!sb) return;
+  try{ await sb.from(CHECKIN_TABLE).upsert({date, ...rec, ts:Date.now()}); }catch(e){}
+}
+async function toggleCheckin(kind){
+  const t=todayStr();
+  const cur=checkinCache[t]||{study:false,sleep:false,exercise:false,read:false};
+  const rec={...cur, [kind]:!cur[kind]};
+  checkinCache[t]=rec; renderCheckin();
+  await saveCheckin(t,rec);
+  await loadCheckin(); renderCheckin();
+}
+document.getElementById("btnStudy").onclick=()=>toggleCheckin("study");
+document.getElementById("btnSleep").onclick=()=>toggleCheckin("sleep");
+document.getElementById("btnExercise").onclick=()=>toggleCheckin("exercise");
+document.getElementById("btnRead").onclick=()=>toggleCheckin("read");
+
+/* ---------- 银简：今日读物（每日一段+三选一打卡）+ 随手记账（云端） ---------- */
+const READING_TABLE = "daily_reading";
+const READING_PLAN = [
+  /* Week 1 · 《小狗钱钱》Bodo Schäfer */
+  {date:"2026-08-19", book:"《小狗钱钱》", p:"当你决定做一件事时，必须在 72 小时内开始行动。\n不是“明天再说”，也不是“等我准备好”。72 小时是个硬门槛——跨过去，那个念头就生根；跨不过去，它就在你脑子里悄悄死掉。\n吉娅把这件事写在自己的成功日记里。她说，每当自己想出一个小点子，就在 72 小时内做一点点，哪怕只是十分钟。\n\n不一定要“完美地开始”。开始，比完美重要。"},
+  {date:"2026-08-20", book:"《小狗钱钱》", p:"吉娅的教练让她做了一件事：拿三张纸，写下��个最想达成的事，做成图片贴在眼睛每天都能看见的地方。\n不是为了“相信”，是为了让脑子天天想着那件事。\n你的脑子是会挑事的——它会把“天天看见的事”当真。你想变富，就把变富的样子天天看；你想写作，就把作品封面天天看；你想减肥，就把那个身材天天看。\n\n心里想着什么，眼睛就会去找什么；眼睛找到了，手才有机会跟上。"},
+  {date:"2026-08-21", book:"《小狗钱钱》", p:"每天写下 5 件你今天做成了的事——哪怕是“今天准时起床了”也算。\n吉娅一开始觉得可笑：这种事也算成功？但当她真的写了三周，发现一件怪事——她真的开始相信，自己是个“会做成事的人”。\n\n自信不是天生的。自信是一张张写满“我做到了”的纸，叠出来的。\n你不必写得轰轰烈烈。从今天准时关灯、上完一节课没看手机、把作业写完——都算。"},
+  {date:"2026-08-22", book:"《小狗钱钱》", p:"从前有个农夫，养了一只每天下一个金蛋的鹅。一天他嫌鹅下蛋太慢，就把鹅杀了，想一次性取完所有金子。结果鹅死了，金蛋也没了。\n\n鹅代表你的本金，金蛋代表你的收益。\n杀鹅取卵 = 提前花掉本金 / 一次性把积蓄挥霍 / 用借贷来“过好日子”。\n养鹅 = 每月固定存一笔、让本金慢慢长大。\n\n你若 19 岁就懂这件事，且真的每月存一点，30 岁时你会拥有一只别人没有的鹅。"},
+  {date:"2026-08-23", book:"《小狗钱钱》", p:"吉娅问钱钱：怎样才能赚更多？\n钱钱说：把精力放在你擅长的事上。\n\n大多数人以为“努力 = 赚到钱”。其实不——你的精力如果放在不擅长的事上，那是低水平重复，赚不到溢价。\n\n反过来，找到你做起来比别人轻松、比别人快、别人愿意为你付钱的事，把所有精力压上去。\n\n你不必什么都强。一件事足够强，足以撑起一片收入。"},
+  {date:"2026-08-24", book:"《小狗钱钱》", p:"大多数人之所以没钱，不是因为赚得少，是因为分不清“需要”和“想要”。\n\n需要 = 你不花钱就会死 / 没法正常生活 / 影响下一段。\n想要 = 不花钱也不会怎样，但你“想”拥有。\n\n鞋柜里 30 双鞋，绝大多数是“想要”。手机出新款就换，绝大多数也是“想要”。\n把你每笔花费用“想要/需要”过一遍。一个月下来你会发现：至少 30% 的钱，本来可以不花。\n\n省钱不是抠门，是把钱留给鹅。"},
+        {date:"2026-08-25", book:"《小狗钱钱》", p:"很多人以为勇敢 = 不害怕。其实不——勇敢是“明明害怕，还在做”。\n\n吉娅第一次上台演讲时手抖得厉害，但她说了一句让自己都惊讶的话：“我害怕，但我还是要说。”台下给她掌声。\n\n理财也一样。\n你第一次记账 / 第一次主动跟父母谈钱 / 第一次拒绝买不必要的东西 / 第一次把存下来的钱投出去——都会害怕。\n\n那不重要。\n你说一句“我害怕，但还是做”——事情就开始转向你了。"},
+{date:"2026-08-26", book:"《富爸爸穷爸爸》", p:"富爸爸只教吉娅一个区分：资产 vs 负债。\n\n资产 = 把钱放进你口袋的东西（股票、债券、能收租的房子、能产生版税的作品、你的人脉）\n负债 = 把钱从你口袋掏走的东西（自住房贷款、消费贷、车、奢侈品、订阅服务）\n\n穷人买负债当“资产”（“房子就是资产啊”——可你住了的房子不产生钱，是负债）；\n富人买真正的资产，让资产买负债（用股票分红的钱去买房子）。\n\n从今天起，每笔花钱，问一句：这是资产还是负债？"},
+  {date:"2026-08-27", book:"《富爸爸穷爸爸》", p:"穷爸爸说：努力读书，找个好工作，努力升职，加薪。\n富爸爸说：你需要的不是更高的工资，是让钱为你工作。\n\n工资是“你的时间换钱”——时间有限，钱就到顶了。\n让钱为你工作 = 让你的本金生出利息、股息、租金——你睡觉时，钱在替你打工。\n\n这不是叫你别上班。是叫你在上班之外，攒第一只鹅，让鹅慢慢生出金蛋。"},
+  {date:"2026-08-28", book:"《富爸爸穷爸爸》", p:"财务自由有一个简单公式：\n\n被动收入 ≥ 你的支出。\n\n被动收入 = 不靠你上班就能来的钱（利息、股息、版税、租金、经营系统的利润）。\n\n当你的被动收入能 cover 你的日常开销那一天，你就不再是为钱而活——你是在用钱生活，时间归你。\n\n不要把财务自由想得很大。\n从一只鹅 / 一份小被动收入 / 一本书开始。它是个过程。"},
+  {date:"2026-08-29", book:"《富爸爸穷爸爸》", p:"穷爸爸说：去学校好好读书，知识都在那里。\n富爸爸说：学校的知识是给“雇员”准备的，不是给“投资人”准备的。财商这种东西，主流教育不教。\n\n财商要自己学：读什么书 / 怎么看财报 / 怎么算资产回报率 / 怎么判断一个项目值不值得投——都得自己花时间。\n\n好消息：财商是公平的。你不需要名校、不需要人脉、不需要家里有钱——你只需要愿意每天学 30 分钟，比大多数人学得深就行。\n\n你已经在这条路上了。银简这一步就是起点。"},
+  {date:"2026-08-30", book:"《富爸爸穷爸爸》", p:"普通人判断要不要花钱：贵不贵？\n富人判断要不要花钱：这是投资还是消费？\n\n买股票 = 投资（钱出去了，但未来会回来更多）\n买课 = 投资（钱出去了，但你能力提升了，未来能赚更多）\n吃顿饭 = 消费（钱出去了，回不来）\n买奢侈品 = 消费 + 负债（钱出去了，还产生后续保养成本）\n\n不是消费就有罪。问题是：你这一笔，能换来未来吗？"},
+  {date:"2026-08-31", book:"《富爸爸穷爸爸》", p:"真正的财富不是“赚得多”，是“留得住、长得大”。\n\n用时间换钱：你一年赚 10 万，每月花 9 千 = 净资产 1 千。\n钱生钱：你一年赚 10 万，每月存 5 千，30 年后那笔存款的本金 + 复利 = 一笔可观的“金库”。\n\n时间换钱有上限；钱生钱没有。\n\n这是为什么你 19 岁就开始记账、开始学理财，是最有价值的事之一。复利只奖励早开始的人。"},
+  {date:"2026-09-01", book:"《富爸爸穷爸爸》", p:"高学历 ≠ 高财商。\n你身边一定有“学历高但月光 / 负债”的人，也一定有“学历一般但存得住 / 有投资”的人。\n\n财商不是数学（找专业的算就行），不是记忆（上网查就有），而是三件事：\n1. 看到钱流动的方向\n2. 管住自己当下不花掉的冲动\n3. 把钱放进能长大的地方\n\n这三件事学校不教，但一个人能学会。\n\n你已经知道“先分清资产和负债”——恭喜，你比很多人走得早。"}
+];
+function todayReading() {
+  const t = todayStr();
+  return READING_PLAN.find(r => r.date === t) || null;
+}
+async function loadReading(){
+  const el = document.getElementById("rdToday");
+  if(!el) return;
+  const r = todayReading();
+  if(!r){
+    el.innerHTML = '<div class="empty">今日暂无读物。书库还在成长，明天会有一条新的。</div>';
+    return;
+  }
+  // 拉今天打卡状态
+  let done={d1:false,d2:false,d3:false};
+  if(sb){ try{
+    const {data} = await sb.from(READING_TABLE).select("*").eq("date", r.date).maybeSingle();
+    if(data){ done = {d1:!!data.done1, d2:!!data.done2, d3:!!data.done3}; }
+  }catch(e){} }
+  const cnt = (done.d1?1:0)+(done.d2?1:0)+(done.d3?1:0);
+  el.innerHTML = `
+    <div class="rd-book">${esc(r.book)} · ${r.date}</div>
+    <div class="rd-passage">${esc(r.p)}</div>
+    <div class="rd-actions">
+      <div class="rd-act ${done.d1?'done':''}" data-key="d1"><div class="rd-cb">✓</div><div class="rd-t">${esc(r.a1||"写下你今天学到的一个观点")}</div></div>
+      <div class="rd-act ${done.d2?'done':''}" data-key="d2"><div class="rd-cb">✓</div><div class="rd-t">${esc(r.a2||"找一处今天就能用上的习惯")}</div></div>
+      <div class="rd-act ${done.d3?'done':''}" data-key="d3"><div class="rd-cb">✓</div><div class="rd-t">${esc(r.a3||"把今天学到的东西讲给我听")}</div></div>
+    </div>
+    <div class="rd-foot">
+      <span class="rd-stat" id="rdStat">已勾 ${cnt}/3</span>
+      <span class="rd-meta">任选一项即算打卡 · 勾选自动存云端</span>
+    </div>
+  `;
+}
+async function toggleReading(key, item){
+  if(!sb) return;
+  const r = todayReading(); if(!r) return;
+  const wasDone = item.classList.contains("done");
+  item.classList.toggle("done");
+  const d1 = document.querySelector('.rd-act[data-key="d1"]').classList.contains("done");
+  const d2 = document.querySelector('.rd-act[data-key="d2"]').classList.contains("done");
+  const d3 = document.querySelector('.rd-act[data-key="d3"]').classList.contains("done");
+  const cnt = (d1?1:0)+(d2?1:0)+(d3?1:0);
+  const st = document.getElementById("rdStat");
+  if(st) st.textContent = `已勾 ${cnt}/3`;
+  try{
+    if(cnt===0){
+      await sb.from(READING_TABLE).delete().eq("date", r.date);
+    }else{
+      await sb.from(READING_TABLE).upsert({date:r.date, done1:d1, done2:d2, done3:d3, ts:Date.now()});
+    }
+  }catch(e){ /* 失败回滚 UI */ item.classList.toggle("done", wasDone); }
+}
+document.addEventListener("click", e=>{
+  const item = e.target.closest(".rd-act");
+  if(item) toggleReading(item.dataset.key, item);
+});
+
+/* 删掉旧的「投资六步」JS */
+async function loadFin(){
+  const listEl=document.getElementById("finList");
+  const balEl=document.getElementById("finBalance");
+  if(!sb){ listEl.innerHTML='<div class="empty">云端未连接，记账暂不可用。</div>'; return; }
+  try{
+    const {data,error}=await sb.from(FIN_TABLE).select("*").order("ts",{ascending:false}).limit(50);
+    if(error){ listEl.innerHTML='<div class="empty">记账加载失败。</div>'; return; }
+    const items=data||[];
+    const ym=new Date().toISOString().slice(0,7);
+    let inc=0, exp=0;
+    items.forEach(r=>{ const a=parseFloat(r.amount)||0; if(r.type==="income") inc+=a; else exp+=a; });
+    const net=inc-exp;
+    balEl.innerHTML = `本月（${ym}）收入 ¥${inc.toFixed(2)} ｜ 支出 ¥${exp.toFixed(2)} ｜ 净 <span class="${net>=0?'':'neg'}">¥${net.toFixed(2)}</span>`;
+    if(items.length===0){ listEl.innerHTML='<div class="empty">还没有记账。收入或支出，记一笔。</div>'; return; }
+    listEl.innerHTML = items.map(r=>`
+      <div class="plan-item" data-id="${r.id}">
+        <div class="plan-txt"><b style="color:${r.type==='income'?'var(--teal)':'var(--ink)'}">${r.type==='income'?'+':'-'}¥${(parseFloat(r.amount)||0).toFixed(2)}</b> ${esc(r.note||'')} <span style="color:var(--muted);font-size:11px">${r.cat||''}</span></div>
+        <div class="plan-del" data-del="${r.id}">×</div>
+      </div>`).join("");
+  }catch(e){ listEl.innerHTML='<div class="empty">记账加载失败。</div>'; }
+}
+async function addFin(){
+  const type=document.getElementById("finType").value;
+  const amt=parseFloat(document.getElementById("finAmt").value);
+  const note=document.getElementById("finNote").value.trim();
+  if(!amt || amt<=0){ return; }
+  document.getElementById("finAmt").value=""; document.getElementById("finNote").value="";
+  if(!sb){ alert("云端未连接"); return; }
+  await sb.from(FIN_TABLE).insert({type, amount:amt, note, cat: type==="income"?"收入":"支出", date:todayStr(), ts:Date.now()});
+  await loadFin();
+}
+document.getElementById("finAddBtn").onclick=addFin;
+document.getElementById("finList").addEventListener("click", async e=>{
+  const del=e.target.closest(".plan-del"); if(!del) return;
+  if(sb){ try{ await sb.from(FIN_TABLE).delete().eq("id", del.dataset.del); await loadFin(); }catch(err){} }
+});
+
+/* ---------- init ---------- */
+document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+renderCheckin();
+if(sb){ loadTodos(); loadCheckin().then(renderCheckin); loadFin(); loadReading(); }
+
+/* ---------- 高考倒计时 ---------- */
+(function(){
+  const exam = new Date(2027, 5, 7); // 2027-06-07（月份 0 起算，5 = 6 月）
+  const now = new Date();
+  const diff = Math.ceil((exam - now) / 86400000);
+  const el = document.getElementById("cdNum");
+  if(el) el.textContent = (diff >= 0 ? diff : 0);
+})();
+
+/* ---------- 司辰页：复读节奏（进度 / 复盘 / 自动化动态） ---------- */
+const SICHEN_TABLE = "sichen_reports";
+const PLANS_TABLE = "sichen_plans";
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function goSichen(){
+  ["page-home","page-xiguang","page-chat","page-agent"].forEach(id=>document.getElementById(id).classList.remove("active"));
+  document.getElementById("page-sichen").classList.add("active");
+  window.scrollTo(0,0);
+  renderSichen();
+}
+function goHome(){
+  document.getElementById("page-sichen").classList.remove("active");
+  document.getElementById("page-agent").classList.remove("active");
+  document.getElementById("page-home").classList.add("active");
+  window.scrollTo(0,0);
+  if(sb) loadTodos();
+}
+document.getElementById("scBack").onclick = goHome;
+
+/* ---------- 伙伴独立页（列宿成员 · 记录 + 问题分析） ---------- */
+let curAgent = "zhao";
+function showAgent(k){
+  curAgent = k;
+  const r = ROLES[k];
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("agentTitle").textContent = r.name;
+  document.getElementById("agentSub").textContent = r.title;
+  const av = document.getElementById("agentAvatar");
+  av.textContent = r.short; av.style.background = r.color;
+  document.getElementById("page-agent").classList.add("active");
+  window.scrollTo(0,0);
+  renderAgent(k);
+}
+async function renderAgent(k){
+  curAgent = k;
+  const r = ROLES[k];
+  const logEl = document.getElementById("agentLog");
+  if(!sb){ logEl.innerHTML='<div class="empty">云端未连接，记录暂不可用（仅本机）。</div>'; }
+  else{
+    const {data,error}=await sb.from(SUPABASE_TABLE).select("*").eq("sender",k).order("ts",{ascending:false}).limit(40);
+    if(error){ logEl.innerHTML='<div class="empty">加载失败。</div>'; }
+    else if(!data||data.length===0){ logEl.innerHTML='<div class="empty">'+esc(r.name)+' 还没有在群里发过言。</div>'; }
+    else{
+      logEl.innerHTML = data.map(m=>{
+        const t=new Date(m.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+        return `<div class="sc-item"><div class="sc-item-t">${t}</div><div class="sc-item-c">${esc(m.text||"")}</div></div>`;
+      }).join("");
+    }
+  }
+}
+document.getElementById("agentBack").onclick = goHome;
+
+async function renderSichen(){
+  if(sb && Object.keys(checkinCache).length===0){ try{ await loadCheckin(); }catch(e){} }
+  const prog=document.getElementById("scProg");
+  const rev=document.getElementById("scReview");
+  const feed=document.getElementById("scFeed");
+  const note=document.getElementById("scProgNote");
+  if(!sb){
+    prog.innerHTML='<div class="empty">云端未连接，进度与动态暂不可用（仅本机）。</div>';
+    rev.innerHTML=''; feed.innerHTML=''; note.textContent='';
+    renderCalendar();
+    return;
+  }
+  const {data,error}=await sb.from(SICHEN_TABLE).select("*").order("ts",{ascending:false});
+  if(error){ prog.innerHTML='<div class="empty">加载失败，稍后重试。</div>'; return; }
+  const rows = data || [];
+
+  /* 区块A：近 7 天复盘节奏（几何柱） */
+  const daySet=new Set();
+  rows.filter(r=>r.type==="复盘").forEach(r=>{
+    const d=new Date(r.ts); daySet.add(d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate());
+  });
+  let bars="";
+  for(let i=6;i>=0;i--){
+    const dt=new Date(); dt.setDate(dt.getDate()-i);
+    const key=dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate();
+    const on=daySet.has(key);
+    const label=(dt.getMonth()+1)+"/"+dt.getDate();
+    bars+=`<div class="sc-bar"><div class="sc-bar-fill ${on?"on":""}"></div><div class="sc-bar-l">${label}</div></div>`;
+  }
+  prog.innerHTML=bars;
+  const total=rows.filter(r=>r.type==="复盘").length;
+  note.textContent = total>0 ? `累计复盘 ${total} 次 · 近 7 天 ${daySet.size} 天有复盘` : "还没有复盘记录，每天 22:30 复盘后这里会亮起来";
+
+  /* 区块B：近期复盘 */
+  const reviews=rows.filter(r=>r.type==="复盘").slice(0,12);
+  if(reviews.length===0){ rev.innerHTML='<div class="empty">还没有复盘记录。</div>'; }
+  else{
+    rev.innerHTML=reviews.map(r=>{
+      const t=new Date(r.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+      return `<div class="sc-item"><div class="sc-item-t">${t} · ${esc(r.agent||"复盘")}</div><div class="sc-item-c">${esc(r.content||"")}</div></div>`;
+    }).join("");
+  }
+
+  /* 区块C：自动化动态（非复盘的汇报 / 设定） */
+  const feeds=rows.filter(r=>r.type!=="复盘").slice(0,20);
+  if(feeds.length===0){ feed.innerHTML='<div class="empty">自动化还没汇报过。</div>'; }
+  else{
+    feed.innerHTML=feeds.map(r=>{
+      const t=new Date(r.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+      return `<div class="sc-item"><div class="sc-item-t">${t} · ${esc(r.agent||"系统")}<span class="sc-tag">${esc(r.type||"")}</span></div><div class="sc-item-c">${esc(r.content||"")}</div></div>`;
+    }).join("");
+  }
+  renderCalendar();
+}
+
+/* ---------- 司辰页：打卡日历（月视图 · 学/眠按天 · 运动/阅读按周） ---------- */
+let calY = new Date().getFullYear();
+let calM = new Date().getMonth();
+const GOAL_EX = 3, GOAL_RD = 5;   // 每周运动≥3天、阅读≥5天达标
+function renderCalendar(){
+  const grid=document.getElementById("calGrid");
+  const head=document.getElementById("calHead");
+  const stat=document.getElementById("calStat");
+  if(!grid) return;
+  head.textContent = `${calY} 年 ${calM+1} 月`;
+  const startDay=new Date(calY,calM,1).getDay();
+  const days=new Date(calY,calM+1,0).getDate();
+  let html="";
+  for(let i=0;i<startDay;i++) html+=`<div class="cal-cell empty"></div>`;
+  let stCnt=0, slCnt=0, both=0;
+  for(let d=1; d<=days; d++){
+    const key=`${calY}-${String(calM+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const c=checkinCache[key]||{};
+    const st=!!c.study, sl=!!c.sleep;
+    if(st)stCnt++; if(sl)slCnt++; if(st&&sl)both++;
+    const isT = key===todayStr();
+    html+=`<div class="cal-cell${isT?' today':''}"><div class="cal-d">${d}</div><div class="cal-dots"><span class="cal-dot ${st?'on study':''}">学</span><span class="cal-dot ${sl?'on sleep':''}">眠</span></div></div>`;
+  }
+  grid.innerHTML=html;
+
+  // 运动 / 阅读：按周聚合
+  let weekStart=new Date(calY,calM,1-startDay);
+  let wi=0, exWeek=0, rdWeek=0, guard=0, wkHtml="";
+  while(guard++<6){
+    const inMonth=[];
+    for(let k=0;k<7;k++){ const dt=new Date(weekStart); dt.setDate(weekStart.getDate()+k); if(dt.getFullYear()===calY&&dt.getMonth()===calM) inMonth.push(dt); }
+    if(inMonth.length===0) break;
+    let exW=0, rdW=0;
+    inMonth.forEach(dt=>{
+      const key=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+      const c=checkinCache[key]||{}; if(c.exercise)exW++; if(c.read)rdW++;
+    });
+    const exOk=exW>=GOAL_EX, rdOk=rdW>=GOAL_RD;
+    if(exOk)exWeek++; if(rdOk)rdWeek++;
+    wi++;
+    wkHtml+=`<div class="cal-wk ${exOk&&rdOk?'ok':''}"><span class="cal-wk-n">第${wi}周</span><span class="cal-wk-s">🏃 ${exW}/${GOAL_EX}</span><span class="cal-wk-s">📖 ${rdW}/${GOAL_RD}</span>${exOk&&rdOk?'<span class="cal-wk-ok">✓达标</span>':'<span class="cal-wk-no">未达标</span>'}</div>`;
+    weekStart.setDate(weekStart.getDate()+7);
+  }
+  stat.innerHTML = `本月 · 学 <b>${stCnt}</b> 天 · 眠 <b>${slCnt}</b> 天 · 全勤 <b>${both}</b> 天　|　周 · 运动达标 <b>${exWeek}</b> · 阅读达标 <b>${rdWeek}</b>`;
+
+  const wkBox=document.getElementById("calWeekPanel");
+  if(wkBox) wkBox.innerHTML=wkHtml;
+}
+document.getElementById("calPrev").onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); };
+document.getElementById("calNext").onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); };
+
+/* ---------- 主页：待办任务（云端 sichen_plans 存，跨日持久） ---------- */
+async function loadTodos(){
+  const listEl = document.getElementById("todoList");
+  if(!sb){
+    listEl.innerHTML = '<div class="empty">云端未连接，待办暂不可用。</div>';
+    return;
+  }
+  const {data,error} = await sb.from(PLANS_TABLE).select("*").order("ts",{ascending:false});
+  if(error){ listEl.innerHTML='<div class="empty">待办加载失败。</div>'; return; }
+  const items = data || [];
+  if(items.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'; }
+  else{
+    listEl.innerHTML = items.map(p=>`
+      <div class="plan-item" data-id="${p.id}">
+        <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
+        <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
+        <div class="plan-del" data-del="${p.id}">×</div>
+      </div>`).join("");
+  }
+}
+let _audioCtx = null;
+function playDoneSound(){
+  try{
+    if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(_audioCtx.state==="suspended") _audioCtx.resume();
+    const ctx = _audioCtx, now = ctx.currentTime;
+    [880, 1320].forEach((f,i)=>{
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      const t0 = now + i*0.09;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.25, t0+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+0.18);
+      o.connect(g).connect(ctx.destination);
+      o.start(t0); o.stop(t0+0.2);
+    });
+  }catch(e){ /* 忽略：部分浏览器/静音下无声音 */ }
+}
+async function toggleTodo(id, done){
+  if(!sb) return;
+  await sb.from(PLANS_TABLE).update({done: !done}).eq("id", id);
+  if(!done) playDoneSound();   // 仅在「未完成 → 完成」时响一声
+  await loadTodos();
+}
+async function delTodo(id){
+  if(!sb) return;
+  await sb.from(PLANS_TABLE).delete().eq("id", id);
+  await loadTodos();
+}
+document.getElementById("todoList").addEventListener("click", e=>{
+  const del = e.target.closest(".plan-del");
+  const item = e.target.closest(".plan-item");
+  if(del){ delTodo(del.dataset.del); return; }
+  if(item){
+    const id = item.dataset.id;
+    const on = item.querySelector(".plan-check").classList.contains("on");
+    toggleTodo(id, on);
+  }
+});
+
+/* ---------- 司辰：一键复盘（四问 → 存 sichen_reports） ---------- */
+document.getElementById("reviewToggle").onclick = ()=>{
+  const f = document.getElementById("reviewForm");
+  const open = f.style.display === "none";
+  f.style.display = open ? "block" : "none";
+  document.getElementById("rvDone").style.display = "none";
+};
+document.getElementById("rvSubmit").onclick = async ()=>{
+  const a=document.getElementById("rv1").value.trim();
+  const b=document.getElementById("rv2").value.trim();
+  const c=document.getElementById("rv3").value.trim();
+  const d=document.getElementById("rv4").value.trim();
+  if(!a && !b && !c && !d){ alert("至少写一点再提交"); return; }
+  const content = `【学了什么】${a||"—"}\n【真懂/假懂】${b||"—"}\n【执行率】${c||"—"}\n【明天微调】${d||"—"}`;
+  if(!sb){ alert("云端未连接，无法保存复盘"); return; }
+  await sb.from(SICHEN_TABLE).insert({agent:"若昭", type:"复盘", content, ts:Date.now()});
+  ["rv1","rv2","rv3","rv4"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("reviewForm").style.display="none";
+  document.getElementById("rvDone").style.display="block";
+  await renderSichen();
+};
+
+/* 实时订阅：电脑端自动化写入后，司辰页自动刷新 */
+if(sb){
+  sb.channel("sichen-room")
+    .on("postgres_changes",{event:"*",schema:"public",table:SICHEN_TABLE}, ()=>{ if(document.getElementById("page-sichen").classList.contains("active")) renderSichen(); })
+    .subscribe();
+  sb.channel("plan-room")
+    .on("postgres_changes",{event:"*",schema:"public",table:PLANS_TABLE}, ()=>{ if(document.getElementById("page-home").classList.contains("active")) loadTodos(); })
+    .subscribe();
+}
+
+/* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW 注册失败:", e));
+  });
+}
+</script>
+</body>
+</html>
