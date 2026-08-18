@@ -155,9 +155,9 @@
   .countdown-card .cd-unit{font-size:12px;opacity:.85;margin-left:4px;font-weight:600;}
   .roster{display:flex;flex-wrap:wrap;gap:8px;}
   .role-chip{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:6px 11px;background:#fff;font-size:12px;}
-  .role-chip .dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;}
+  .role-chip .dot{width:10px;height:10px;border-radius:50%;}
   .role-chip .rt{color:var(--muted);font-size:10px;}
-  .agent-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;margin-left:auto;flex:0 0 auto;}
+  .agent-avatar{width:4px;height:36px;border-radius:2px;background:#1f4e4a;margin-left:auto;flex:0 0 auto;}
   .sc-refresh{margin-top:10px;align-self:flex-start;font-size:12px;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:10px;padding:7px 14px;}
   .sc-refresh:active{transform:scale(.96);}
   .ins-block{margin-top:10px;}
@@ -194,7 +194,7 @@
   .msg.user{align-self:flex-end;background:var(--teal);color:#fff;border-bottom-right-radius:4px;}
   .msg.agent{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px;}
   .msg .who{font-size:10px;font-weight:700;color:var(--teal);margin-bottom:3px;display:flex;align-items:center;gap:5px;}
-  .msg .who .rd{width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;}
+  .msg .who .rd{width:9px;height:9px;border-radius:50%;}
   .input-bar{display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);}
   .input-bar input{flex:1;border:1px solid var(--line);border-radius:22px;padding:11px 16px;font-size:14px;outline:none;}
   .input-bar input:focus{border-color:var(--teal);}
@@ -383,7 +383,7 @@
       <span class="goal-arrow">→</span>
       <span class="goal-target">600</span>
     </div>
-    <div class="goal-note">2026 高考复读目标 · 江浙沪 211/985 · 8/20 正式开干</div>
+    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 8/20 正式开干</div>
   </div>
 
   <div class="countdown-card">
@@ -477,7 +477,7 @@
       </div>
       <div class="fin-add" style="margin-top:8px;">
         <select id="finCat">
-          <option value="餐饮">餐饮</option><option value="交通">交通</b></option>
+          <option value="餐饮">餐饮</option><option value="交通">交通</option>
           <option value="学习资料">学习资料</option><option value="购物">购物</option>
           <option value="娱乐">娱乐</option><option value="其他">其他</option>
         </select>
@@ -575,7 +575,7 @@
       <div class="sc-title" id="agentTitle">序</div>
       <div class="sc-sub" id="agentSub">数学导师</div>
     </div>
-    <div class="rd agent-avatar" id="agentAvatar">序</div>
+    <div class="agent-avatar" id="agentAvatar"></div>
   </div>
   <div class="sc-body">
     <div class="sc-block">
@@ -751,6 +751,24 @@ function groupReply(text){
   return top.map(k=>({role:k,text:pickReply(k,text)}));
 }
 
+/* ---------- 主页：复读天数提示（动态化） ---------- */
+(function setGoalNote(){
+  const el = document.getElementById("goalNote");
+  if(!el) return;
+  const start = new Date("2026-08-20T00:00:00");
+  const now   = new Date();
+  const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const diffDays = Math.floor((today-start)/86400000);
+  if(diffDays < 0){
+    const left = -diffDays;
+    el.textContent = `距 8/20 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
+  } else if(diffDays === 0){
+    el.textContent = "今天 8/20 · 复读第一天 · 启动";
+  } else {
+    el.textContent = `复读第 ${diffDays} 天 · 江浙沪 211/985 · 目标 287 → 600`;
+  }
+})();
+
 /* ---------- Supabase 连接 ---------- */
 const sb = (typeof supabase!=="undefined" && typeof SUPABASE_URL!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0)
   ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -764,7 +782,7 @@ ORDER.forEach(k=>{
   const r = ROLES[k];
   const el = document.createElement("div");
   el.className="role-chip";
-  el.innerHTML = `<span class="dot" style="background:${r.color}">${r.short}</span><span><b>${r.name}</b> <span class="rt">${r.title}</span></span>`;
+  el.innerHTML = `<span class="dot" style="background:${r.color}"></span><span><b>${r.name}</b> <span class="rt">${r.title}</span></span>`;
   el.style.cursor="pointer";
   el.onclick = ()=>showAgent(k);
   rosterEl.appendChild(el);
@@ -782,7 +800,7 @@ function makeMsgEl(m){
   }else{
     const who=document.createElement("div"); who.className="who";
     const r=ROLES[m.role]||ROLES.zhao;
-    who.innerHTML=`<span class="rd" style="background:${r.color}">${r.short}</span>${r.name}·${r.title}`;
+    who.innerHTML=`<span class="rd" style="background:${r.color}"></span>${r.name}·${r.title}`;
     const p=document.createElement("div"); p.textContent=m.text;
     d.appendChild(who); d.appendChild(p);
   }
@@ -1167,7 +1185,7 @@ document.getElementById("btnExercise").onclick=()=>toggleCheckin("exercise");
 document.getElementById("btnRead").onclick=()=>toggleCheckin("read");
 
 /* ---------- 银简数据层：12 本 × 章节 × 239 段循环读物（本机存储） ---------- */
-const PLAN_START = "2026-08-19";
+const PLAN_START = "2026-08-20";  // 与学习正式开干对齐
 const READING_BOOKS = [
   {title:"《小狗钱钱》", paras:[
     {ch:"第一章 确立目标与自信", text:"成功日记：每天睡前写下自己当天做到的 5 件事。坚持记录会让你慢慢相信「我能行」，自信是赚钱的第一块地基。"},
@@ -1753,7 +1771,7 @@ function showAgent(k){
   document.getElementById("agentTitle").textContent = r.name;
   document.getElementById("agentSub").textContent = r.title;
   const av = document.getElementById("agentAvatar");
-  av.textContent = r.short; av.style.background = r.color;
+  av.style.background = r.color;
   document.getElementById("page-agent").classList.add("active");
   window.scrollTo(0,0);
   renderAgent(k);
@@ -1762,18 +1780,32 @@ async function renderAgent(k){
   curAgent = k;
   const r = ROLES[k];
   const logEl = document.getElementById("agentLog");
-  if(!sb){ logEl.innerHTML='<div class="empty">云端未连接，记录暂不可用（仅本机）。</div>'; }
-  else{
-    const {data,error}=await sb.from(SUPABASE_TABLE).select("*").eq("sender",k).order("ts",{ascending:false}).limit(40);
-    if(error){ logEl.innerHTML='<div class="empty">加载失败。</div>'; }
-    else if(!data||data.length===0){ logEl.innerHTML='<div class="empty">'+esc(r.name)+' 还没有在群里发过言。</div>'; }
-    else{
-      logEl.innerHTML = data.map(m=>{
-        const t=new Date(m.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
-        return `<div class="sc-item"><div class="sc-item-t">${t}</div><div class="sc-item-c">${esc(m.text||"")}</div></div>`;
-      }).join("");
-    }
+  const cacheKey = "yj_agent_log_v1_"+k;
+  const renderRows=(data)=>{
+    if(!data||data.length===0){ logEl.innerHTML='<div class="empty">'+esc(r.name)+' 还没有在群里发过言。</div>'; return; }
+    logEl.innerHTML = data.map(m=>{
+      const t=new Date(m.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+      return `<div class="sc-item"><div class="sc-item-t">${t}</div><div class="sc-item-c">${esc(m.text||"")}</div></div>`;
+    }).join("");
+  };
+  if(!sb){
+    // 兜底：读本机缓存
+    let cache=[];
+    try{ cache = JSON.parse(localStorage.getItem(cacheKey)||"[]")||[]; }catch(_){}
+    if(cache.length===0){ logEl.innerHTML='<div class="empty">云端未连接，本机暂无 '+esc(r.name)+' 的历史发言（连上后会展示）。</div>'; return; }
+    renderRows(cache);
+    return;
   }
+  const {data,error} = await sb.from(SUPABASE_TABLE).select("*").eq("sender",k).order("ts",{ascending:false}).limit(40);
+  if(error){
+    let cache=[];
+    try{ cache = JSON.parse(localStorage.getItem(cacheKey)||"[]")||[]; }catch(_){}
+    renderRows(cache);
+    return;
+  }
+  // 镜像到本地缓存
+  try{ localStorage.setItem(cacheKey, JSON.stringify(data||[])); }catch(_){}
+  renderRows(data||[]);
 }
 document.getElementById("agentBack").onclick = goHome;
 
@@ -1883,16 +1915,53 @@ function renderCalendar(){
 document.getElementById("calPrev").onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); };
 document.getElementById("calNext").onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); };
 
-/* ---------- 主页：待办任务（云端 sichen_plans 存，跨日持久） ---------- */
+/* ---------- 主页：待办任务（云端 sichen_plans 主 + 本地 yj_todos_v1 兜底） ---------- */
+const TODO_LOCAL_KEY = "yj_todos_v1";
+function todoLocalRead(){
+  try{ return JSON.parse(localStorage.getItem(TODO_LOCAL_KEY)||"[]")||[]; }catch(_){ return []; }
+}
+function todoLocalWrite(arr){
+  try{ localStorage.setItem(TODO_LOCAL_KEY, JSON.stringify(arr)); }catch(_){}
+}
+function todoLocalUpsert(item){
+  const arr = todoLocalRead();
+  const i = arr.findIndex(x=>String(x.id)===String(item.id));
+  if(i>=0) arr[i] = item; else arr.unshift(item);
+  todoLocalWrite(arr);
+}
+function todoLocalDel(id){
+  todoLocalWrite(todoLocalRead().filter(x=>String(x.id)!==String(id)));
+}
 async function loadTodos(){
   const listEl = document.getElementById("todoList");
   if(!sb){
-    listEl.innerHTML = '<div class="empty">云端未连接，待办暂不可用。</div>';
+    // 云端未连 → 走本地
+    const local = todoLocalRead();
+    if(local.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'; return; }
+    listEl.innerHTML = local.map(p=>`
+      <div class="plan-item" data-id="${p.id}">
+        <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
+        <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
+        <div class="plan-del" data-del="${p.id}">×</div>
+      </div>`).join("");
     return;
   }
-  const {data,error} = await sb.from(PLANS_TABLE).select("*").order("ts",{ascending:false});
-  if(error){ listEl.innerHTML='<div class="empty">待办加载失败。</div>'; return; }
+  let {data,error} = await sb.from(PLANS_TABLE).select("*").order("ts",{ascending:false});
+  if(error){
+    // 云端失败 → 落本地兜底
+    const local = todoLocalRead();
+    if(local.length===0){ listEl.innerHTML='<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'; return; }
+    listEl.innerHTML = local.map(p=>`
+      <div class="plan-item" data-id="${p.id}">
+        <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
+        <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
+        <div class="plan-del" data-del="${p.id}">×</div>
+      </div>`).join("");
+    return;
+  }
   const items = data || [];
+  // 同步一份到本地作为缓存
+  todoLocalWrite(items.map(p=>({id:p.id,content:p.content,done:p.done,ts:p.ts})));
   if(items.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'; }
   else{
     listEl.innerHTML = items.map(p=>`
@@ -1939,15 +2008,29 @@ function playCheckinDing(){
   }catch(e){ /* 忽略：静音/不支持时无声 */ }
 }
 async function toggleTodo(id, done){
-  if(!sb) return;
-  await sb.from(PLANS_TABLE).update({done: !done}).eq("id", id);
-  if(!done) playDoneSound();   // 仅在「未完成 → 完成」时响一声
-  await loadTodos();
+  const newDone = !done;
+  if(sb){
+    const {error} = await sb.from(PLANS_TABLE).update({done: newDone}).eq("id", id);
+    if(!error){ if(!done) playDoneSound(); await loadTodos(); return; }
+  }
+  // 兜底：写本地
+  const arr = todoLocalRead();
+  const i = arr.findIndex(x=>String(x.id)===String(id));
+  if(i>=0){
+    arr[i].done = newDone;
+    todoLocalWrite(arr);
+    if(!done) playDoneSound();
+    loadTodos();
+  }
 }
 async function delTodo(id){
-  if(!sb) return;
-  await sb.from(PLANS_TABLE).delete().eq("id", id);
-  await loadTodos();
+  if(sb){
+    const {error} = await sb.from(PLANS_TABLE).delete().eq("id", id);
+    if(!error){ await loadTodos(); return; }
+  }
+  // 兜底：写本地
+  todoLocalDel(id);
+  loadTodos();
 }
 document.getElementById("todoList").addEventListener("click", e=>{
   const del = e.target.closest(".plan-del");
