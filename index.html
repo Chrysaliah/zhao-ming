@@ -168,12 +168,27 @@
   .ins-loading{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;padding:14px 2px;line-height:1.7;}
   .ins-spin{width:15px;height:15px;border:2px solid var(--teal);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:0 0 auto;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .mat-list{font-size:13px;}
-  .mat-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);}
-  .mat-item:last-child{border-bottom:none;}
-  .tag{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;}
-  .tag.have{background:#e3f1ea;color:var(--ok);}
-  .tag.need{background:#f7ece3;color:var(--warn);}
+  .badge{margin-left:auto;font-size:11px;font-weight:600;color:#9a8fb0;background:#f3f0f8;border-radius:8px;padding:2px 8px;}
+  .add-row{display:flex;gap:7px;margin-bottom:10px;}
+  .add-row input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;background:#faf9fc;outline:none;font-family:inherit;}
+  .add-row select{border:1px solid var(--line);border-radius:10px;padding:0 6px;font-size:12px;background:#faf9fc;color:#5b5570;font-family:inherit;}
+  .add-row .add{width:38px;border:0;border-radius:10px;background:var(--teal);color:#fff;font-size:18px;font-weight:700;cursor:pointer;flex:0 0 auto;}
+  .add-row .add:active{transform:scale(.94);}
+  .tag-filter{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px;}
+  .tag-filter .chip{font-size:11px;padding:3px 9px;border-radius:20px;background:#f3f0f8;color:#7a6e91;cursor:pointer;user-select:none;}
+  .tag-filter .chip.on{background:var(--teal);color:#fff;}
+  .li-list{display:flex;flex-direction:column;}
+  .li-item{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #f3f1f6;}
+  .li-item:last-child{border-bottom:0;}
+  .li-emo{font-size:17px;width:22px;text-align:center;flex:0 0 auto;}
+  .li-tx{flex:1;font-size:13px;color:#3a3a3a;word-break:break-word;}
+  .li-item.done .li-tx{color:#b3acbd;text-decoration:line-through;}
+  .li-tag{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;flex:0 0 auto;color:#fff;}
+  .li-chk{width:21px;height:21px;border-radius:50%;border:2px solid #d8d2e2;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex:0 0 auto;cursor:pointer;transition:.15s;}
+  .li-item.done .li-chk{background:var(--checkin);border-color:var(--checkin);}
+  .li-del{font-size:16px;color:#cfc8da;flex:0 0 auto;cursor:pointer;padding:0 1px;}
+  .li-del:active{color:#c97b9a;}
+  .li-tip{font-size:11px;color:#a79fbb;margin-top:11px;line-height:1.65;}
   .howto{font-size:12.5px;color:var(--muted);line-height:1.7;}
   .howto code{background:#f0eef6;padding:1px 6px;border-radius:5px;color:var(--teal);font-size:11.5px;}
   .nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));}
@@ -496,22 +511,40 @@
     </div>
   </div>
 
+  <div class="card">
+    <div class="sec-title">🗂️ 拾单 <span class="badge" id="listBadge">0 项</span></div>
+    <div class="add-row">
+      <input id="listInput" placeholder="想记点什么…" autocomplete="off">
+      <select id="listTagSel">
+        <option value="zl">📚 资料</option>
+        <option value="gw">🛍️ 购物</option>
+        <option value="sz">🧵 手作</option>
+        <option value="xd">💡 想做</option>
+        <option value="xw">⭐ 心愿</option>
+        <option value="ds">📖 读书</option>
+        <option value="mb">🎯 目标</option>
+        <option value="qt">📌 其他</option>
+      </select>
+      <button class="add" id="listAddBtn">＋</button>
+    </div>
+    <div class="tag-filter" id="listFilter">
+      <span class="chip on" data-f="all">全部</span>
+      <span class="chip" data-f="zl">📚 资料</span>
+      <span class="chip" data-f="gw">🛍️ 购物</span>
+      <span class="chip" data-f="sz">🧵 手作</span>
+      <span class="chip" data-f="xd">💡 想做</span>
+      <span class="chip" data-f="xw">⭐ 心愿</span>
+      <span class="chip" data-f="ds">📖 读书</span>
+      <span class="chip" data-f="mb">🎯 目标</span>
+      <span class="chip" data-f="qt">📌 其他</span>
+    </div>
+    <div class="li-list" id="listEl"></div>
+    <div class="li-tip">随手加 · 勾掉响「叮」· 本机自动保存<br>和「待办」不同：这是你自己的小匣子，不接云端</div>
+  </div>
+
   <div class="card mod-liexu">
     <div class="sec-title">列宿</div>
     <div class="roster" id="roster"></div>
-  </div>
-
-  <div class="card">
-    <div class="sec-title">资料清单</div>
-    <div class="mat-list">
-      <div class="mat-item"><span class="tag have">已购</span> 数学：人教B版 + 天星《基础双练》</div>
-      <div class="mat-item"><span class="tag have">已购</span> 英语：FREE套装 + 星火四级 + 中国文化概况</div>
-      <div class="mat-item"><span class="tag have">已购</span> 语文：杨佳奇真题12卷(2025版)</div>
-      <div class="mat-item"><span class="tag need">待购</span> 物理：跳跳学长高考物理系列</div>
-      <div class="mat-item"><span class="tag need">待购</span> 化学：化学超人全家桶</div>
-      <div class="mat-item"><span class="tag need">待购</span> 生物：李林生物</div>
-      <div class="mat-item"><span class="tag need">待购</span> 语文：陈Sir 135</div>
-    </div>
   </div>
 
   <div class="footnote">个人成长系统 · 为若昭一人搭建 · 13 伙伴常驻</div>
@@ -618,7 +651,7 @@
 <!-- ============ 对话（单一大群：列宿 · 云端同步） ============ -->
 <div class="page" id="page-chat">
   <div class="group-head">
-    <div class="gicon">🛟</div>
+    <div class="gicon">💬</div>
     <div>
       <div class="gname" id="groupName">列宿</div>
       <div class="gmeta">13 伙伴常驻 · 全员都在</div>
@@ -1728,6 +1761,85 @@ buildRdMonthSel();
 renderRdMonth(todayStr().slice(0,7));
 buildMonthSel();
 loadFin();
+/* ---------- 拾单（自由清单 · 本机 localStorage，不接云端） ---------- */
+const LIST_TAGS = {
+  zl:{n:"资料", e:"📚", c:"#6f9079"},
+  gw:{n:"购物", e:"🛍️", c:"#cf9a4e"},
+  sz:{n:"手作", e:"🧵", c:"#c97b9a"},
+  xd:{n:"想做", e:"💡", c:"#5b78b0"},
+  xw:{n:"心愿", e:"⭐", c:"#e06a8e"},
+  ds:{n:"读书", e:"📖", c:"#9a8fb0"},
+  mb:{n:"目标", e:"🎯", c:"#b06f3a"},
+  qt:{n:"其他", e:"📌", c:"#9a93a8"},
+};
+const LIST_KEY = "yj_list_v1";
+let listData = [];
+let listFilter = "all";
+function listRead(){ try{ return JSON.parse(localStorage.getItem(LIST_KEY)||"[]"); }catch(e){ return []; } }
+function listWrite(a){ try{ localStorage.setItem(LIST_KEY, JSON.stringify(a)); }catch(e){} }
+function renderList(){
+  const el = document.getElementById("listEl");
+  if(!el) return;
+  const done = listData.filter(x=>x.done).length;
+  const badge = document.getElementById("listBadge");
+  if(badge) badge.textContent = `${listData.length} 项 · ${done} 完成`;
+  document.querySelectorAll("#listFilter .chip").forEach(c=>c.classList.toggle("on", c.dataset.f===listFilter));
+  const items = listFilter==="all" ? listData : listData.filter(x=>x.tag===listFilter);
+  if(items.length===0){
+    el.innerHTML = `<div class="empty" style="margin-top:14px;">${listFilter==="all"?"还没有东西，上面加一条吧":"这个标签下还没有"}</div>`;
+    return;
+  }
+  el.innerHTML = items.map(x=>{
+    const t = LIST_TAGS[x.tag] || LIST_TAGS.qt;
+    return `<div class="li-item ${x.done?'done':''}" data-id="${x.id}">
+      <span class="li-emo">${t.e}</span>
+      <span class="li-tx">${esc(x.text)}</span>
+      <span class="li-tag" style="background:${t.c}">${t.n}</span>
+      <span class="li-chk" data-act="chk">${x.done?'✓':''}</span>
+      <span class="li-del" data-act="del">×</span>
+    </div>`;
+  }).join("");
+}
+function loadList(){ listData = listRead(); renderList(); }
+function addListItem(){
+  const inp = document.getElementById("listInput");
+  const sel = document.getElementById("listTagSel");
+  const text = inp.value.trim();
+  if(!text) return;
+  listData.unshift({ id: Date.now()+"_"+Math.random().toString(36).slice(2,7), text, tag: sel.value, done:false });
+  listWrite(listData);
+  inp.value = "";
+  renderList();
+}
+function toggleListItem(id){
+  const i = listData.findIndex(x=>x.id===id);
+  if(i<0) return;
+  const was = listData[i].done;
+  listData[i].done = !was;
+  listWrite(listData);
+  if(!was) playCheckinDing();   // 勾掉 → 清脆「叮」
+  renderList();
+}
+function delListItem(id){
+  listData = listData.filter(x=>x.id!==id);
+  listWrite(listData);
+  renderList();
+}
+document.getElementById("listAddBtn").onclick = addListItem;
+document.getElementById("listInput").addEventListener("keydown", e=>{ if(e.key==="Enter") addListItem(); });
+document.getElementById("listFilter").addEventListener("click", e=>{
+  const c = e.target.closest(".chip"); if(!c) return;
+  listFilter = c.dataset.f; renderList();
+});
+document.getElementById("listEl").addEventListener("click", e=>{
+  const item = e.target.closest(".li-item"); if(!item) return;
+  const id = item.dataset.id;
+  const aEl = e.target.closest("[data-act]");
+  const act = aEl ? aEl.dataset.act : null;
+  if(act==="del") delListItem(id);
+  else toggleListItem(id);   // 点整行 / 点圆圈都切换勾选
+});
+loadList();
 /* ---------- init ---------- */
 document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 renderCheckin();
