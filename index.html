@@ -1500,25 +1500,27 @@ function renderReading(){
   const pass=(multi?`<div class="rd-merge-hd">本章 · <span class="rd-merge-ch">${esc(chNow)}</span></div>`:``) +
     r.segs.map((seg,i)=>`<div class="rd-seg">${multi?`<div class="rd-seg-idx">${i+1}</div>`:``}<div class="rd-seg-txt">${esc(seg.text)}</div></div>`).join("");
   // 打卡按钮：未打卡紫、已打卡绿
-  let checkHtml = !saved.done
-    ? `<button class="rd-checkbtn" id="rdCheckBtn">📖 今日打卡</button>
-       <div class="rd-checktip">写下今天的阅读 · 让它真的留在脑子里</div>`
-    : `<button class="rd-checkbtn done" id="rdCheckBtn">✓ 今日已打卡 ${esc(saved.time||"")}</button>`;
-  // 记录区：始终可见 textarea（已有记录时显示金色卡 + 编辑）
-  if(saved.note && !rdEditMode){
-    checkHtml += `<div class="rd-reccard">
-      <div class="rd-reccard-t">📝 今日记录</div>
-      <div class="rd-reccard-b">${esc(saved.note)}</div>
-      <button class="rd-recedit" id="rdNoteEdit">编辑</button>
-    </div>`;
+  let checkHtml;
+  if(!saved.done){
+    checkHtml = `<button class="rd-checkbtn" id="rdCheckBtn">📖 今日打卡</button>
+      <div class="rd-checktip">打卡后会出现记录框 · 写下今天读到的</div>`;
   } else {
-    checkHtml += `<div class="rd-recbox">
-      <textarea class="rd-rec" id="rdNoteInput" placeholder="写一句今天的阅读记录（可选）…">${esc(saved.note||"")}</textarea>
-      <div class="rd-recbtns">
-        <button class="rd-recsave" id="rdNoteSave">${saved.done?'保存记录':'打卡并保存'}</button>
-        ${saved.note?`<button class="rd-reccancel" id="rdNoteCancel">取消</button>`:`<span class="rd-recskip">不写也可以</span>`}
-      </div>
-    </div>`;
+    checkHtml = `<button class="rd-checkbtn done" id="rdCheckBtn">✓ 今日已打卡 ${esc(saved.time||"")}</button>`;
+    if(rdEditMode || !saved.note){
+      checkHtml += `<div class="rd-recbox">
+        <textarea class="rd-rec" id="rdNoteInput" placeholder="写一句今天的阅读记录（可选）…">${esc(saved.note||"")}</textarea>
+        <div class="rd-recbtns">
+          <button class="rd-recsave" id="rdNoteSave">保存记录</button>
+          ${saved.note?`<button class="rd-reccancel" id="rdNoteCancel">取消</button>`:`<span class="rd-recskip">不写也可以</span>`}
+        </div>
+      </div>`;
+    } else {
+      checkHtml += `<div class="rd-reccard">
+        <div class="rd-reccard-t">📝 今日记录</div>
+        <div class="rd-reccard-b">${esc(saved.note)}</div>
+        <button class="rd-recedit" id="rdNoteEdit">编辑</button>
+      </div>`;
+    }
   }
   el.innerHTML=`<div class="rd-pos"><span class="rd-dot"></span>第 ${r.book+1}/12 本 · 全部阅读单元 ${UNITS.length} 个</div>
     <div class="rd-book">${esc(r.bookTitle)}</div>
