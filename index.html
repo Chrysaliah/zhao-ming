@@ -191,6 +191,10 @@
   .li-del{font-size:16px;color:#cfc8da;flex:0 0 auto;cursor:pointer;padding:0 1px;}
   .li-del:active{color:#c97b9a;}
   .li-tip{font-size:11px;color:#a79fbb;margin-top:11px;line-height:1.65;}
+  .backup-tip{font-size:11.5px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+  .backup-btns{display:flex;gap:10px;}
+  .backup-btn{flex:1;padding:9px 0;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;}
+  .backup-btn:active{background:#f3f0f8;}
   .howto{font-size:12.5px;color:var(--muted);line-height:1.7;}
   .howto code{background:#f0eef6;padding:1px 6px;border-radius:5px;color:var(--teal);font-size:11.5px;}
   .nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));}
@@ -552,6 +556,16 @@
     <div class="roster" id="roster"></div>
   </div>
 
+  <div class="card">
+    <div class="sec-title">⚙️ 数据备份</div>
+    <div class="backup-tip">本机数据（打卡/聊天/阅读/记账/拾单/待办/伙伴记录）导出成文件，换手机或清缓存前先备一份。</div>
+    <div class="backup-btns">
+      <button class="backup-btn" id="backupExport">⬇️ 导出备份</button>
+      <button class="backup-btn" id="backupImport">⬆️ 导入备份</button>
+      <input type="file" id="backupFile" accept="application/json" style="display:none">
+    </div>
+  </div>
+
   <div class="footnote">个人成长系统 · 为若昭一人搭建 · 13 伙伴常驻</div>
 </div>
 
@@ -872,6 +886,7 @@ async function renderMessages(){
       chatLog = cloud.concat(localOnly).sort((a,b)=>(a.ts||0)-(b.ts||0));
       chatSave(chatLog);
       setSync(true);
+      await flushPending();
     } else { setSync(false); }
   } else { setSync(false); }
 
@@ -889,11 +904,23 @@ async function send(){
   if(!text) return;
   const ts=Date.now();
   const userMsg={from:"user",role:"user",text,ts};
+  if(!sb) userMsg._pending=true;   // 断网发的，标为待补发
   appendMsg(userMsg);
   inp.value="";
   if(sb){
     await sb.from(SUPABASE_TABLE).insert({sender:"user",name:"若昭",text,ts});
   }
+}
+async function flushPending(){
+  if(!sb) return;
+  const pend=chatLog.filter(m=>m._pending && m.from==="user");
+  if(!pend.length) return;
+  for(const m of pend){
+    try{ await sb.from(SUPABASE_TABLE).insert({sender:"user",name:"若昭",text:m.text,ts:m.ts}); }
+    catch(e){ return; }
+    delete m._pending;
+  }
+  chatSave(chatLog);
 }
 
 document.getElementById("sendBtn").onclick=send;
@@ -908,6 +935,7 @@ if(sb){
     })
     .subscribe();
 }
+window.addEventListener("online", ()=>{ if(sb) flushPending(); });
 
 /* ---------- 隙光：碎碎念（自动分类整理 · 无 AI） ---------- */
 const XG_TABLE = "xiguang_notes";
@@ -1213,13 +1241,15 @@ async function loadCheckin(){
   try{
     const {data,error}=await sb.from(CHECKIN_TABLE).select("*").gte("date",since);
     if(!error && data){
-      const m={...checkinCache};   // 保留本机 time 字段
+      const m={...checkinCache};
       data.forEach(r=>{
         const base=checkinCache[r.date]||{};
         m[r.date]={
           study:!!r.study, sleep:!!r.sleep, exercise:!!r.exercise, read:!!r.read,
-          studyTime:base.studyTime, sleepTime:base.sleepTime,
-          exerciseTime:base.exerciseTime, readTime:base.readTime
+          studyTime:r.study_time||base.studyTime||"",
+          sleepTime:r.sleep_time||base.sleepTime||"",
+          exerciseTime:r.exercise_time||base.exerciseTime||"",
+          readTime:r.read_time||base.readTime||""
         };
       });
       checkinCache=m; localStorage.setItem("checkin",JSON.stringify(m));
@@ -1230,10 +1260,10 @@ async function saveCheckin(date,rec){
   checkinCache[date]=rec;
   try{ localStorage.setItem("checkin",JSON.stringify(checkinCache)); }catch(e){}
   if(!sb) return;
-  // 云端只同步布尔状态；打卡时间点为本机记录（云端 checkin 表无 time 列）
+  // 云端同步布尔 + 打卡时间（checkin 表已加 *_time 列，跨设备可见）
   try{
-    const {study=false,sleep=false,exercise=false,read=false}=rec;
-    await sb.from(CHECKIN_TABLE).upsert({date, study, sleep, exercise, read, ts:Date.now()});
+    const {study=false,sleep=false,exercise=false,read=false,studyTime="",sleepTime="",exerciseTime="",readTime=""}=rec;
+    await sb.from(CHECKIN_TABLE).upsert({date, study, sleep, exercise, read, study_time:studyTime, sleep_time:sleepTime, exercise_time:exerciseTime, read_time:readTime, ts:Date.now()});
   }catch(e){}
 }
 async function toggleCheckin(kind){
@@ -1883,6 +1913,16 @@ document.getElementById("listEl").addEventListener("click", e=>{
   else toggleListItem(id);   // 点整行 / 点圆圈都切换勾选
 });
 loadList();
+
+/* ---------- 数据备份（本机导出/导入） ---------- */
+const BACKUP_PREFIXES=["checkin","yj_chat_v1","yj_rd_v2_","yj_fin_v1","yj_list_v1","yj_todos_v1","yj_agent_log_v1_"];
+function collectBackup(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(BACKUP_PREFIXES.some(p=>k.startsWith(p))) o[k]=localStorage.getItem(k); } return o; }
+function exportBackup(){ const d=collectBackup(); const b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"}); const a=document.createElement("a"); const ts=new Date().toISOString().slice(0,16).replace(/[:T]/g,""); a.href=URL.createObjectURL(b); a.download=`拾光备份_${ts}.json`; a.click(); URL.revokeObjectURL(a.href); }
+function importBackup(file){ const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); Object.keys(d).forEach(k=>localStorage.setItem(k,d[k])); alert("导入成功，即将刷新应用备份。"); location.reload(); }catch(e){ alert("导入失败：文件格式不对。"); } }; r.readAsText(file); }
+document.getElementById("backupExport").onclick=exportBackup;
+document.getElementById("backupImport").onclick=()=>document.getElementById("backupFile").click();
+document.getElementById("backupFile").onchange=e=>{ if(e.target.files[0]) importBackup(e.target.files[0]); };
+
 /* ---------- init ---------- */
 document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 renderCheckin();
