@@ -259,7 +259,7 @@
 .sec-sub{font-size:13px;font-weight:700;margin-top:14px;margin-bottom:3px;color:var(--ink);}
 .rd-divider{height:1px;background:var(--line);margin:14px 0;}
 .rd-book{font-size:11px;color:var(--yinjian);font-weight:700;margin-top:8px;letter-spacing:.3px;}
-.rd-passage{margin-top:9px;font-size:13.5px;color:#3a3a3a;white-space:pre-wrap;line-height:1.95;text-align:justify;}
+.rd-passage{margin-top:9px;font-size:13.5px;color:#3a3a3a;white-space:pre-wrap;line-height:1.75;text-align:left;}
 .rd-meta{color:var(--muted);}
 .yj-streak{margin-left:auto;background:var(--yinjian);color:#fff;border-radius:18px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap;}
 .rd-ov{display:flex;gap:14px;align-items:center;margin-top:6px;}
@@ -314,11 +314,14 @@
   .rd-dot{width:7px;height:7px;border-radius:50%;background:var(--yinjian);}
   .rd-book{font-size:17px;font-weight:700;color:#3a3550;margin-bottom:3px;}
   .rd-chapter{font-size:12.5px;color:#5b5570;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-  .rd-meta2{font-size:11px;color:#a39cb5;margin-bottom:11px;}
-  .rd-seg{border-left:3px solid #e7e2ef;padding-left:10px;margin:0 0 11px;}
-  .rd-seg:last-child{margin-bottom:0;}
-  .rd-seg-ch{display:block;font-size:10px;color:#9a8fb0;margin-bottom:3px;}
-  .rd-merge{display:inline-block;font-size:10.5px;color:#9a8fb0;background:#f3f0f8;border-radius:6px;padding:1px 7px;margin-bottom:7px;}
+  .rd-meta2{font-size:11px;color:#a39cb5;margin-bottom:11px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .rd-meta-pill{background:#fbf4e6;color:#8a6a1a;border-radius:11px;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.2px;}
+  .rd-seg{display:flex;gap:9px;}
+  .rd-seg + .rd-seg{margin-top:10px;padding-top:10px;border-top:1px dashed #ece8f3;}
+  .rd-seg-idx{flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:#f3eef6;color:#5b5570;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .rd-seg-txt{flex:1;font-size:13.5px;line-height:1.75;color:#3a3a3a;text-align:left;}
+  .rd-merge-hd{font-size:10.5px;color:#9a8fb0;margin:0 0 9px;display:flex;align-items:center;gap:6px;}
+  .rd-merge-ch{background:#f3eef6;color:#5b5570;border-radius:8px;padding:1px 7px;font-weight:600;}
   @keyframes rdFlip{0%{opacity:0;transform:translateY(16px);}100%{opacity:1;transform:none;}}
   .rd-flip{animation:rdFlip .42s cubic-bezier(.2,.7,.3,1);}
   .rd-banner{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) scale(.82);background:rgba(91,85,112,.96);color:#fff;padding:11px 20px;border-radius:14px;font-size:13.5px;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:9;box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:80%;}
@@ -1469,10 +1472,15 @@ function renderReading(){
   let cnt=0; for(let i=0;i<=r.idx;i++) if(UNITS[i].book===r.book) cnt++;
   const saved=getRd(r.date)||{};
   const chNow=chLabel(r);
-  const meta=`全书 ${bookUnitCount[r.book]} 个单元 · 今日第 ${cnt}/${bookUnitCount[r.book]} 单元` +
-    (r.segs.length>1 ? ` · 合并 ${r.segs.length} 段短段` : (r.segs[0].text.length<SHORT ? ` · 单段短文` : ` · 长段独享`));
-  const pass=(r.segs.length>1 ? `<div class="rd-merge">以下 ${r.segs.length} 段因较短已合并为今日阅读</div>` : ``) +
-    r.segs.map(seg=>`<div class="rd-seg"><span class="rd-seg-ch">${esc(seg.ch)}</span>${esc(seg.text)}</div>`).join("");
+  const baseMeta=`全书 ${bookUnitCount[r.book]} 个单元 · 今日第 ${cnt}/${bookUnitCount[r.book]} 单元`;
+  let metaPill;
+  if(r.segs.length>1) metaPill=`<span class="rd-meta-pill">📚 合并 ${r.segs.length} 段</span>`;
+  else if(r.segs[0].text.length<SHORT) metaPill=`<span class="rd-meta-pill">✎ 单段短文</span>`;
+  else metaPill=`<span class="rd-meta-pill">◆ 长段独享</span>`;
+  const meta=baseMeta+` `+metaPill;
+  const multi=r.segs.length>1;
+  const pass=(multi?`<div class="rd-merge-hd">本章 · <span class="rd-merge-ch">${esc(chNow)}</span></div>`:``) +
+    r.segs.map((seg,i)=>`<div class="rd-seg">${multi?`<div class="rd-seg-idx">${i+1}</div>`:``}<div class="rd-seg-txt">${esc(seg.text)}</div></div>`).join("");
   let checkHtml;
   if(!saved.done){
     checkHtml = `<button class="rd-checkbtn" id="rdCheckBtn">📖 今日打卡</button>
