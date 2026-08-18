@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#1f4e4a">
-  <title>若昭 · 个人成长工作台</title>
+  <title>拾光 · 若昭成长台</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -180,7 +180,8 @@
   .howto code{background:#f0ece4;padding:1px 6px;border-radius:5px;color:var(--teal);font-size:11.5px;}
   .nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));}
   .nav button{flex:1;background:none;border:none;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;}
-  .nav button .ic{font-size:20px;line-height:1;}
+  .nav button .ic{display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;}
+  .nav button .ic svg{width:22px;height:22px;display:block;}
   .nav button.active{color:var(--teal);font-weight:700;}
   /* ===== 群聊（单一大群·云端同步） ===== */
   .group-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;}
@@ -260,7 +261,7 @@
 <body>
 
 <div class="topbar">
-  <h1>若昭 · 个人成长工作台</h1>
+  <h1>拾光</h1>
   <div class="sub" id="dateSub"></div>
 </div>
 
@@ -450,12 +451,12 @@
   <div class="xg-reassign" id="xgReassign" hidden></div>
 </div>
 
-<!-- ============ 对话（单一大群：昭明 · 云端同步） ============ -->
+<!-- ============ 对话（单一大群：列宿 · 云端同步） ============ -->
 <div class="page" id="page-chat">
   <div class="group-head">
     <div class="gicon">🛟</div>
     <div>
-      <div class="gname" id="groupName">昭明</div>
+      <div class="gname" id="groupName">列宿</div>
       <div class="gmeta">13 伙伴常驻 · 全员都在</div>
     </div>
     <div class="syncbadge off" id="syncBadge">未连接</div>
@@ -471,9 +472,9 @@
 
 <!-- bottom nav -->
 <div class="nav">
-  <button class="active" data-page="home"><span class="ic">🏠</span>主页</button>
-  <button data-page="xiguang"><span class="ic">✦</span>隙光</button>
-  <button data-page="chat"><span class="ic">💬</span>对话</button>
+  <button class="active" data-page="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10.5V19h12v-8.5"/><path d="M10 19v-5h4v5"/></svg></span>主页</button>
+  <button data-page="xiguang"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5Z"/><path d="M18.6 14.4c.3 1.7.8 2.2 2.4 2.6-1.6.4-2.1.9-2.4 2.6-.3-1.7-.8-2.2-2.4-2.6 1.6-.4 2.1-.9 2.4-2.6Z"/></svg></span>隙光</button>
+  <button data-page="chat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1.4"/><circle cx="12" cy="13.5" r="1.4"/><circle cx="18" cy="8" r="1.4"/><path d="M7.3 7.7 10.7 12.8M13.3 13.2 16.7 8.3"/></svg></span>列宿</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -637,7 +638,7 @@ async function renderMessages(){
   rendered.clear();
   if(!sb){
     const e=document.createElement("div"); e.className="empty";
-    e.innerHTML="「昭明」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>（云端未连接，消息仅存本机）";
+    e.innerHTML="「列宿」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>（云端未连接，消息仅存本机）";
     messagesEl.appendChild(e); setSync(false); return;
   }
   const {data,error} = await sb.from(SUPABASE_TABLE).select("*").order("ts",{ascending:true});
@@ -645,7 +646,7 @@ async function renderMessages(){
   setSync(true);
   if(!data || data.length===0){
     const e=document.createElement("div"); e.className="empty";
-    e.innerHTML="「昭明」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>比如「今天数学又卡了还睡不着」<br>或「我有点想太多，动不起来」";
+    e.innerHTML="「列宿」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>比如「今天数学又卡了还睡不着」<br>或「我有点想太多，动不起来」";
     messagesEl.appendChild(e); return;
   }
   data.forEach(r=>appendMsg({from:r.sender==="user"?"user":"agent", role:r.sender, text:r.text, ts:r.ts}));
@@ -994,6 +995,7 @@ async function toggleCheckin(kind){
   checkinCache[t]=rec; renderCheckin();
   await saveCheckin(t,rec);
   await loadCheckin(); renderCheckin();
+  playCheckinDing();   // 打卡到位 → 清脆“叮”
 }
 document.getElementById("btnStudy").onclick=()=>toggleCheckin("study");
 document.getElementById("btnSleep").onclick=()=>toggleCheckin("sleep");
@@ -1324,6 +1326,23 @@ function playDoneSound(){
       o.start(t0); o.stop(t0+0.2);
     });
   }catch(e){ /* 忽略：部分浏览器/静音下无声音 */ }
+}
+let _dingCtx = null;
+function playCheckinDing(){
+  try{
+    if(!_dingCtx) _dingCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(_dingCtx.state==="suspended") _dingCtx.resume();
+    const ctx = _dingCtx, t = ctx.currentTime;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type="sine";
+    o.frequency.setValueAtTime(880, t);
+    o.frequency.exponentialRampToValueAtTime(660, t+0.10); // 轻微下滑，清脆“叮”
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.28, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.14);
+    o.connect(g).connect(ctx.destination);
+    o.start(t); o.stop(t+0.16);
+  }catch(e){ /* 忽略：静音/不支持时无声 */ }
 }
 async function toggleTodo(id, done){
   if(!sb) return;
