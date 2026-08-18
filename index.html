@@ -263,6 +263,73 @@
   /* 改分类底部弹层 */
   .xg-mask{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:60;}
   .xg-reassign{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top-left-radius:18px;border-top-right-radius:18px;padding:16px 14px calc(18px + env(safe-area-inset-bottom));display:none;flex-wrap:wrap;gap:8px;align-items:center;z-index:61;box-shadow:0 -6px 20px rgba(0,0,0,.14);}
+
+/* ===== 银简增强：读物留字 / 本月环形 / 记账分类+资产负债 / streak ===== */
+.sec-sub{font-size:13px;font-weight:700;margin-top:14px;margin-bottom:3px;color:var(--ink);}
+.rd-divider{height:1px;background:var(--line);margin:14px 0;}
+.rd-book{font-size:11px;color:var(--yinjian);font-weight:700;margin-top:8px;letter-spacing:.3px;}
+.rd-passage{margin-top:9px;font-size:13.5px;color:#3a3a3a;white-space:pre-wrap;line-height:1.75;}
+.rd-actions{display:flex;flex-direction:column;gap:8px;margin-top:13px;}
+.rd-act{border:1px solid var(--line);border-radius:11px;padding:10px 12px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:.15s;background:#fcfbfd;}
+.rd-act.done{border-color:var(--yinjian);background:#fbf4e6;}
+.rd-cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;margin-top:1px;}
+.rd-act.done .rd-cb{background:var(--yinjian);border-color:var(--yinjian);}
+.rd-t{font-size:13px;flex:1;}
+.rd-act.done .rd-t{color:#7a5a1e;font-weight:600;}
+.rd-write{margin-top:8px;width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px;font-family:inherit;resize:vertical;min-height:42px;display:none;background:#fff;}
+.rd-act.done .rd-write{display:block;}
+.rd-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:12px;}
+.rd-stat{font-weight:700;color:var(--yinjian);}
+.rd-meta{color:var(--muted);}
+.yj-streak{margin-left:auto;background:var(--yinjian);color:#fff;border-radius:18px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap;}
+.rd-ov{display:flex;gap:14px;align-items:center;margin-top:6px;}
+.rd-donut{position:relative;width:104px;height:104px;flex:0 0 auto;}
+.rd-donut svg{transform:rotate(-90deg);display:block;}
+.rd-donut .hole{position:absolute;inset:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;}
+.rd-donut .hole b{font-size:18px;color:var(--ok);line-height:1;}
+.rd-donut .hole span{font-size:10px;color:var(--muted);margin-top:2px;}
+.rd-ov-info{flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;}
+.rd-ov-rate{font-size:13px;font-weight:700;color:var(--yinjian);}
+.rd-ov-leg{display:flex;flex-direction:column;gap:3px;font-size:12px;color:#555;}
+.rd-ov-leg b{color:#333;}
+.rd-ov-leg .swk{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:middle;}
+.rd-ov-leg .swk.ok{background:var(--ok);}
+.rd-ov-leg .swk.nt{background:#d8d4de;}
+.rd-toggle{margin-top:2px;align-self:flex-start;border:1px solid var(--line);background:#fff;border-radius:9px;padding:5px 10px;font-size:11.5px;color:var(--muted);cursor:pointer;font-family:inherit;}
+.rd-toggle:active{transform:scale(.96);}
+.rd-month-list{margin-top:10px;display:flex;flex-direction:column;gap:7px;}
+.rd-ml-item{border:1px solid var(--line);border-radius:10px;background:#fcfbfd;overflow:hidden;}
+.rd-ml-h{display:flex;align-items:center;gap:8px;padding:9px 11px;cursor:pointer;}
+.rd-ml-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.rd-ml-dot.done{background:var(--ok);}
+.rd-ml-dot.none{background:#d8d4de;}
+.rd-ml-dt{font-size:12px;font-weight:700;color:#5a5a5a;width:44px;flex:0 0 auto;}
+.rd-ml-bk{flex:1;font-size:12.5px;color:#3a3a3a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rd-ml-st{font-size:11px;color:var(--yinjian);font-weight:700;flex:0 0 auto;}
+.rd-ml-nt{font-size:11px;color:var(--muted);flex:0 0 auto;}
+.rd-ml-body{padding:0 12px 11px 12px;display:none;border-top:1px solid var(--line);}
+.rd-ml-item.open .rd-ml-body{display:block;}
+.rd-ml-pg{font-size:12.5px;color:#444;white-space:pre-wrap;line-height:1.7;margin-top:9px;}
+.rd-ml-wr{margin-top:9px;font-size:12px;color:#7a5a1e;background:#fbf4e6;border-radius:8px;padding:7px 9px;line-height:1.6;}
+.rd-ml-wr b{color:var(--yinjian);}
+.fin-balance .pos{color:var(--ok);} .fin-balance .neg{color:var(--neg,#c0392b);}
+.nat{font-size:10px;border-radius:7px;padding:1px 6px;margin-left:5px;font-weight:700;color:#fff;}
+.nat-消费{background:#b6b2bd;} .nat-投资{background:var(--ok);} .nat-资产{background:#7a8fb5;} .nat-负债{background:#c0392b;}
+.cat-dot{width:8px;height:8px;border-radius:50%;margin-right:8px;flex:0 0 auto;}
+.chart-row{display:flex;gap:14px;align-items:center;margin-top:13px;}
+.donut{width:116px;height:116px;border-radius:50%;flex:0 0 auto;position:relative;}
+.donut .hole{position:absolute;inset:30px;background:#fff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut .hole b{font-size:15px;color:var(--yinjian);}
+.donut .hole span{font-size:10px;color:var(--muted);}
+.legend{flex:1;display:flex;flex-direction:column;gap:5px;font-size:12px;}
+.legend .li{display:flex;align-items:center;}
+.legend i, .legend .li{font-style:normal;}
+.legend .li .nm{flex:1;}
+.legend .li .vl{color:var(--muted);font-variant-numeric:tabular-nums;}
+.month-sel{margin-top:13px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.month-sel select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;font-family:inherit;background:#fff;}
+.note-tip{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;}
+
 </style>
 </head>
 <body>
@@ -321,22 +388,57 @@
   </div>
 
   <div class="card mod-yinjian">
-    <div class="sec-title">银简</div>
-    <div class="fin-sub">今日读物 · 读完三选一打卡</div>
+    <div class="sec-title">银简 <span class="yj-streak" id="yjStreak">连续 0 天</span></div>
+    <div class="fin-sub">财商启蒙 · 每日一段 + 三选一留字打卡</div>
     <div id="rdToday"></div>
+
     <div class="rd-divider"></div>
-    <div class="fin-sub">随手记账</div>
+    <div class="sec-sub">本月读物</div>
+    <div class="fin-sub">这个月财商阅读完成度</div>
+    <div class="rd-ov">
+      <div class="rd-donut" id="rdDonut"></div>
+      <div class="rd-ov-info">
+        <div class="rd-ov-rate" id="rdRate">—</div>
+        <div class="rd-ov-leg">
+          <span><i class="swk ok"></i>已读 <b id="rdDoneN">0</b> 天</span>
+          <span><i class="swk nt"></i>未读 <b id="rdNoneN">0</b> 天</span>
+        </div>
+        <button class="rd-toggle" id="rdToggle">显示未读天数</button>
+      </div>
+    </div>
+    <div class="month-sel">查看月份 <select id="rdMonthSel"></select></div>
+    <div class="rd-month-list" id="rdMonthList"></div>
+
+    <div class="rd-divider"></div>
+    <div class="sec-sub">随手记账</div>
+    <div class="fin-sub">收入/支出 · 分类 + 资产·负债标注</div>
+    <div class="fin-balance" id="finBalance"></div>
     <div class="fin-add">
       <select id="finType">
-        <option value="expense">支出</option>
-        <option value="income">收入</option>
+        <option value="expense">支出</option><option value="income">收入</option>
       </select>
       <input id="finAmt" type="number" inputmode="decimal" placeholder="金额" autocomplete="off">
       <input id="finNote" type="text" placeholder="备注" autocomplete="off">
       <button class="add" id="finAddBtn">＋</button>
     </div>
-    <div class="fin-balance" id="finBalance"></div>
-    <div class="sc-list" id="finList"></div>
+    <div class="fin-add" style="margin-top:8px;">
+      <select id="finCat">
+        <option value="餐饮">餐饮</option><option value="交通">交通</option>
+        <option value="学习资料">学习资料</option><option value="购物">购物</option>
+        <option value="娱乐">娱乐</option><option value="其他">其他</option>
+      </select>
+      <select id="finNat">
+        <option value="消费">消费</option><option value="投资">投资</option>
+        <option value="资产">资产</option><option value="负债">负债</option>
+      </select>
+    </div>
+    <div class="chart-row">
+      <div class="donut" id="donut"><div class="hole"><b id="donutTot">¥0</b><span>本月支出</span></div></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="month-sel">查看月份 <select id="monthSel"></select></div>
+    <div class="fin-list" id="finList"></div>
+    <div class="note-tip">性质标注呼应读物：买课/教辅=投资，吃饭=消费，囤货=资产，借贷=负债。月末可看「消费 vs 投资」对比。</div>
   </div>
 
   <div class="card mod-liexu">
@@ -1009,120 +1111,318 @@ document.getElementById("btnSleep").onclick=()=>toggleCheckin("sleep");
 document.getElementById("btnExercise").onclick=()=>toggleCheckin("exercise");
 document.getElementById("btnRead").onclick=()=>toggleCheckin("read");
 
-/* ---------- 银简：今日读物（每日一段+三选一打卡）+ 随手记账（云端） ---------- */
-const READING_TABLE = "daily_reading";
+/* ---------- 银简数据层：12 本 × 7 段 = 84 段循环读物（本机存储） ---------- */
+const PLAN_START = "2026-08-19";
 const READING_PLAN = [
-  /* Week 1 · 《小狗钱钱》Bodo Schäfer */
-  {date:"2026-08-19", book:"《小狗钱钱》", p:"当你决定做一件事时，必须在 72 小时内开始行动。\n不是“明天再说”，也不是“等我准备好”。72 小时是个硬门槛——跨过去，那个念头就生根；跨不过去，它就在你脑子里悄悄死掉。\n吉娅把这件事写在自己的成功日记里。她说，每当自己想出一个小点子，就在 72 小时内做一点点，哪怕只是十分钟。\n\n不一定要“完美地开始”。开始，比完美重要。"},
-  {date:"2026-08-20", book:"《小狗钱钱》", p:"吉娅的教练让她做了一件事：拿三张纸，写下��个最想达成的事，做成图片贴在眼睛每天都能看见的地方。\n不是为了“相信”，是为了让脑子天天想着那件事。\n你的脑子是会挑事的——它会把“天天看见的事”当真。你想变富，就把变富的样子天天看；你想写作，就把作品封面天天看；你想减肥，就把那个身材天天看。\n\n心里想着什么，眼睛就会去找什么；眼睛找到了，手才有机会跟上。"},
-  {date:"2026-08-21", book:"《小狗钱钱》", p:"每天写下 5 件你今天做成了的事——哪怕是“今天准时起床了”也算。\n吉娅一开始觉得可笑：这种事也算成功？但当她真的写了三周，发现一件怪事——她真的开始相信，自己是个“会做成事的人”。\n\n自信不是天生的。自信是一张张写满“我做到了”的纸，叠出来的。\n你不必写得轰轰烈烈。从今天准时关灯、上完一节课没看手机、把作业写完——都算。"},
-  {date:"2026-08-22", book:"《小狗钱钱》", p:"从前有个农夫，养了一只每天下一个金蛋的鹅。一天他嫌鹅下蛋太慢，就把鹅杀了，想一次性取完所有金子。结果鹅死了，金蛋也没了。\n\n鹅代表你的本金，金蛋代表你的收益。\n杀鹅取卵 = 提前花掉本金 / 一次性把积蓄挥霍 / 用借贷来“过好日子”。\n养鹅 = 每月固定存一笔、让本金慢慢长大。\n\n你若 19 岁就懂这件事，且真的每月存一点，30 岁时你会拥有一只别人没有的鹅。"},
-  {date:"2026-08-23", book:"《小狗钱钱》", p:"吉娅问钱钱：怎样才能赚更多？\n钱钱说：把精力放在你擅长的事上。\n\n大多数人以为“努力 = 赚到钱”。其实不——你的精力如果放在不擅长的事上，那是低水平重复，赚不到溢价。\n\n反过来，找到你做起来比别人轻松、比别人快、别人愿意为你付钱的事，把所有精力压上去。\n\n你不必什么都强。一件事足够强，足以撑起一片收入。"},
-  {date:"2026-08-24", book:"《小狗钱钱》", p:"大多数人之所以没钱，不是因为赚得少，是因为分不清“需要”和“想要”。\n\n需要 = 你不花钱就会死 / 没法正常生活 / 影响下一段。\n想要 = 不花钱也不会怎样，但你“想”拥有。\n\n鞋柜里 30 双鞋，绝大多数是“想要”。手机出新款就换，绝大多数也是“想要”。\n把你每笔花费用“想要/需要”过一遍。一个月下来你会发现：至少 30% 的钱，本来可以不花。\n\n省钱不是抠门，是把钱留给鹅。"},
-        {date:"2026-08-25", book:"《小狗钱钱》", p:"很多人以为勇敢 = 不害怕。其实不——勇敢是“明明害怕，还在做”。\n\n吉娅第一次上台演讲时手抖得厉害，但她说了一句让自己都惊讶的话：“我害怕，但我还是要说。”台下给她掌声。\n\n理财也一样。\n你第一次记账 / 第一次主动跟父母谈钱 / 第一次拒绝买不必要的东西 / 第一次把存下来的钱投出去——都会害怕。\n\n那不重要。\n你说一句“我害怕，但还是做”——事情就开始转向你了。"},
-{date:"2026-08-26", book:"《富爸爸穷爸爸》", p:"富爸爸只教吉娅一个区分：资产 vs 负债。\n\n资产 = 把钱放进你口袋的东西（股票、债券、能收租的房子、能产生版税的作品、你的人脉）\n负债 = 把钱从你口袋掏走的东西（自住房贷款、消费贷、车、奢侈品、订阅服务）\n\n穷人买负债当“资产”（“房子就是资产啊”——可你住了的房子不产生钱，是负债）；\n富人买真正的资产，让资产买负债（用股票分红的钱去买房子）。\n\n从今天起，每笔花钱，问一句：这是资产还是负债？"},
-  {date:"2026-08-27", book:"《富爸爸穷爸爸》", p:"穷爸爸说：努力读书，找个好工作，努力升职，加薪。\n富爸爸说：你需要的不是更高的工资，是让钱为你工作。\n\n工资是“你的时间换钱”——时间有限，钱就到顶了。\n让钱为你工作 = 让你的本金生出利息、股息、租金——你睡觉时，钱在替你打工。\n\n这不是叫你别上班。是叫你在上班之外，攒第一只鹅，让鹅慢慢生出金蛋。"},
-  {date:"2026-08-28", book:"《富爸爸穷爸爸》", p:"财务自由有一个简单公式：\n\n被动收入 ≥ 你的支出。\n\n被动收入 = 不靠你上班就能来的钱（利息、股息、版税、租金、经营系统的利润）。\n\n当你的被动收入能 cover 你的日常开销那一天，你就不再是为钱而活——你是在用钱生活，时间归你。\n\n不要把财务自由想得很大。\n从一只鹅 / 一份小被动收入 / 一本书开始。它是个过程。"},
-  {date:"2026-08-29", book:"《富爸爸穷爸爸》", p:"穷爸爸说：去学校好好读书，知识都在那里。\n富爸爸说：学校的知识是给“雇员”准备的，不是给“投资人”准备的。财商这种东西，主流教育不教。\n\n财商要自己学：读什么书 / 怎么看财报 / 怎么算资产回报率 / 怎么判断一个项目值不值得投——都得自己花时间。\n\n好消息：财商是公平的。你不需要名校、不需要人脉、不需要家里有钱——你只需要愿意每天学 30 分钟，比大多数人学得深就行。\n\n你已经在这条路上了。银简这一步就是起点。"},
-  {date:"2026-08-30", book:"《富爸爸穷爸爸》", p:"普通人判断要不要花钱：贵不贵？\n富人判断要不要花钱：这是投资还是消费？\n\n买股票 = 投资（钱出去了，但未来会回来更多）\n买课 = 投资（钱出去了，但你能力提升了，未来能赚更多）\n吃顿饭 = 消费（钱出去了，回不来）\n买奢侈品 = 消费 + 负债（钱出去了，还产生后续保养成本）\n\n不是消费就有罪。问题是：你这一笔，能换来未来吗？"},
-  {date:"2026-08-31", book:"《富爸爸穷爸爸》", p:"真正的财富不是“赚得多”，是“留得住、长得大”。\n\n用时间换钱：你一年赚 10 万，每月花 9 千 = 净资产 1 千。\n钱生钱：你一年赚 10 万，每月存 5 千，30 年后那笔存款的本金 + 复利 = 一笔可观的“金库”。\n\n时间换钱有上限；钱生钱没有。\n\n这是为什么你 19 岁就开始记账、开始学理财，是最有价值的事之一。复利只奖励早开始的人。"},
-  {date:"2026-09-01", book:"《富爸爸穷爸爸》", p:"高学历 ≠ 高财商。\n你身边一定有“学历高但月光 / 负债”的人，也一定有“学历一般但存得住 / 有投资”的人。\n\n财商不是数学（找专业的算就行），不是记忆（上网查就有），而是三件事：\n1. 看到钱流动的方向\n2. 管住自己当下不花掉的冲动\n3. 把钱放进能长大的地方\n\n这三件事学校不教，但一个人能学会。\n\n你已经知道“先分清资产和负债”——恭喜，你比很多人走得早。"}
+  {book:"《小狗钱钱》", p:"写“成功日记”：每天记下自己做到的 5 件事，训练你先看见“我其实能行”。"},
+  {book:"《小狗钱钱》", p:"养一只会下金蛋的“鹅”：把收入的一部分雷打不动存起来，让它长期生息。"},
+  {book:"《小狗钱钱》", p:"分清“想要”和“必要”：列出愿望清单，但只把零钱放进梦想储蓄罐。"},
+  {book:"《小狗钱钱》", p:"钱是中性工具：它不会让人幸福或痛苦，取决于你拿它去做什么。"},
+  {book:"《小狗钱钱》", p:"陷入债务时先还清小债、不轻易赊账消费，并始终保留一只小鹅。"},
+  {book:"《小狗钱钱》", p:"72 小时法则：决定做一件事，72 小时内必须开始，否则容易不了了之。"},
+  {book:"《小狗钱钱》", p:"让钱为你工作，而不是你为钱工作——这是财务自由的第一课。"},
+  {book:"《富爸爸穷爸爸》", p:"穷爸爸说“我买不起”，富爸爸说“我怎样才能买得起”。"},
+  {book:"《富爸爸穷爸爸》", p:"资产是把钱放进你口袋的东西；负债是把钱从你口袋取走的东西。"},
+  {book:"《富爸爸穷爸爸》", p:"穷人为钱工作，富人让钱为自己工作。"},
+  {book:"《富爸爸穷爸爸》", p:"学校不教财商，所以大多数人终其一生都在为钱焦虑。"},
+  {book:"《富爸爸穷爸爸》", p:"恐惧与贪婪是致富的两大敌人：怕穷去工作，想买去负债。"},
+  {book:"《富爸爸穷爸爸》", p:"先买资产，再拿资产产生的现金流去奖励自己买奢侈品。"},
+  {book:"《富爸爸穷爸爸》", p:"财商 = 会计 + 投资 + 市场 + 法律，四者缺一不可。"},
+  {book:"《金钱心理学》", p:"财富是看不见的：真正富有的人，往往看起来没那么“有钱”。"},
+  {book:"《金钱心理学》", p:"复利的第一条规则：除非绝对必要，否则永远别打断它。"},
+  {book:"《金钱心理学》", p:"知足是少见的美德：多赚不等于多幸福，预期管理更重要。"},
+  {book:"《金钱心理学》", p:"风险来自你不知道自己不知道什么——那些“未知的未知”。"},
+  {book:"《金钱心理学》", p:"自由是最被低估的财富红利：掌控自己时间的能力。"},
+  {book:"《金钱心理学》", p:"省钱不靠精明算计，而靠控制欲望的“足够”心态。"},
+  {book:"《金钱心理学》", p:"市场会奖励长期主义者，但没人能预测短期的疯狂。"},
+  {book:"《纳瓦尔宝典》", p:"财富 ≠ 金钱：财富是你睡觉时仍在增值的资产。"},
+  {book:"《纳瓦尔宝典》", p:"用专精度（specific knowledge）杠杆化自己，而非出卖时间换时薪。"},
+  {book:"《纳瓦尔宝典》", p:"三种杠杆：人力、资本、零边际成本的产品（代码与媒体）。"},
+  {book:"《纳瓦尔宝典》", p:"追求复利：人际关系、知识、声誉，都是长期滚雪球。"},
+  {book:"《纳瓦尔宝典》", p:"幸福是一种可以训练的技能，像肌肉一样去练。"},
+  {book:"《纳瓦尔宝典》", p:"做自己、爱具体的人、对热爱之事保持痴迷。"},
+  {book:"《纳瓦尔宝典》", p:"做决策时问：长远看，这会让我更自由还是更被困住？"},
+  {book:"《财务自由之路》", p:"清晰的目标：写下你想成为什么样的人，而非只写“想要多少钱”。"},
+  {book:"《财务自由之路》", p:"50% 收入法则：至少把收入的一半用于储蓄与投资。"},
+  {book:"《财务自由之路》", p:"先建立“财务保障”：攒够 6–12 个月生活费的现金护城河。"},
+  {book:"《财务自由之路》", p:"再建“财务安全”：让利息能覆盖基本开支的投资组合。"},
+  {book:"《财务自由之路》", p:"最后才是“财务自由”：让被动收入覆盖理想生活。"},
+  {book:"《财务自由之路》", p:"责任 = 权力：你为结果负全责，才真正掌握改变的力量。"},
+  {book:"《财务自由之路》", p:"每次加薪都把大部分存起来，而非立刻抬高生活水准。"},
+  {book:"《邻家的百万富翁》", p:"真正富有的人大多低调、节俭，住在普通社区。"},
+  {book:"《邻家的百万富翁》", p:"财富积累能力取决于“收入减支出”的结余率，而非收入本身。"},
+  {book:"《邻家的百万富翁》", p:"他们先储蓄后消费，而非先消费再指望月底有余钱。"},
+  {book:"《邻家的百万富翁》", p:"多数富翁是创业者或自雇，靠专业积累客户而非靠高薪。"},
+  {book:"《邻家的百万富翁》", p:"时间自由比炫富更重要：他们不买身份符号。"},
+  {book:"《邻家的百万富翁》", p:"教孩子财务自律，比留一笔遗产更能延续富裕。"},
+  {book:"《邻家的百万富翁》", p:"量入为出 + 长期持有 + 不乱投资，是最朴素的致富术。"},
+  {book:"《稀缺》", p:"稀缺会“俘获”注意力：越缺什么，越只盯住那一件事。"},
+  {book:"《稀缺》", p:"管窥效应：只顾眼前缺口，忽略长远真正重要的事。"},
+  {book:"《稀缺》", p:"带宽负担：稀缺让人认知能力下降，更容易做错决定。"},
+  {book:"《稀缺》", p:"穷不是因为蠢，而是稀缺占用了本应用于规划的脑力。"},
+  {book:"《稀缺》", p:"留出“余闲”：一点缓冲空间能防止连锁崩溃。"},
+  {book:"《稀缺》", p:"把重要决策变成“默认项”（如自动储蓄），减少带宽消耗。"},
+  {book:"《稀缺》", p:"稀缺会自我强化：一次透支往往引发更多透支。"},
+  {book:"《微习惯》", p:"微习惯 = 小到不可能失败的目标（比如每天 1 个俯卧撑）。"},
+  {book:"《微习惯》", p:"大脑抗拒大改变，却几乎不抗拒极小的一步。"},
+  {book:"《微习惯》", p:"先“士力架”再“正餐”：用 30 秒微行动撬动大任务。"},
+  {book:"《微习惯》", p:"意志力像肌肉会疲劳；微习惯几乎不消耗它。"},
+  {book:"《微习惯》", p:"用“每天”而非“偶尔”建立身份认同：我是会写作的人。"},
+  {book:"《微习惯》", p:"超额完成没问题，但底线永远是那个最小动作。"},
+  {book:"《微习惯》", p:"微习惯会滚雪球：动起来后，你往往会自然做更多。"},
+  {book:"《指数基金投资指南》", p:"指数基金按规则买下一篮子股票，费用低、透明、不赌个股。"},
+  {book:"《指数基金投资指南》", p:"估值定投：在市盈率低（便宜）时多买，高时少买。"},
+  {book:"《指数基金投资指南》", p:"宽基指数（如沪深300）长期跟着国运走，适合大多数人。"},
+  {book:"《指数基金投资指南》", p:"定投平滑成本：不用猜涨跌，分批买入摊平风险。"},
+  {book:"《指数基金投资指南》", p:"长期持有 + 低估多投，是普通人的微笑曲线策略。"},
+  {book:"《指数基金投资指南》", p:"分红再投入，让复利在时间的土壤里生长。"},
+  {book:"《指数基金投资指南》", p:"不懂不投：先理解指数背后的公司，再下注。"},
+  {book:"《定投十年财务自由》", p:"定投 = 定期、定额买入优质资产，用纪律战胜情绪。"},
+  {book:"《定投十年财务自由》", p:"前十年的积累期最寂寞，却是复利扎根的时候。"},
+  {book:"《定投十年财务自由》", p:"熊市是定投的朋友：同样的钱能买到更多份额。"},
+  {book:"《定投十年财务自由》", p:"把工资的一部分设为“自动定投”，避免冲动花掉。"},
+  {book:"《定投十年财务自由》", p:"目标日期法：离用钱越远，越敢配高风险的股票类。"},
+  {book:"《定投十年财务自由》", p:"止盈不止损：达到收益线再落袋，浮亏时继续攒筹码。"},
+  {book:"《定投十年财务自由》", p:"财务自由 = 被动收入覆盖支出，定投是造鹅的农具。"},
+  {book:"《漫步华尔街》", p:"股价短期是投票机，长期是称重机。"},
+  {book:"《漫步华尔街》", p:"没人能持续预测市场时机，连专家也常常出错。"},
+  {book:"《漫步华尔街》", p:"有效市场假说：公开信息早已反映在当前价格里。"},
+  {book:"《漫步华尔街》", p:"低成本指数基金长期跑赢大多数主动管理基金。"},
+  {book:"《漫步华尔街》", p:"分散投资是对无知的保护：别把鸡蛋放同一个篮子。"},
+  {book:"《漫步华尔街》", p:"警惕“技术图形”和“内幕消息”织成的陷阱。"},
+  {book:"《漫步华尔街》", p:"资产配置比选股更重要：股债比例决定大部分收益。"},
+  {book:"《投资中最简单的事》", p:"便宜是硬道理：好公司也要有好价格才值得买。"},
+  {book:"《投资中最简单的事》", p:"定价权是护城河：能涨价还不丢客户的企业最香。"},
+  {book:"《投资中最简单的事》", p:"月朗星稀：一个行业最好只投龙头，别投一大堆。"},
+  {book:"《投资中最简单的事》", p:"逆向投资：人弃我取，在悲观时找被错杀的便宜货。"},
+  {book:"《投资中最简单的事》", p:"价值投资三问：估值、品质、时机，先看估值。"},
+  {book:"《投资中最简单的事》", p:"不要盲目追热点，风吹向哪不代表你该往哪走。"},
+  {book:"《投资中最简单的事》", p:"把复杂的事做简单：守住能力圈，不懂不碰。"}
 ];
-function todayReading() {
-  const t = todayStr();
-  return READING_PLAN.find(r => r.date === t) || null;
+function todayReading(){
+  const tStr = todayStr();
+  const start = new Date(PLAN_START+"T00:00:00");
+  const diff = Math.floor((new Date(tStr+"T00:00:00") - start)/86400000);
+  const idx = ((diff % READING_PLAN.length) + READING_PLAN.length) % READING_PLAN.length;
+  return Object.assign({}, READING_PLAN[idx], {date: tStr});
 }
-async function loadReading(){
-  const el = document.getElementById("rdToday");
-  if(!el) return;
-  const r = todayReading();
-  if(!r){
-    el.innerHTML = '<div class="empty">今日暂无读物。书库还在成长，明天会有一条新的。</div>';
-    return;
-  }
-  // 拉今天打卡状态
-  let done={d1:false,d2:false,d3:false};
-  if(sb){ try{
-    const {data} = await sb.from(READING_TABLE).select("*").eq("date", r.date).maybeSingle();
-    if(data){ done = {d1:!!data.done1, d2:!!data.done2, d3:!!data.done3}; }
-  }catch(e){} }
-  const cnt = (done.d1?1:0)+(done.d2?1:0)+(done.d3?1:0);
-  el.innerHTML = `
-    <div class="rd-book">${esc(r.book)} · ${r.date}</div>
-    <div class="rd-passage">${esc(r.p)}</div>
-    <div class="rd-actions">
-      <div class="rd-act ${done.d1?'done':''}" data-key="d1"><div class="rd-cb">✓</div><div class="rd-t">${esc(r.a1||"写下你今天学到的一个观点")}</div></div>
-      <div class="rd-act ${done.d2?'done':''}" data-key="d2"><div class="rd-cb">✓</div><div class="rd-t">${esc(r.a2||"找一处今天就能用上的习惯")}</div></div>
-      <div class="rd-act ${done.d3?'done':''}" data-key="d3"><div class="rd-cb">✓</div><div class="rd-t">${esc(r.a3||"把今天学到的东西讲给我听")}</div></div>
-    </div>
-    <div class="rd-foot">
-      <span class="rd-stat" id="rdStat">已勾 ${cnt}/3</span>
-      <span class="rd-meta">任选一项即算打卡 · 勾选自动存云端</span>
-    </div>
-  `;
-}
-async function toggleReading(key, item){
-  if(!sb) return;
-  const r = todayReading(); if(!r) return;
-  const wasDone = item.classList.contains("done");
-  item.classList.toggle("done");
-  const d1 = document.querySelector('.rd-act[data-key="d1"]').classList.contains("done");
-  const d2 = document.querySelector('.rd-act[data-key="d2"]').classList.contains("done");
-  const d3 = document.querySelector('.rd-act[data-key="d3"]').classList.contains("done");
-  const cnt = (d1?1:0)+(d2?1:0)+(d3?1:0);
-  const st = document.getElementById("rdStat");
-  if(st) st.textContent = `已勾 ${cnt}/3`;
-  try{
-    if(cnt===0){
-      await sb.from(READING_TABLE).delete().eq("date", r.date);
-    }else{
-      await sb.from(READING_TABLE).upsert({date:r.date, done1:d1, done2:d2, done3:d3, ts:Date.now()});
-    }
-  }catch(e){ /* 失败回滚 UI */ item.classList.toggle("done", wasDone); }
-}
-document.addEventListener("click", e=>{
-  const item = e.target.closest(".rd-act");
-  if(item) toggleReading(item.dataset.key, item);
-});
 
-/* 删掉旧的「投资六步」JS */
-async function loadFin(){
-  const listEl=document.getElementById("finList");
-  const balEl=document.getElementById("finBalance");
-  if(!sb){ listEl.innerHTML='<div class="empty">云端未连接，记账暂不可用。</div>'; return; }
-  try{
-    const {data,error}=await sb.from(FIN_TABLE).select("*").order("ts",{ascending:false}).limit(50);
-    if(error){ listEl.innerHTML='<div class="empty">记账加载失败。</div>'; return; }
-    const items=data||[];
-    const ym=new Date().toISOString().slice(0,7);
-    let inc=0, exp=0;
-    items.forEach(r=>{ const a=parseFloat(r.amount)||0; if(r.type==="income") inc+=a; else exp+=a; });
-    const net=inc-exp;
-    balEl.innerHTML = `本月（${ym}）收入 ¥${inc.toFixed(2)} ｜ 支出 ¥${exp.toFixed(2)} ｜ 净 <span class="${net>=0?'':'neg'}">¥${net.toFixed(2)}</span>`;
-    if(items.length===0){ listEl.innerHTML='<div class="empty">还没有记账。收入或支出，记一笔。</div>'; return; }
-    listEl.innerHTML = items.map(r=>`
-      <div class="plan-item" data-id="${r.id}">
-        <div class="plan-txt"><b style="color:${r.type==='income'?'var(--teal)':'var(--ink)'}">${r.type==='income'?'+':'-'}¥${(parseFloat(r.amount)||0).toFixed(2)}</b> ${esc(r.note||'')} <span style="color:var(--muted);font-size:11px">${r.cat||''}</span></div>
-        <div class="plan-del" data-del="${r.id}">×</div>
-      </div>`).join("");
-  }catch(e){ listEl.innerHTML='<div class="empty">记账加载失败。</div>'; }
+/* ---------- 银简：今日读物（留字打卡）+ 本月读物回看 + 随手记账（本机存储） ---------- */
+const RD_KEYS=["d1","d2","d3"];
+const RD_DEFS=[
+  {k:"d1",t:"写下你今天学到的一个观点"},
+  {k:"d2",t:"找一处今天就能用上的习惯"},
+  {k:"d3",t:"把今天学到的东西讲出来"}
+];
+function rdStoreKey(d){return "yj_rd_"+d;}
+function getRd(d){try{return JSON.parse(localStorage.getItem(rdStoreKey(d))||"{}");}catch(e){return{};}}
+function setRd(d,o){localStorage.setItem(rdStoreKey(d),JSON.stringify(o));}
+function rdIdxOfDate(dStr){
+  const today=new Date(dStr+"T00:00:00");today.setHours(0,0,0,0);
+  const start=new Date(PLAN_START+"T00:00:00");
+  const diff=Math.floor((today-start)/86400000);
+  return ((diff%READING_PLAN.length)+READING_PLAN.length)%READING_PLAN.length;
 }
-async function addFin(){
+let rdShowNone=false;
+function renderReading(){
+  const el=document.getElementById("rdToday");
+  if(!el) return;
+  const r=todayReading();
+  const saved=getRd(r.date);
+  const idx=((Math.floor((new Date(r.date+"T00:00:00")-new Date(PLAN_START+"T00:00:00"))/86400000)%READING_PLAN.length)+READING_PLAN.length)%READING_PLAN.length;
+  const bi=Math.floor(idx/7)+1, si=(idx%7)+1;
+  const cards=RD_DEFS.map(def=>{
+    const st=saved[def.k]||{done:false,text:""};
+    return `<div class="rd-act ${st.done?'done':''}" data-key="${def.k}">
+      <div class="rd-cb">✓</div>
+      <div style="flex:1">
+        <div class="rd-t">${esc(def.t)}</div>
+        <textarea class="rd-write" placeholder="写下来（自动存本机）…">${esc(st.text)}</textarea>
+      </div>
+    </div>`;
+  }).join("");
+  const cnt=RD_DEFS.filter(d=>(saved[d.k]||{}).done).length;
+  el.innerHTML=`<div class="rd-book">${esc(r.book)} · 第 ${bi}/12 本 · 第 ${si}/7 段</div>
+    <div class="rd-passage">${esc(r.p)}</div>
+    <div class="rd-actions">${cards}</div>
+    <div class="rd-foot"><span class="rd-stat">已勾 ${cnt}/3</span><span class="rd-meta">任选一项即打卡 · 可留字</span></div>`;
+  updateStreak();
+}
+document.addEventListener("click",e=>{
+  const act=e.target.closest(".rd-act");
+  if(!act) return;
+  if(e.target.classList.contains("rd-write")) return;
+  const key=act.dataset.key;
+  const r=todayReading();
+  const saved=getRd(r.date);
+  const cur=saved[key]||{done:false,text:""};
+  cur.done=!cur.done;
+  saved[key]=cur;
+  if(!cur.done && !cur.text) delete saved[key];
+  setRd(r.date,saved);
+  renderReading();
+});
+document.addEventListener("input",e=>{
+  if(e.target.classList.contains("rd-write")){
+    const act=e.target.closest(".rd-act");
+    const key=act.dataset.key;
+    const r=todayReading();
+    const saved=getRd(r.date);
+    saved[key]=saved[key]||{done:true};
+    saved[key].done=true;
+    saved[key].text=e.target.value;
+    if(!saved[key].text){ delete saved[key]; }
+    setRd(r.date,saved);
+    updateStreak();
+  }
+});
+function updateStreak(){
+  let n=0;const d=new Date();
+  for(let i=0;i<400;i++){
+    const dd=new Date(d);dd.setDate(d.getDate()-i);
+    const ds=dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0');
+    const o=getRd(ds);
+    const has=RD_DEFS.some(k=>(o[k.k]||{}).done);
+    if(has) n++; else if(i>0) break;
+  }
+  const el=document.getElementById("yjStreak");
+  if(el) el.textContent="连续 "+n+" 天";
+}
+function renderRdMonth(monthStr){
+  const [y,m]=monthStr.split("-").map(Number);
+  const total=new Date(y,m,0).getDate();
+  let doneCount=0, html="";
+  for(let d=total; d>=1; d--){
+    const dd=String(d).padStart(2,'0');
+    const ds=`${y}-${String(m).padStart(2,'0')}-${dd}`;
+    const idx=rdIdxOfDate(ds);
+    const r=READING_PLAN[idx];
+    const saved=getRd(ds);
+    const doneArr=RD_DEFS.filter(k=>(saved[k.k]||{}).done);
+    const cnt=doneArr.length;
+    const isDone=cnt>0;
+    if(isDone) doneCount++;
+    if(!isDone && !rdShowNone) continue;
+    const bkShort=r.book.replace(/[《》]/g,"");
+    const wroteHtml=RD_DEFS.map(def=>{const t=(saved[def.k]||{}).text;return t?`<div class="rd-ml-wr"><b>${esc(def.t.slice(0,6))}：</b>${esc(t)}</div>`:'';}).filter(Boolean).join("");
+    const body=`<div class="rd-ml-pg">${esc(r.book)}｜第 ${idx+1} 段循环
+
+${esc(r.p)}</div>` + (wroteHtml||(isDone?'<div class="rd-ml-wr">已打卡，未留字。</div>':''));
+    html+=`<div class="rd-ml-item ${isDone?'':'none'}">
+      <div class="rd-ml-h" data-ds="${ds}">
+        <span class="rd-ml-dot ${isDone?'done':'none'}"></span>
+        <span class="rd-ml-dt">${m}/${d}</span>
+        <span class="rd-ml-bk">${esc(bkShort)}</span>
+        ${isDone?`<span class="rd-ml-st">已勾${cnt}/3</span>`:`<span class="rd-ml-nt">未读</span>`}
+      </div>
+      <div class="rd-ml-body">${body}</div>
+    </div>`;
+  }
+  document.getElementById("rdMonthList").innerHTML=html||'<div class="fin-sub">这个月还没有已读的记录。</div>';
+  const pct=total?doneCount/total:0;
+  const circ=2*Math.PI*52;
+  const off=circ*(1-pct);
+  const col=doneCount>0?"#3f8a6d":"#d8d4de";
+  document.getElementById("rdDonut").innerHTML=
+    `<svg width="104" height="104" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#ece9ee" stroke-width="12"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
+    </svg>
+    <div class="hole"><b>${doneCount}</b><span>已读天</span></div>`;
+  document.getElementById("rdRate").textContent=`本月完成 ${Math.round(pct*100)}%`;
+  document.getElementById("rdDoneN").textContent=doneCount;
+  document.getElementById("rdNoneN").textContent=total-doneCount;
+  document.getElementById("rdToggle").textContent=rdShowNone?"隐藏未读天数":"显示未读天数";
+}
+document.addEventListener("click",e=>{
+  const h=e.target.closest(".rd-ml-h");
+  if(h){ h.parentElement.classList.toggle("open"); }
+});
+function buildRdMonthSel(){
+  const cur=todayStr().slice(0,7);
+  const months=[cur];
+  const [y,m]=cur.split("-").map(Number);
+  if(m>1) months.unshift(`${y}-${String(m-1).padStart(2,'0')}`);
+  document.getElementById("rdMonthSel").innerHTML=months.map(x=>`<option value="${x}" ${x===cur?'selected':''}>${x}</option>`).join("");
+}
+const FIN_KEY="yj_fin_v1";
+const CATCOL={"餐饮":"#e8a87c","交通":"#8ab0d8","学习资料":"#d4ad5e","购物":"#c29aa6","娱乐":"#9a8fb0","其他":"#b6b2bd"};
+function getFin(){try{return JSON.parse(localStorage.getItem(FIN_KEY)||"[]");}catch(e){return[];}}
+function setFin(a){localStorage.setItem(FIN_KEY,JSON.stringify(a));}
+function ymOf(r){return r.slice(0,7);}
+function loadFin(){
+  const items=getFin();
+  const curMonth=todayStr().slice(0,7);
+  const sel=(document.getElementById("monthSel").value)||curMonth;
+  const monthItems=items.filter(r=>ymOf(r.date)===sel);
+  let inc=0,exp=0,cons=0,inv=0;
+  monthItems.forEach(r=>{const a=parseFloat(r.amount)||0;if(r.type==="income"){inc+=a;}else{exp+=a;if(r.nature==="投资")inv+=a;else if(r.nature==="消费")cons+=a;}});
+  const net=inc-exp;
+  document.getElementById("finBalance").innerHTML=
+    `本月 收入 <b class="pos">¥${inc.toFixed(2)}</b> ｜ 支出 <b class="neg">¥${exp.toFixed(2)}</b> ｜ 净 <span class="${net>=0?'pos':'neg'}">¥${net.toFixed(2)}</span><br>支出中：消费 ¥${cons.toFixed(2)} ｜ 投资 ¥${inv.toFixed(2)}`;
+  const byCat={};
+  monthItems.filter(r=>r.type==="expense").forEach(r=>{byCat[r.cat]=(byCat[r.cat]||0)+(parseFloat(r.amount)||0);});
+  const entries=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const tot=entries.reduce((s,e)=>s+e[1],0);
+  let acc=0;const stops=[];
+  entries.forEach(([cat,v])=>{
+    const c=getComputedStyle(document.documentElement).getPropertyValue(CATCOL[cat]||"#b6b2bd").trim()||"#b6b2bd";
+    const start=acc/tot*360, end=(acc+v)/tot*360;acc+=v;
+    stops.push(`${c} ${start}deg ${end}deg`);
+  });
+  const donut=document.getElementById("donut");
+  donut.style.background = tot>0 ? `conic-gradient(${stops.join(",")})` : "conic-gradient(#ece8ee 0deg 360deg)";
+  document.getElementById("donutTot").textContent="¥"+tot.toFixed(0);
+  document.getElementById("legend").innerHTML = tot>0 ? entries.map(([cat,v])=>{
+    const c=getComputedStyle(document.documentElement).getPropertyValue(CATCOL[cat]||"#b6b2bd").trim()||"#b6b29b";
+    return `<div class="li"><span class="cat-dot" style="background:${c}"></span><span class="nm">${cat}</span><span class="vl">¥${v.toFixed(0)}</span></div>`;
+  }).join("") : '<div class="li" style="color:var(--muted)">本月暂无支出</div>';
+  const list=document.getElementById("finList");
+  if(monthItems.length===0){list.innerHTML='<div class="empty">这个月还没有记账。</div>';return;}
+  list.innerHTML=monthItems.sort((a,b)=>b.ts-a.ts).map(r=>`
+    <div class="plan-item" data-id="${r.id}">
+      <span class="cat-dot" style="background:${getComputedStyle(document.documentElement).getPropertyValue(CATCOL[r.cat]||'#b6b2bd').trim()||'#b6b2bd'}"></span>
+      <div class="plan-txt"><b style="color:${r.type==='income'?'var(--ok)':'var(--ink)'}">${r.type==='income'?'+':'-'}¥${(parseFloat(r.amount)||0).toFixed(2)}</b> ${esc(r.note||'')} <span style="color:var(--muted);font-size:11px">${r.cat}</span><span class="nat nat-${r.nature}">${r.nature}</span></div>
+      <div class="plan-del" data-del="${r.id}">×</div>
+    </div>`).join("");
+}
+function buildMonthSel(){
+  const items=getFin();
+  const set=new Set(items.map(r=>ymOf(r.date)));set.add(todayStr().slice(0,7));
+  const arr=[...set].sort().reverse();
+  const cur=todayStr().slice(0,7);
+  document.getElementById("monthSel").innerHTML=arr.map(m=>`<option value="${m}" ${m===cur?'selected':''}>${m}</option>`).join("");
+}
+function addFin(){
   const type=document.getElementById("finType").value;
   const amt=parseFloat(document.getElementById("finAmt").value);
   const note=document.getElementById("finNote").value.trim();
-  if(!amt || amt<=0){ return; }
-  document.getElementById("finAmt").value=""; document.getElementById("finNote").value="";
-  if(!sb){ alert("云端未连接"); return; }
-  await sb.from(FIN_TABLE).insert({type, amount:amt, note, cat: type==="income"?"收入":"支出", date:todayStr(), ts:Date.now()});
-  await loadFin();
+  const cat=document.getElementById("finCat").value;
+  const nat=document.getElementById("finNat").value;
+  if(!amt||amt<=0) return;
+  const items=getFin();
+  const id=Date.now();
+  items.push({id,type,amount:amt,note,cat,nature:type==="income"?"资产":nat,date:todayStr(),ts:id});
+  setFin(items);
+  document.getElementById("finAmt").value="";document.getElementById("finNote").value="";
+  buildMonthSel();loadFin();
 }
+function loadReading(){ renderReading(); }
 document.getElementById("finAddBtn").onclick=addFin;
-document.getElementById("finList").addEventListener("click", async e=>{
-  const del=e.target.closest(".plan-del"); if(!del) return;
-  if(sb){ try{ await sb.from(FIN_TABLE).delete().eq("id", del.dataset.del); await loadFin(); }catch(err){} }
+document.getElementById("monthSel").onchange=loadFin;
+document.getElementById("finList").addEventListener("click",e=>{
+  const del=e.target.closest(".plan-del");if(!del)return;
+  const items=getFin().filter(r=>String(r.id)!==String(del.dataset.del));
+  setFin(items);buildMonthSel();loadFin();
 });
-
+document.getElementById("rdMonthSel").onchange=e=>renderRdMonth(e.target.value);
+document.getElementById("rdToggle").onclick=()=>{ rdShowNone=!rdShowNone; renderRdMonth(document.getElementById("rdMonthSel").value); };
+/* 银简 init（本机存储，不依赖云端） */
+renderReading();
+buildRdMonthSel();
+renderRdMonth(todayStr().slice(0,7));
+buildMonthSel();
+loadFin();
 /* ---------- init ---------- */
 document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 renderCheckin();
