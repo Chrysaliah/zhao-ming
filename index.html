@@ -239,6 +239,22 @@
   .xg-input textarea:focus{border-color:var(--teal);}
   .xg-input .send{background:var(--teal);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:18px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
   .xg-input .send:active{transform:scale(.92);}
+  /* 隙光工具栏：分类 chips + 视图切换 + 搜索 */
+  .xg-toolbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);}
+  .xg-bar{display:flex;gap:8px;align-items:center;padding:8px 14px;border-top:1px solid var(--line);}
+  .xg-toggle{display:flex;background:#eef1f0;border-radius:12px;padding:2px;flex:0 0 auto;}
+  .xg-toggle button{border:none;background:transparent;padding:5px 12px;border-radius:10px;font-size:12px;color:var(--muted);font-family:inherit;cursor:pointer;}
+  .xg-toggle button.active{background:#fff;color:var(--teal);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08);}
+  .xg-search{flex:1;border:1px solid var(--line);border-radius:12px;padding:7px 12px;font-size:13px;outline:none;font-family:inherit;min-width:0;}
+  .xg-search:focus{border-color:var(--teal);}
+  /* 卡片操作：改 / 删 */
+  .xg-tag{cursor:pointer;}
+  .xg-actions{display:flex;gap:12px;margin-left:8px;}
+  .xg-act{font-size:11px;color:var(--silver-deep);background:none;border:none;font-family:inherit;cursor:pointer;padding:2px 2px;}
+  .xg-act:active{color:var(--teal);}
+  /* 改分类底部弹层 */
+  .xg-mask{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:60;}
+  .xg-reassign{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top-left-radius:18px;border-top-right-radius:18px;padding:16px 14px calc(18px + env(safe-area-inset-bottom));display:none;flex-wrap:wrap;gap:8px;align-items:center;z-index:61;box-shadow:0 -6px 20px rgba(0,0,0,.14);}
 </style>
 </head>
 <body>
@@ -410,17 +426,28 @@
     <div class="xgicon">✦</div>
     <div>
       <div class="xgname">隙光</div>
-      <div class="xgmeta">碎碎念 · 按内容自动分类整理</div>
+      <div class="xgmeta">碎碎念 · 自动分类 · 可搜索 / 改 / 删</div>
     </div>
   </div>
   <div class="xg-wrap">
-    <div class="xg-filter" id="xgFilter"></div>
+    <div class="xg-toolbar">
+      <div class="xg-filter" id="xgFilter"></div>
+      <div class="xg-bar">
+        <div class="xg-toggle" id="xgToggle">
+          <button data-mode="cat" class="active">分类</button>
+          <button data-mode="time">时间</button>
+        </div>
+        <input id="xgSearch" class="xg-search" type="text" placeholder="搜索碎碎念…" autocomplete="off">
+      </div>
+    </div>
     <div class="xg-notes" id="xgNotes"></div>
     <div class="xg-input">
       <textarea id="xgInput" rows="1" placeholder="写点碎碎念…（自动按内容分类）" autocomplete="off"></textarea>
       <button class="send" id="xgSendBtn">↑</button>
     </div>
   </div>
+  <div class="xg-mask" id="xgReassignMask" style="display:none" onclick="closeReassign()"></div>
+  <div class="xg-reassign" id="xgReassign" hidden></div>
 </div>
 
 <!-- ============ 对话（单一大群：昭明 · 云端同步） ============ -->
@@ -683,7 +710,12 @@ function classifyXg(text){
 const xgNotesEl = document.getElementById("xgNotes");
 const xgFilterEl = document.getElementById("xgFilter");
 let xgFilter = "全部";
-let xgLocal = [];   // 离线兜底
+let xgMode = "cat";       // "cat" 分类视图 | "time" 时间视图
+let xgSearch = "";
+let xgEditId = null;      // 正在编辑的碎碎念 id
+let xgReassignId = null;  // 正在改分类的碎碎念 id
+let xgLocal = [];         // 离线兜底
+let xgCache = [];         // 最近一次拉取的数据（切换视图/搜索时复用）
 
 function renderXgFilter(){
   xgFilterEl.innerHTML = "";
@@ -695,7 +727,7 @@ function renderXgFilter(){
     const color = c==="全部" ? "var(--teal)" : XG_CATS[c];
     if(c===xgFilter){ chip.style.background = color; }
     else { chip.style.color = color; chip.style.borderColor = color; }
-    chip.onclick = ()=>{ xgFilter = c; renderXgFilter(); renderXg(); };
+    chip.onclick = ()=>{ xgFilter = c; renderXgFilter(); renderXgFrom(xgCache); };
     xgFilterEl.appendChild(chip);
   });
 }
@@ -703,48 +735,88 @@ function renderXgFilter(){
 function makeXgCard(n){
   const d = document.createElement("div");
   d.className = "xg-card";
+  d.dataset.id = n.id;
   const you = document.createElement("div"); you.className="you"; you.textContent = n.content || "";
   d.appendChild(you);
   const meta = document.createElement("div"); meta.className="meta";
   const cat = n.category && XG_CATS[n.category] ? n.category : "其他";
   const tag = document.createElement("span");
   tag.className="xg-tag"; tag.style.background = XG_CATS[cat]; tag.textContent = "分类 · " + cat;
+  tag.title="点此改分类";
+  tag.onclick = (e)=>{ e.stopPropagation(); openReassign(n.id, cat); };
+  const acts = document.createElement("span"); acts.className="xg-actions";
+  const editBtn = document.createElement("button"); editBtn.className="xg-act"; editBtn.textContent="改";
+  editBtn.onclick=(e)=>{ e.stopPropagation(); startEdit(n); };
+  const delBtn = document.createElement("button"); delBtn.className="xg-act"; delBtn.textContent="删";
+  delBtn.onclick=(e)=>{ e.stopPropagation(); delNote(n.id); };
+  acts.appendChild(editBtn); acts.appendChild(delBtn);
   const tm = document.createElement("span"); tm.className="xg-time";
   tm.textContent = n.ts ? new Date(n.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "";
-  meta.appendChild(tag); meta.appendChild(tm);
+  meta.appendChild(tag); meta.appendChild(tm); meta.appendChild(acts);
   d.appendChild(meta);
   return d;
 }
 
+function dayLabel(ts){
+  const d = new Date(ts); const now = new Date();
+  const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const that = new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const diff = Math.round((today-that)/86400000);
+  if(diff===0) return "今天";
+  if(diff===1) return "昨天";
+  return (d.getMonth()+1)+"月"+d.getDate()+"日";
+}
+
+function emptyMsg(){
+  xgNotesEl.innerHTML = '<div class="empty">' +
+    (xgSearch.trim() ? "没有匹配的碎碎念。"
+     : xgFilter==="全部"
+       ? "「隙光」——缝隙里的一点光。<br>写点碎碎念，系统按内容自动分类整理。<br><br>比如「今天又想太多没动」<br>或「突然想到珀缦可以做个书签」"
+       : "这个分类下还没有碎碎念。") + '</div>';
+}
+
 function renderXgFrom(notes){
+  xgCache = notes || [];
   xgNotesEl.innerHTML = "";
-  if(!notes || notes.length===0){
-    xgNotesEl.innerHTML = '<div class="empty">' +
-      (xgFilter==="全部"
-        ? "「隙光」——缝隙里的一点光。<br>写点碎碎念，系统按内容自动分类整理。<br><br>比如「今天又想太多没动」<br>或「突然想到珀缦可以做个书签」"
-        : "这个分类下还没有碎碎念。") + '</div>';
-    return;
+  let list = xgCache.slice();
+  if(xgSearch.trim()){
+    const q = xgSearch.trim().toLowerCase();
+    list = list.filter(n=> (n.content||"").toLowerCase().includes(q));
   }
-  if(xgFilter !== "全部"){
-    const list = notes.filter(n=> (n.category||"其他")===xgFilter);
-    if(list.length===0){ xgNotesEl.innerHTML = '<div class="empty">这个分类下还没有碎碎念。</div>'; return; }
-    list.forEach(n=> xgNotesEl.appendChild(makeXgCard(n)));
-    return;
+  if(xgMode==="cat"){
+    if(xgFilter!=="全部"){ list = list.filter(n=> (n.category||"其他")===xgFilter); }
+    if(!list.length){ emptyMsg(); return; }
+    XG_ORDER.forEach(cat=>{
+      if(xgFilter!=="全部" && cat!==xgFilter) return;
+      const cl = list.filter(n=> (n.category||"其他")===cat);
+      if(!cl.length) return;
+      const h = document.createElement("div"); h.className="xg-group-h";
+      h.innerHTML = cat + ' <span class="cnt">' + cl.length + ' 条</span>';
+      xgNotesEl.appendChild(h);
+      cl.forEach(n=> xgNotesEl.appendChild(makeXgCard(n)));
+    });
+  } else {
+    if(!list.length){ emptyMsg(); return; }
+    const groups = {};
+    list.forEach(n=>{ const k = dayLabel(n.ts); (groups[k]=groups[k]||[]).push(n); });
+    const ordered = Object.keys(groups).sort((a,b)=>{
+      const wa = a==="今天"?2:(a==="昨天"?1:0);
+      const wb = b==="今天"?2:(b==="昨天"?1:0);
+      if(wa!==wb) return wb-wa;
+      return groups[b][0].ts - groups[a][0].ts;
+    });
+    ordered.forEach(k=>{
+      const h = document.createElement("div"); h.className="xg-group-h";
+      h.innerHTML = k + ' <span class="cnt">' + groups[k].length + ' 条</span>';
+      xgNotesEl.appendChild(h);
+      groups[k].forEach(n=> xgNotesEl.appendChild(makeXgCard(n)));
+    });
   }
-  // 「全部」：按分类整合分组，每组带条数
-  XG_ORDER.forEach(cat=>{
-    const list = notes.filter(n=> (n.category||"其他")===cat);
-    if(!list.length) return;
-    const h = document.createElement("div"); h.className="xg-group-h";
-    h.innerHTML = `${cat} <span class="cnt">${list.length} 条</span>`;
-    xgNotesEl.appendChild(h);
-    list.forEach(n=> xgNotesEl.appendChild(makeXgCard(n)));
-  });
 }
 
 async function renderXg(){
   if(!sb){ renderXgFrom(xgLocal); return; }
-  const {data,error} = await sb.from(XG_TABLE).select("*").order("ts",{ascending:true});
+  const {data,error} = await sb.from(XG_TABLE).select("*").order("ts",{ascending:false});
   if(error){ console.error(error); xgNotesEl.innerHTML='<div class="empty">隙光加载失败，稍后重试。</div>'; return; }
   xgLocal = data || [];
   renderXgFrom(xgLocal);
@@ -754,6 +826,14 @@ async function sendXg(){
   const ta = document.getElementById("xgInput");
   const text = ta.value.trim();
   if(!text) return;
+  if(xgEditId){
+    const id = xgEditId;
+    if(sb){ await sb.from(XG_TABLE).update({content:text}).eq("id",id); }
+    else { const i=xgLocal.findIndex(n=>n.id===id); if(i>=0) xgLocal[i].content=text; }
+    cancelEdit();
+    renderXg();
+    return;
+  }
   const ts = Date.now();
   const cat = classifyXg(text);
   ta.value=""; ta.style.height="auto";
@@ -761,15 +841,87 @@ async function sendXg(){
     await sb.from(XG_TABLE).insert({content:text, category:cat, ts});
     renderXg();
   } else {
-    xgLocal.push({content:text, category:cat, ts});
+    const id = "local_"+ts;
+    xgLocal.push({id, content:text, category:cat, ts});
     renderXg();
   }
+}
+function startEdit(n){
+  xgEditId = n.id;
+  const ta = document.getElementById("xgInput");
+  ta.value = n.content || "";
+  ta.focus();
+  ta.style.height="auto"; ta.style.height=Math.min(ta.scrollHeight,120)+"px";
+  ta.placeholder="修改中…回车保存";
+  document.getElementById("xgSendBtn").textContent="✓";
+}
+function cancelEdit(){
+  xgEditId=null;
+  const ta=document.getElementById("xgInput");
+  ta.value=""; ta.style.height="auto";
+  ta.placeholder="写点碎碎念…（自动按内容分类）";
+  document.getElementById("xgSendBtn").textContent="↑";
+}
+async function delNote(id){
+  if(!confirm("删除这条碎碎念？")) return;
+  if(sb){ await sb.from(XG_TABLE).delete().eq("id",id); }
+  else { xgLocal = xgLocal.filter(n=>n.id!==id); }
+  if(xgEditId===id) cancelEdit();
+  renderXg();
+}
+function openReassign(id, cur){
+  xgReassignId = id;
+  const sheet = document.getElementById("xgReassign");
+  sheet.innerHTML="";
+  const title=document.createElement("div");
+  title.style.cssText="width:100%;font-size:13px;font-weight:700;color:var(--teal);margin-bottom:8px;";
+  title.textContent="改分类";
+  sheet.appendChild(title);
+  XG_ORDER.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="xg-chip"+(c===cur?" active":"");
+    b.textContent=c;
+    const color = XG_CATS[c];
+    if(c===cur){ b.style.background=color; } else { b.style.color=color; b.style.borderColor=color; }
+    b.onclick=()=>applyReassign(c);
+    sheet.appendChild(b);
+  });
+  const cancel=document.createElement("button");
+  cancel.className="xg-chip"; cancel.textContent="取消";
+  cancel.style.cssText="border-color:var(--line);color:var(--muted);margin-left:auto;";
+  cancel.onclick=closeReassign;
+  sheet.appendChild(cancel);
+  sheet.hidden=false; sheet.style.display="flex";
+  document.getElementById("xgReassignMask").style.display="block";
+}
+async function applyReassign(cat){
+  const id=xgReassignId; closeReassign();
+  if(sb){ await sb.from(XG_TABLE).update({category:cat}).eq("id",id); }
+  else { const i=xgLocal.findIndex(n=>n.id===id); if(i>=0) xgLocal[i].category=cat; }
+  renderXg();
+}
+function closeReassign(){
+  xgReassignId=null;
+  document.getElementById("xgReassign").hidden=true;
+  document.getElementById("xgReassign").style.display="none";
+  document.getElementById("xgReassignMask").style.display="none";
 }
 document.getElementById("xgSendBtn").onclick = sendXg;
 const xgInputEl = document.getElementById("xgInput");
 xgInputEl.addEventListener("input", ()=>{ xgInputEl.style.height="auto"; xgInputEl.style.height=Math.min(xgInputEl.scrollHeight,120)+"px"; });
 xgInputEl.addEventListener("keydown", e=>{
   if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendXg(); }
+  else if(e.key==="Escape" && xgEditId){ cancelEdit(); }
+});
+document.getElementById("xgSearch").addEventListener("input", e=>{ xgSearch=e.target.value; renderXgFrom(xgCache); });
+document.querySelectorAll("#xgToggle button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("#xgToggle button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    xgMode=b.dataset.mode;
+    document.getElementById("xgFilter").style.display = xgMode==="cat" ? "flex" : "none";
+    renderXgFrom(xgCache);
+  };
 });
 
 /* 实时订阅：手机/电脑近实时同步（分类已在本地算好，云端不再调 AI） */
