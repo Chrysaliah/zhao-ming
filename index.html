@@ -324,22 +324,28 @@
   .rd-merge-ch{background:#f3eef6;color:#5b5570;border-radius:8px;padding:1px 7px;font-weight:600;}
   @keyframes rdFlip{0%{opacity:0;transform:translateY(16px);}100%{opacity:1;transform:none;}}
   .rd-flip{animation:rdFlip .42s cubic-bezier(.2,.7,.3,1);}
-  .rd-banner{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) scale(.82);background:rgba(91,85,112,.96);color:#fff;padding:11px 20px;border-radius:14px;font-size:13.5px;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:9;box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:80%;}
+  .rd-banner{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%) scale(.82);background:rgba(91,85,112,.96);color:#fff;padding:11px 20px;border-radius:14px;font-size:13.5px;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:9;box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:80%;}
   .rd-banner.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 
 
-  /* 银简卡片堆叠（照片堆叠手感） */
-  .yj-stack{position:relative;margin-top:6px;}
-  .yj-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 15px;transition:transform .42s cubic-bezier(.2,.7,.3,1),opacity .42s,box-shadow .42s;box-shadow:0 10px 26px rgba(40,30,60,.10);}
-  .yj-card.peek{position:absolute;left:0;right:0;top:0;transform:translateY(26px) scale(.95) rotate(-1.4deg);opacity:.9;z-index:1;pointer-events:none;box-shadow:0 14px 30px rgba(40,30,60,.12);}
-  .yj-card.curr{z-index:3;}
-  .yj-card-h{font-size:13.5px;font-weight:700;color:#4a4560;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
-  .yj-dots{display:flex;justify-content:center;gap:7px;margin:13px 0 2px;}
-  .yj-dots i{width:7px;height:7px;border-radius:50%;background:#d8d4de;transition:.3s;cursor:pointer;}
-  .yj-dots i.on{width:22px;border-radius:5px;background:var(--yinjian);}
-  .yj-nav{position:absolute;top:46%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.92);font-size:18px;line-height:1;color:#6a6480;z-index:6;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.08);}
-  .yj-nav.yj-prev{left:-4px;} .yj-nav.yj-next{right:-4px;}
-  .yj-nav:active{transform:translateY(-50%) scale(.9);}
+  /* 银简：阅痕 / 银流 入口按钮 + 底部滑入独立界面 */
+  .yj-actions{display:flex;gap:10px;margin-top:14px;}
+  .yj-act-btn{flex:1;display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;text-align:left;font-family:inherit;transition:.15s;box-shadow:0 4px 14px rgba(91,85,112,.08);}
+  .yj-act-btn:active{transform:scale(.98);}
+  .yj-act-ic{font-size:20px;width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#f3eef6,#e9e2f1);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .yj-act-tx{display:flex;flex-direction:column;gap:2px;}
+  .yj-act-tx b{font-size:14px;color:#4a4560;font-weight:700;}
+  .yj-act-tx em{font-size:11px;color:var(--muted);font-style:normal;}
+  .fin-sub{font-size:11.5px;color:var(--muted);margin-bottom:9px;}
+  .sheet{position:fixed;inset:0;z-index:60;display:none;}
+  .sheet.show{display:block;}
+  .sheet-mask{position:absolute;inset:0;background:rgba(40,30,60,.42);animation:shMask .3s ease;}
+  .sheet-panel{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow-y:auto;background:#fbfafc;border-radius:20px 20px 0 0;padding:18px 16px calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .38s cubic-bezier(.2,.7,.3,1);box-shadow:0 -10px 30px rgba(0,0,0,.18);}
+  .sheet.show .sheet-panel{transform:translateY(0);}
+  .sheet-hd{font-size:16px;font-weight:800;color:#3a3550;padding:2px 4px 14px;display:flex;align-items:center;border-bottom:1px solid var(--line);margin-bottom:14px;}
+  .sheet-close{margin-left:auto;width:30px;height:30px;border-radius:50%;background:#f0edf5;color:#7a7390;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .sheet-close:active{transform:scale(.92);}
+  @keyframes shMask{from{opacity:0;}to{opacity:1;}}
   /* 新打卡：单按钮 + 完成态 + 加记录 */
   .rd-check{margin-top:13px;}
   .rd-checkbtn{width:100%;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:#fff;background:linear-gradient(135deg,#9a8fb0,#5b5570);box-shadow:0 6px 16px rgba(91,85,112,.28);transition:.15s;}
@@ -417,65 +423,76 @@
     <div class="card mod-yinjian">
     <div class="sec-title">银简 <span class="yj-streak" id="yjStreak">连续 0 天</span></div>
 
-    <div class="yj-stack" id="yjStack">
-      <div class="yj-card curr" data-i="0">
-        <div class="yj-card-h">📖 今日读物</div>
-        <div id="rdToday"></div>
-      </div>
-      <div class="yj-card peek" data-i="1">
-        <div class="yj-card-h">📊 本月读物</div>
-        <div class="rd-divider"></div>
-        <div class="fin-sub">这个月财商阅读完成度</div>
-        <div class="rd-ov">
-          <div class="rd-donut" id="rdDonut"></div>
-          <div class="rd-ov-info">
-            <div class="rd-ov-rate" id="rdRate">—</div>
-            <div class="rd-ov-leg">
-              <span><i class="swk ok"></i>已读 <b id="rdDoneN">0</b> 天</span>
-              <span><i class="swk nt"></i>未读 <b id="rdNoneN">0</b> 天</span>
-            </div>
-            <button class="rd-toggle" id="rdToggle">显示未读天数</button>
-          </div>
-        </div>
-        <div class="month-sel">查看月份 <select id="rdMonthSel"></select></div>
-        <div class="rd-month-list" id="rdMonthList"></div>
-      </div>
-      <div class="yj-dots" id="yjDots"></div>
-      <button class="yj-nav yj-prev" id="yjPrev" aria-label="上一张">‹</button>
-      <button class="yj-nav yj-next" id="yjNext" aria-label="下一张">›</button>
-      <div class="rd-banner" id="rdBanner"></div>
-    </div>
+    <div id="rdToday"></div>
 
-    <div class="rd-divider"></div>
-    <div class="sec-sub">随手记账</div>
-    <div class="fin-sub">收入/支出 · 分类 + 资产·负债标注</div>
-    <div class="fin-balance" id="finBalance"></div>
-    <div class="fin-add">
-      <select id="finType">
-        <option value="expense">支出</option><option value="income">收入</option>
-      </select>
-      <input id="finAmt" type="number" inputmode="decimal" placeholder="金额" autocomplete="off">
-      <input id="finNote" type="text" placeholder="备注" autocomplete="off">
-      <button class="add" id="finAddBtn">＋</button>
+    <div class="yj-actions">
+      <button class="yj-act-btn" id="openYuehen">
+        <span class="yj-act-ic">📊</span>
+        <span class="yj-act-tx"><b>阅痕</b><em>本月读物回顾</em></span>
+      </button>
+      <button class="yj-act-btn" id="openYinliu">
+        <span class="yj-act-ic">💰</span>
+        <span class="yj-act-tx"><b>银流</b><em>随手记账</em></span>
+      </button>
     </div>
-    <div class="fin-add" style="margin-top:8px;">
-      <select id="finCat">
-        <option value="餐饮">餐饮</option><option value="交通">交通</option>
-        <option value="学习资料">学习资料</option><option value="购物">购物</option>
-        <option value="娱乐">娱乐</option><option value="其他">其他</option>
-      </select>
-      <select id="finNat">
-        <option value="消费">消费</option><option value="投资">投资</option>
-        <option value="资产">资产</option><option value="负债">负债</option>
-      </select>
+  </div>
+
+  <!-- 阅痕：本月读物独立界面 -->
+  <div class="sheet" id="yuehenSheet">
+    <div class="sheet-mask" data-close="yuehenSheet"></div>
+    <div class="sheet-panel">
+      <div class="sheet-hd">阅痕<span class="sheet-close" data-close="yuehenSheet">✕</span></div>
+      <div class="fin-sub">这个月财商阅读完成度</div>
+      <div class="rd-ov">
+        <div class="rd-donut" id="rdDonut"></div>
+        <div class="rd-ov-info">
+          <div class="rd-ov-rate" id="rdRate">—</div>
+          <div class="rd-ov-leg">
+            <span><i class="swk ok"></i>已读 <b id="rdDoneN">0</b> 天</span>
+            <span><i class="swk nt"></i>未读 <b id="rdNoneN">0</b> 天</span>
+          </div>
+          <button class="rd-toggle" id="rdToggle">显示未读天数</button>
+        </div>
+      </div>
+      <div class="month-sel">查看月份 <select id="rdMonthSel"></select></div>
+      <div class="rd-month-list" id="rdMonthList"></div>
     </div>
-    <div class="chart-row">
-      <div class="donut" id="donut"><div class="hole"><b id="donutTot">¥0</b><span>本月支出</span></div></div>
-      <div class="legend" id="legend"></div>
+  </div>
+
+  <!-- 银流：随手记账独立界面 -->
+  <div class="sheet" id="yinliuSheet">
+    <div class="sheet-mask" data-close="yinliuSheet"></div>
+    <div class="sheet-panel">
+      <div class="sheet-hd">银流<span class="sheet-close" data-close="yinliuSheet">✕</span></div>
+      <div class="fin-sub">收入/支出 · 分类 + 资产·负债标注</div>
+      <div class="fin-balance" id="finBalance"></div>
+      <div class="fin-add">
+        <select id="finType">
+          <option value="expense">支出</option><option value="income">收入</option>
+        </select>
+        <input id="finAmt" type="number" inputmode="decimal" placeholder="金额" autocomplete="off">
+        <input id="finNote" type="text" placeholder="备注" autocomplete="off">
+        <button class="add" id="finAddBtn">＋</button>
+      </div>
+      <div class="fin-add" style="margin-top:8px;">
+        <select id="finCat">
+          <option value="餐饮">餐饮</option><option value="交通">交通</b></option>
+          <option value="学习资料">学习资料</option><option value="购物">购物</option>
+          <option value="娱乐">娱乐</option><option value="其他">其他</option>
+        </select>
+        <select id="finNat">
+          <option value="消费">消费</option><option value="投资">投资</option>
+          <option value="资产">资产</option><option value="负债">负债</option>
+        </select>
+      </div>
+      <div class="chart-row">
+        <div class="donut" id="donut"><div class="hole"><b id="donutTot">¥0</b><span>本月支出</span></div></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="month-sel">查看月份 <select id="monthSel"></select></div>
+      <div class="fin-list" id="finList"></div>
+      <div class="note-tip">性质标注呼应读物：买课/教辅=投资，吃饭=消费，囤货=资产，借贷=负债。月末可看「消费 vs 投资」对比。</div>
     </div>
-    <div class="month-sel">查看月份 <select id="monthSel"></select></div>
-    <div class="fin-list" id="finList"></div>
-    <div class="note-tip">性质标注呼应读物：买课/教辅=投资，吃饭=消费，囤货=资产，借贷=负债。月末可看「消费 vs 投资」对比。</div>
   </div>
 
   <div class="card mod-liexu">
@@ -1677,30 +1694,12 @@ document.getElementById("finList").addEventListener("click",e=>{
 });
 document.getElementById("rdMonthSel").onchange=e=>renderRdMonth(e.target.value);
 document.getElementById("rdToggle").onclick=()=>{ rdShowNone=!rdShowNone; renderRdMonth(document.getElementById("rdMonthSel").value); };
-/* 银简卡片堆叠 */
-function initYjStack(){
-  const stack=document.getElementById("yjStack");
-  if(!stack) return;
-  const cards=[...stack.querySelectorAll(".yj-card")];
-  const dots=document.getElementById("yjDots");
-  let idx=0;
-  dots.innerHTML=cards.map((c,i)=>`<i class="${i===0?'on':''}" data-i="${i}"></i>`).join("");
-  function show(i, silent){
-    idx=((i%cards.length)+cards.length)%cards.length;
-    cards.forEach(c=>{ const ci=+c.dataset.i; c.classList.toggle("curr", ci===idx); c.classList.toggle("peek", ci!==idx); });
-    [...dots.children].forEach((dd,k)=>dd.classList.toggle("on", k===idx));
-    if(!silent) showRdBanner(idx===0?"📖 今日读物":"📊 本月读物");
-  }
-  const prev=stack.querySelector("#yjPrev"), next=stack.querySelector("#yjNext");
-  if(prev) prev.onclick=()=>show(idx-1);
-  if(next) next.onclick=()=>show(idx+1);
-  dots.addEventListener("click",e=>{ const di=e.target.closest("i"); if(di) show(+di.dataset.i); });
-  let sx=0,sy=0,drag=false;
-  stack.addEventListener("touchstart",e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; drag=true; },{passive:true});
-  stack.addEventListener("touchend",e=>{ if(!drag)return; drag=false; const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) show(idx+(dx<0?1:-1)); },{passive:true});
-  show(0, true);
-}
-initYjStack();
+/* 银简：阅痕 / 银流 独立界面开关 */
+function openSheet(id){ const s=document.getElementById(id); if(s){ s.classList.add("show"); document.body.style.overflow="hidden"; } }
+function closeSheet(id){ const s=document.getElementById(id); if(s){ s.classList.remove("show"); document.body.style.overflow=""; } }
+document.getElementById("openYuehen").onclick=()=>openSheet("yuehenSheet");
+document.getElementById("openYinliu").onclick=()=>openSheet("yinliuSheet");
+document.querySelectorAll("[data-close]").forEach(el=>el.onclick=()=>closeSheet(el.dataset.close));
 
 
 /* 银简 init（本机存储，不依赖云端） */
@@ -1998,5 +1997,6 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+<div class="rd-banner" id="rdBanner"></div>
 </body>
 </html>
