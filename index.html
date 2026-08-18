@@ -368,6 +368,9 @@
   .rd-checkbtn:active{transform:scale(.98);}
   .rd-checkbtn.done{background:linear-gradient(135deg,#6fae8c,#3f8a6d);box-shadow:0 6px 16px rgba(63,138,109,.26);}
   .rd-checktip{margin-top:8px;font-size:11.5px;color:var(--muted);text-align:center;}
+  .rd-notstart{margin-top:8px;padding:16px 14px;border:1px dashed var(--line);border-radius:12px;background:#faf9fc;text-align:center;}
+  .rd-notstart b{display:block;font-size:13.5px;color:var(--teal);margin-bottom:5px;}
+  .rd-notstart span{font-size:12px;color:var(--muted);}
   .rd-recbox{margin-top:10px;}
   .rd-rec{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:56px;background:#fff;}
   .rd-recbtns{display:flex;align-items:center;gap:9px;margin-top:8px;}
@@ -1169,7 +1172,7 @@ document.querySelectorAll(".nav button").forEach(b=>{
 const CHECKIN_TABLE = "checkin";
 const FIN_TABLE = "finance_log";
 const CHECK_FIELDS = ["study","sleep","exercise","read"];
-const todayStr=()=>new Date().toISOString().slice(0,10);
+const todayStr=()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
 let checkinCache = {};
 function renderCheckin(){
   const c=checkinCache; const t=todayStr();
@@ -1179,7 +1182,7 @@ function renderCheckin(){
   });
   let streak=0; let d=new Date();
   while(true){
-    const key=d.toISOString().slice(0,10);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     if(c[key]?.study){ streak++; d.setDate(d.getDate()-1); } else break;
   }
   document.getElementById("streakLine").innerHTML = streak>0 ? `🔥 连续学习 <b>${streak}</b> 天` : `还没开始打卡，今天动一下`;
@@ -1537,6 +1540,13 @@ function nowHM(){ const n=new Date(); return String(n.getHours()).padStart(2,'0'
 function renderReading(){
   const el=document.getElementById("rdToday");
   if(!el) return;
+  const tStr=todayStr();
+  const start=new Date(PLAN_START+"T00:00:00");
+  const diff=Math.floor((new Date(tStr+"T00:00:00")-start)/86400000);
+  if(diff<0){
+    el.innerHTML=`<div class="rd-notstart"><b>📖 阅读计划 ${PLAN_START.slice(5).replace("-","/")} 开启</b><span>还有 ${-diff} 天 · 先专注把打卡习惯养起来</span></div>`;
+    return;
+  }
   const r=todayReading();
   let cnt=0; for(let i=0;i<=r.idx;i++) if(UNITS[i].book===r.book) cnt++;
   const saved=getRd(r.date)||{};
@@ -1809,6 +1819,7 @@ function addListItem(){
   listData.unshift({ id: Date.now()+"_"+Math.random().toString(36).slice(2,7), text, tag: sel.value, done:false });
   listWrite(listData);
   inp.value = "";
+  if(listFilter!=="all"){ listFilter="all"; }   // 加完回到「全部」，新条目才看得见
   renderList();
 }
 function toggleListItem(id){
