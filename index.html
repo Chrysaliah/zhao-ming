@@ -332,7 +332,8 @@
   .yj-actions{display:flex;gap:10px;margin-top:14px;}
   .yj-act-btn{flex:1;display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;text-align:left;font-family:inherit;transition:.15s;box-shadow:0 4px 14px rgba(91,85,112,.08);}
   .yj-act-btn:active{transform:scale(.98);}
-  .yj-act-ic{font-size:20px;width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#f3eef6,#e9e2f1);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .yj-act-ic{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#f3eef6,#e9e2f1);display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:#7a6e91;}
+  .yj-act-ic svg{width:21px;height:21px;display:block;}
   .yj-act-tx{display:flex;flex-direction:column;gap:2px;}
   .yj-act-tx b{font-size:14px;color:#4a4560;font-weight:700;}
   .yj-act-tx em{font-size:11px;color:var(--muted);font-style:normal;}
@@ -427,11 +428,11 @@
 
     <div class="yj-actions">
       <button class="yj-act-btn" id="openYuehen">
-        <span class="yj-act-ic">📊</span>
+        <span class="yj-act-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="13" width="3.5" height="7" rx="0.8"/><rect x="10.25" y="9" width="3.5" height="11" rx="0.8"/><rect x="16.5" y="6" width="3.5" height="14" rx="0.8"/></svg></span>
         <span class="yj-act-tx"><b>阅痕</b><em>本月读物回顾</em></span>
       </button>
       <button class="yj-act-btn" id="openYinliu">
-        <span class="yj-act-ic">💰</span>
+        <span class="yj-act-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8" stroke-opacity="0.22"/><path d="M12 4 A8 8 0 0 1 19.5 14.5"/></svg></span>
         <span class="yj-act-tx"><b>银流</b><em>随手记账</em></span>
       </button>
     </div>
@@ -1498,27 +1499,26 @@ function renderReading(){
   const multi=r.segs.length>1;
   const pass=(multi?`<div class="rd-merge-hd">本章 · <span class="rd-merge-ch">${esc(chNow)}</span></div>`:``) +
     r.segs.map((seg,i)=>`<div class="rd-seg">${multi?`<div class="rd-seg-idx">${i+1}</div>`:``}<div class="rd-seg-txt">${esc(seg.text)}</div></div>`).join("");
-  let checkHtml;
-  if(!saved.done){
-    checkHtml = `<button class="rd-checkbtn" id="rdCheckBtn">📖 今日打卡</button>
-      <div class="rd-checktip">打卡后可以加一条记录 · 写下来更记得住</div>`;
+  // 打卡按钮：未打卡紫、已打卡绿
+  let checkHtml = !saved.done
+    ? `<button class="rd-checkbtn" id="rdCheckBtn">📖 今日打卡</button>
+       <div class="rd-checktip">写下今天的阅读 · 让它真的留在脑子里</div>`
+    : `<button class="rd-checkbtn done" id="rdCheckBtn">✓ 今日已打卡 ${esc(saved.time||"")}</button>`;
+  // 记录区：始终可见 textarea（已有记录时显示金色卡 + 编辑）
+  if(saved.note && !rdEditMode){
+    checkHtml += `<div class="rd-reccard">
+      <div class="rd-reccard-t">📝 今日记录</div>
+      <div class="rd-reccard-b">${esc(saved.note)}</div>
+      <button class="rd-recedit" id="rdNoteEdit">编辑</button>
+    </div>`;
   } else {
-    checkHtml = `<button class="rd-checkbtn done" id="rdCheckBtn">✓ 今日已打卡 ${esc(saved.time||"")}</button>`;
-    if(rdEditMode || !saved.note){
-      checkHtml += `<div class="rd-recbox">
-        <textarea class="rd-rec" id="rdNoteInput" placeholder="写一句今天的阅读记录（可选）…">${esc(saved.note||"")}</textarea>
-        <div class="rd-recbtns">
-          <button class="rd-recsave" id="rdNoteSave">保存记录</button>
-          ${saved.note?`<button class="rd-reccancel" id="rdNoteCancel">取消</button>`:`<span class="rd-recskip">不写也可以</span>`}
-        </div>
-      </div>`;
-    } else {
-      checkHtml += `<div class="rd-reccard">
-        <div class="rd-reccard-t">📝 今日记录</div>
-        <div class="rd-reccard-b">${esc(saved.note)}</div>
-        <button class="rd-recedit" id="rdNoteEdit">编辑</button>
-      </div>`;
-    }
+    checkHtml += `<div class="rd-recbox">
+      <textarea class="rd-rec" id="rdNoteInput" placeholder="写一句今天的阅读记录（可选）…">${esc(saved.note||"")}</textarea>
+      <div class="rd-recbtns">
+        <button class="rd-recsave" id="rdNoteSave">${saved.done?'保存记录':'打卡并保存'}</button>
+        ${saved.note?`<button class="rd-reccancel" id="rdNoteCancel">取消</button>`:`<span class="rd-recskip">不写也可以</span>`}
+      </div>
+    </div>`;
   }
   el.innerHTML=`<div class="rd-pos"><span class="rd-dot"></span>第 ${r.book+1}/12 本 · 全部阅读单元 ${UNITS.length} 个</div>
     <div class="rd-book">${esc(r.bookTitle)}</div>
