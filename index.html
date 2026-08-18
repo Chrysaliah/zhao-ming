@@ -42,6 +42,8 @@
   .checkin{display:flex;gap:9px;flex-wrap:wrap;}
   .checkin .btn{flex:1 1 calc(50% - 5px);min-width:calc(50% - 5px);border:1px solid var(--line);background:#fff;border-radius:12px;padding:14px 8px;text-align:center;font-size:13px;color:var(--ink);transition:.15s;}
   .checkin .btn.done{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .checkin .btn .ck-time{display:none;}
+  .checkin .btn.done .ck-time{display:block;font-size:10.5px;margin-top:3px;opacity:.9;font-weight:400;line-height:1.2;}
   .checkin .btn:active{transform:scale(.97);}
   .streak{margin-top:10px;font-size:13px;color:var(--warn);font-weight:600;}
   .streak b{font-size:20px;}
@@ -415,10 +417,10 @@
   <div class="card mod-checkin">
     <div class="sec-title">今日打卡</div>
     <div class="checkin">
-      <div class="btn" id="btnStudy">📚 学习打卡</div>
-      <div class="btn" id="btnSleep">😴 睡眠达标</div>
-      <div class="btn" id="btnExercise">🏃 运动打卡</div>
-      <div class="btn" id="btnRead">📖 阅读打卡</div>
+      <div class="btn" id="btnStudy">📚 学习打卡<span class="ck-time" id="timeStudy"></span></div>
+      <div class="btn" id="btnSleep">😴 睡眠达标<span class="ck-time" id="timeSleep"></span></div>
+      <div class="btn" id="btnExercise">🏃 运动打卡<span class="ck-time" id="timeExercise"></span></div>
+      <div class="btn" id="btnRead">📖 阅读打卡<span class="ck-time" id="timeRead"></span></div>
     </div>
     <div class="streak" id="streakLine"></div>
     <div class="goal-note" style="margin-top:6px">已上云 · 换手机也同步 · 运动/阅读按周统计（每周 动≥3 / 读≥5）</div>
@@ -827,6 +829,12 @@ ORDER.forEach(k=>{
 const messagesEl = document.getElementById("messages");
 const rendered = new Set();   // 去重 key: ts|text
 
+/* 群聊本机镜像（断网也能看/发，联网后云端 merge 不丢） */
+const CHAT_KEY="yj_chat_v1";
+function chatLoad(){ try{ return JSON.parse(localStorage.getItem(CHAT_KEY)||"[]"); }catch(e){ return []; } }
+function chatSave(a){ try{ localStorage.setItem(CHAT_KEY, JSON.stringify(a.slice(-300))); }catch(e){} }
+let chatLog = chatLoad();
+
 function makeMsgEl(m){
   const d=document.createElement("div");
   d.className="msg "+(m.from==="user"?"user":"agent");
@@ -842,32 +850,37 @@ function makeMsgEl(m){
   }
   return d;
 }
-function appendMsg(m){
+function appendMsg(m, persist=true){
   const key=(m.ts||0)+"|"+m.text;
   if(rendered.has(key)) return;        // 去重（realtime 与本地 insert 可能重复）
   rendered.add(key);
   const e=makeMsgEl(m);
   messagesEl.appendChild(e);
   messagesEl.scrollTop = messagesEl.scrollHeight;
+  if(persist && !chatLog.some(x=>(x.ts||0)+"|"+x.text===key)){ chatLog.push(m); chatSave(chatLog); }
 }
 
 async function renderMessages(){
   messagesEl.innerHTML="";
   rendered.clear();
-  if(!sb){
-    const e=document.createElement("div"); e.className="empty";
-    e.innerHTML="「列宿」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>（云端未连接，消息仅存本机）";
-    messagesEl.appendChild(e); setSync(false); return;
-  }
-  const {data,error} = await sb.from(SUPABASE_TABLE).select("*").order("ts",{ascending:true});
-  if(error){ console.error(error); setSync(false); return; }
-  setSync(true);
-  if(!data || data.length===0){
+  if(sb){
+    const {data,error} = await sb.from(SUPABASE_TABLE).select("*").order("ts",{ascending:true});
+    if(!error && data){
+      const cloud = data.map(r=>({from:r.sender==="user"?"user":"agent", role:r.sender, text:r.text, ts:r.ts}));
+      const seen = new Set(cloud.map(m=>(m.ts||0)+"|"+m.text));
+      const localOnly = chatLog.filter(m=>!seen.has((m.ts||0)+"|"+m.text));   // 离线发的本地消息，联网后保留
+      chatLog = cloud.concat(localOnly).sort((a,b)=>(a.ts||0)-(b.ts||0));
+      chatSave(chatLog);
+      setSync(true);
+    } else { setSync(false); }
+  } else { setSync(false); }
+
+  if(!chatLog.length){
     const e=document.createElement("div"); e.className="empty";
     e.innerHTML="「列宿」——13 个伙伴都在。<br>说点什么，相关的人会一起接你。<br><br>比如「今天数学又卡了还睡不着」<br>或「我有点想太多，动不起来」";
     messagesEl.appendChild(e); return;
   }
-  data.forEach(r=>appendMsg({from:r.sender==="user"?"user":"agent", role:r.sender, text:r.text, ts:r.ts}));
+  chatLog.forEach(m=>appendMsg(m, false));
 }
 
 async function send(){
@@ -1177,8 +1190,12 @@ let checkinCache = {};
 function renderCheckin(){
   const c=checkinCache; const t=todayStr();
   CHECK_FIELDS.forEach(f=>{
-    const el=document.getElementById("btn"+f.charAt(0).toUpperCase()+f.slice(1));
-    if(el) el.classList.toggle("done",!!c[t]?.[f]);
+    const cap=f.charAt(0).toUpperCase()+f.slice(1);
+    const el=document.getElementById("btn"+cap);
+    const tm=document.getElementById("time"+cap);
+    const done=!!c[t]?.[f];
+    if(el) el.classList.toggle("done",done);
+    if(tm) tm.textContent = done ? (c[t]?.[f+"Time"]||"") : "";
   });
   let streak=0; let d=new Date();
   while(true){
@@ -1188,14 +1205,23 @@ function renderCheckin(){
   document.getElementById("streakLine").innerHTML = streak>0 ? `🔥 连续学习 <b>${streak}</b> 天` : `还没开始打卡，今天动一下`;
 }
 async function loadCheckin(){
-  try{ const l=JSON.parse(localStorage.getItem("checkin")||"{}"); if(Object.keys(l).length) checkinCache=l; }catch(e){}
+  let local={};
+  try{ local=JSON.parse(localStorage.getItem("checkin")||"{}"); }catch(e){}
+  if(Object.keys(local).length) checkinCache=local;   // 先本机（含 time）
   if(!sb) return;
   const since=new Date(Date.now()-1000*60*60*24*120).toISOString().slice(0,10);
   try{
     const {data,error}=await sb.from(CHECKIN_TABLE).select("*").gte("date",since);
     if(!error && data){
-      const m={};
-      data.forEach(r=>{ m[r.date]={study:!!r.study,sleep:!!r.sleep,exercise:!!r.exercise,read:!!r.read}; });
+      const m={...checkinCache};   // 保留本机 time 字段
+      data.forEach(r=>{
+        const base=checkinCache[r.date]||{};
+        m[r.date]={
+          study:!!r.study, sleep:!!r.sleep, exercise:!!r.exercise, read:!!r.read,
+          studyTime:base.studyTime, sleepTime:base.sleepTime,
+          exerciseTime:base.exerciseTime, readTime:base.readTime
+        };
+      });
       checkinCache=m; localStorage.setItem("checkin",JSON.stringify(m));
     }
   }catch(e){}
@@ -1204,16 +1230,22 @@ async function saveCheckin(date,rec){
   checkinCache[date]=rec;
   try{ localStorage.setItem("checkin",JSON.stringify(checkinCache)); }catch(e){}
   if(!sb) return;
-  try{ await sb.from(CHECKIN_TABLE).upsert({date, ...rec, ts:Date.now()}); }catch(e){}
+  // 云端只同步布尔状态；打卡时间点为本机记录（云端 checkin 表无 time 列）
+  try{
+    const {study=false,sleep=false,exercise=false,read=false}=rec;
+    await sb.from(CHECKIN_TABLE).upsert({date, study, sleep, exercise, read, ts:Date.now()});
+  }catch(e){}
 }
 async function toggleCheckin(kind){
   const t=todayStr();
   const cur=checkinCache[t]||{study:false,sleep:false,exercise:false,read:false};
-  const rec={...cur, [kind]:!cur[kind]};
+  const willDone=!cur[kind];
+  const time = willDone ? new Date().toTimeString().slice(0,5) : "";
+  const rec={...cur, [kind]:willDone, [kind+"Time"]:time};
   checkinCache[t]=rec; renderCheckin();
   await saveCheckin(t,rec);
   await loadCheckin(); renderCheckin();
-  playCheckinDing();   // 打卡到位 → 清脆“叮”
+  if(willDone) playCheckinDing();   // 仅「未→已」清脆“叮”；取消不响
 }
 document.getElementById("btnStudy").onclick=()=>toggleCheckin("study");
 document.getElementById("btnSleep").onclick=()=>toggleCheckin("sleep");
