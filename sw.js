@@ -1,5 +1,5 @@
 // 昭明工作台 · Service Worker（仅用于「添加到主屏幕」可安装 + 离线打开 app shell）
-const CACHE = "longming-v41";
+const CACHE = "longming-v42";
 const SHELL = [
   "./",
   "./index.html",
