@@ -42,6 +42,16 @@
   .checkin{display:flex;gap:9px;flex-wrap:wrap;}
   .checkin .btn{flex:1 1 calc(50% - 5px);min-width:calc(50% - 5px);border:1px solid var(--line);background:#fff;border-radius:12px;padding:14px 8px;text-align:center;font-size:13px;color:var(--ink);transition:.15s;}
   .checkin .btn.done{background:var(--teal);color:#fff;border-color:var(--teal);}
+  /* 打卡提醒：顶部下滑通知弹窗 */
+  #ckNotice{position:fixed;top:0;left:0;right:0;z-index:200;background:linear-gradient(135deg,#fff,#f3eef6);border-bottom:1px solid var(--line);box-shadow:0 6px 18px rgba(40,30,60,.14);padding:11px 14px;display:flex;align-items:flex-start;gap:9px;transform:translateY(-120%);transition:transform .45s cubic-bezier(.2,.7,.3,1);pointer-events:none;}
+  #ckNotice.show{transform:translateY(0);pointer-events:auto;}
+  #ckNotice .nt-ic{font-size:17px;flex:0 0 auto;margin-top:1px;}
+  #ckNotice .nt-body{font-size:12.5px;line-height:1.5;flex:1;}
+  #ckNotice .nt-body b{color:var(--teal);}
+  #ckNotice .nt-chips{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+  #ckNotice .nt-chip{font-size:12px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:3px 9px;cursor:pointer;transition:.2s;}
+  #ckNotice .nt-chip:active{transform:scale(.94);}
+  #ckNotice .nt-x{color:var(--muted);font-size:15px;cursor:pointer;padding:2px 4px;flex:0 0 auto;}
   .checkin .btn .ck-time{display:none;}
   .checkin .btn.done .ck-time{display:block;font-size:10.5px;margin-top:3px;opacity:.9;font-weight:400;line-height:1.2;}
   .checkin .btn:active{transform:scale(.97);}
@@ -417,6 +427,8 @@
     </div>
     <div><span class="cd-num" id="cdNum">—</span><span class="cd-unit">天</span></div>
   </div>
+
+  <div id="ckNotice"></div>
 
   <div class="card mod-checkin">
     <div class="sec-title">今日打卡</div>
@@ -1231,6 +1243,25 @@ function renderCheckin(){
     if(c[key]?.study){ streak++; d.setDate(d.getDate()-1); } else break;
   }
   document.getElementById("streakLine").innerHTML = streak>0 ? `🔥 连续学习 <b>${streak}</b> 天` : `还没开始打卡，今天动一下`;
+  showCheckinNotice();
+}
+/* 打卡提醒：顶部下滑通知弹窗（点图标直接打卡，✕ 关闭本会话不再弹） */
+let ckNoticeClosed=false;
+function showCheckinNotice(){
+  const box=document.getElementById("ckNotice");
+  if(!box) return;
+  if(ckNoticeClosed) return;
+  const c=checkinCache[todayStr()]||{};
+  const icons={study:"📚",sleep:"😴",exercise:"🏃",read:"📖"};
+  const names={study:"学习",sleep:"睡眠",exercise:"运动",read:"阅读"};
+  const pending=CHECK_FIELDS.filter(f=>!c[f]);
+  if(pending.length===0){ box.classList.remove("show"); return; }
+  box.innerHTML=`<span class="nt-ic">🔔</span><div class="nt-body"><b>今日还没打卡</b>（剩 ${pending.length} 项）<div class="nt-chips">${pending.map(f=>`<span class="nt-chip" data-k="${f}">${icons[f]} ${names[f]}</span>`).join("")}</div></div><span class="nt-x" id="ntX">✕</span>`;
+  box.classList.add("show");
+  box.querySelector("#ntX").onclick=()=>{ box.classList.remove("show"); ckNoticeClosed=true; };
+  box.querySelectorAll(".nt-chip").forEach(ch=>{
+    ch.onclick=()=>{ toggleCheckin(ch.dataset.k); };   // toggleCheckin → renderCheckin → 刷新通知
+  });
 }
 async function loadCheckin(){
   let local={};
