@@ -606,6 +606,19 @@
   </div>
   <div class="sc-body">
     <div class="sc-block">
+      <div class="sc-bt">近期复盘</div>
+      <button class="sc-refresh" id="reviewToggle">📝 写今日复盘</button>
+      <div class="rv-form" id="reviewForm" style="display:none">
+        <div class="rv-f"><label>① 今天学了什么</label><textarea id="rv1" placeholder="科目 + 具体内容"></textarea></div>
+        <div class="rv-f"><label>② 真懂还是假懂（卡在哪）</label><textarea id="rv2" placeholder="哪个点没通、概念还是步骤"></textarea></div>
+        <div class="rv-f"><label>③ 执行率（学了多久 / 计划完成度）</label><textarea id="rv3" placeholder="大概几小时、计划做了多少"></textarea></div>
+        <div class="rv-f"><label>④ 明天微调</label><textarea id="rv4" placeholder="哪科加强、哪块重来"></textarea></div>
+        <button class="rv-submit" id="rvSubmit">提交复盘 · 存入司辰</button>
+      </div>
+      <div class="rv-done" id="rvDone" style="display:none">✓ 已存入司辰，进度柱与复盘列表已更新</div>
+      <div class="sc-list" id="scReview"></div>
+    </div>
+    <div class="sc-block">
       <div class="sc-bt">本周数据</div>
       <div class="wk-sum" id="wkSummary"></div>
     </div>
@@ -625,19 +638,6 @@
       <div class="cal-grid" id="calGrid"></div>
       <div class="cal-stat-inline" id="calStat"></div>
       <div id="calWeekPanel" style="margin-top:10px;display:flex;flex-direction:column;gap:7px;"></div>
-    </div>
-    <div class="sc-block">
-      <div class="sc-bt">近期复盘</div>
-      <button class="sc-refresh" id="reviewToggle">📝 写今日复盘</button>
-      <div class="rv-form" id="reviewForm" style="display:none">
-        <div class="rv-f"><label>① 今天学了什么</label><textarea id="rv1" placeholder="科目 + 具体内容"></textarea></div>
-        <div class="rv-f"><label>② 真懂还是假懂（卡在哪）</label><textarea id="rv2" placeholder="哪个点没通、概念还是步骤"></textarea></div>
-        <div class="rv-f"><label>③ 执行率（学了多久 / 计划完成度）</label><textarea id="rv3" placeholder="大概几小时、计划做了多少"></textarea></div>
-        <div class="rv-f"><label>④ 明天微调</label><textarea id="rv4" placeholder="哪科加强、哪块重来"></textarea></div>
-        <button class="rv-submit" id="rvSubmit">提交复盘 · 存入司辰</button>
-      </div>
-      <div class="rv-done" id="rvDone" style="display:none">✓ 已存入司辰，进度柱与复盘列表已更新</div>
-      <div class="sc-list" id="scReview"></div>
     </div>
   </div>
 </div>
