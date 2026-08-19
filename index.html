@@ -114,7 +114,17 @@
   .sc-bar-fill.on{height:78px;background:linear-gradient(180deg,#2f6b64,#1f4e4a);}
   .sc-bar-l{font-size:9px;color:var(--silver-deep);}
   .sc-prog-note{margin-top:10px;font-size:11px;color:var(--muted);text-align:center;}
-  /* ===== 打卡日历（司辰页内） ===== */
+  /* ===== 本周数据总览（司辰页顶部） ===== */
+.wk-sum{display:flex;flex-wrap:wrap;gap:7px;}
+.wk-item{flex:1 1 calc(50% - 4px);display:flex;align-items:center;gap:7px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:12.5px;}
+.wk-item.done{background:#f0eef6;border-color:#e3def0;}
+.wk-ic{font-size:16px;flex:0 0 auto;}
+.wk-val{font-weight:700;color:var(--teal);}
+.wk-lbl{font-size:10.5px;color:var(--muted);}
+.wk-countdown{flex:1 1 100%;text-align:center;padding:8px 10px;border:1px dashed var(--line);border-radius:10px;font-size:12px;color:var(--muted);background:#faf9fc;margin-top:2px;}
+.wk-countdown b{color:var(--warn);font-size:14px;}
+
+/* ===== 打卡日历（司辰页内） ===== */
   .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
   .cal-nav{display:flex;gap:8px;}
   .cal-nav button{border:1px solid var(--line);background:#fff;border-radius:8px;width:32px;height:32px;font-size:17px;color:var(--teal);flex:0 0 auto;}
@@ -591,10 +601,19 @@
     <button class="sc-back" id="scBack">←</button>
     <div>
       <div class="sc-title">司辰</div>
-      <div class="sc-sub">复读节奏 · 进度 / 复盘 / 自动化动态</div>
+      <div class="sc-sub">复读节奏 · 本周数据 / 进度 / 日历 / 复盘</div>
     </div>
   </div>
   <div class="sc-body">
+    <div class="sc-block">
+      <div class="sc-bt">本周数据</div>
+      <div class="wk-sum" id="wkSummary"></div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">每日进度</div>
+      <div class="sc-prog" id="scProg"></div>
+      <div class="sc-prog-note" id="scProgNote"></div>
+    </div>
     <div class="sc-block">
       <div class="sc-bt">打卡日历</div>
       <div class="cal-head">
@@ -605,15 +624,7 @@
       <div class="cal-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="cal-stat-inline" id="calStat"></div>
-    </div>
-    <div class="sc-block">
-      <div class="sc-bt">运动 / 阅读 · 按周</div>
-      <div id="calWeekPanel"></div>
-    </div>
-    <div class="sc-block">
-      <div class="sc-bt">每日进度</div>
-      <div class="sc-prog" id="scProg"></div>
-      <div class="sc-prog-note" id="scProgNote"></div>
+      <div id="calWeekPanel" style="margin-top:10px;display:flex;flex-direction:column;gap:7px;"></div>
     </div>
     <div class="sc-block">
       <div class="sc-bt">近期复盘</div>
@@ -627,10 +638,6 @@
       </div>
       <div class="rv-done" id="rvDone" style="display:none">✓ 已存入司辰，进度柱与复盘列表已更新</div>
       <div class="sc-list" id="scReview"></div>
-    </div>
-    <div class="sc-block">
-      <div class="sc-bt">自动化动态</div>
-      <div class="sc-list" id="scFeed"></div>
     </div>
   </div>
 </div>
@@ -2116,12 +2123,12 @@ async function renderSichen(){
   if(sb && Object.keys(checkinCache).length===0){ try{ await loadCheckin(); }catch(e){} }
   const prog=document.getElementById("scProg");
   const rev=document.getElementById("scReview");
-  const feed=document.getElementById("scFeed");
   const note=document.getElementById("scProgNote");
   if(!sb){
     prog.innerHTML='<div class="empty">云端未连接，进度与动态暂不可用（仅本机）。</div>';
-    rev.innerHTML=''; feed.innerHTML=''; note.textContent='';
+    rev.innerHTML=''; note.textContent='';
     renderCalendar();
+    renderWeeklySummary();
     return;
   }
   const {data,error}=await sb.from(SICHEN_TABLE).select("*").order("ts",{ascending:false});
@@ -2155,16 +2162,45 @@ async function renderSichen(){
     }).join("");
   }
 
-  /* 区块C：自动化动态（非复盘的汇报 / 设定） */
-  const feeds=rows.filter(r=>r.type!=="复盘").slice(0,20);
-  if(feeds.length===0){ feed.innerHTML='<div class="empty">自动化还没汇报过。</div>'; }
-  else{
-    feed.innerHTML=feeds.map(r=>{
-      const t=new Date(r.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
-      return `<div class="sc-item"><div class="sc-item-t">${t} · ${esc(r.agent||"系统")}<span class="sc-tag">${esc(r.type||"")}</span></div><div class="sc-item-c">${esc(r.content||"")}</div></div>`;
-    }).join("");
-  }
   renderCalendar();
+  renderWeeklySummary();
+}
+
+/* ---------- 司辰页：本周数据总览 ---------- */
+function renderWeeklySummary(){
+  const el=document.getElementById("wkSummary");
+  if(!el) return;
+  const now=new Date();
+  // This week: Sunday to Saturday
+  const weekStart=new Date(now); weekStart.setDate(now.getDate()-now.getDay()); weekStart.setHours(0,0,0,0);
+  let stDays=0, exDays=0, rdDays=0;
+  for(let i=0;i<7;i++){
+    const dt=new Date(weekStart); dt.setDate(weekStart.getDate()+i);
+    const key=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+    const ck=checkinCache[key]||{};
+    if(ck.study) stDays++;
+    if(ck.exercise) exDays++;
+    if(ck.read) rdDays++;
+  }
+  const streak=getStreakCount();
+  // Countdown
+  const planStart=new Date("2026-08-25T00:00:00");
+  const gaokao=new Date("2027-06-07T00:00:00");
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const dPlan=Math.ceil((planStart-today)/86400000);
+  const dGk=Math.ceil((gaokao-today)/86400000);
+  let cdText;
+  if(dPlan>0){ cdText=`距 8/25 开干 <b>${dPlan}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
+  else if(dPlan===0){ cdText=`今天开干 · 距高考 <b>${dGk}</b> 天`; }
+  else { cdText=`复读第 <b>${-dPlan+1}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
+  const stDone=stDays>=5, exDone=exDays>=GOAL_EX, rdDone=rdDays>=GOAL_RD;
+  el.innerHTML=`
+    <div class="wk-item ${stDone?'done':''}"><span class="wk-ic">📚</span><div><span class="wk-val">${stDays}/7</span> <span class="wk-lbl">学习打卡</span></div></div>
+    <div class="wk-item ${exDone?'done':''}"><span class="wk-ic">🏃</span><div><span class="wk-val">${exDays}/${GOAL_EX}</span> <span class="wk-lbl">运动</span></div></div>
+    <div class="wk-item ${rdDone?'done':''}"><span class="wk-ic">📖</span><div><span class="wk-val">${rdDays}/${GOAL_RD}</span> <span class="wk-lbl">阅读</span></div></div>
+    <div class="wk-item ${streak>0?'done':''}"><span class="wk-ic">🔥</span><div><span class="wk-val">${streak}</span> <span class="wk-lbl">连续天</span></div></div>
+    <div class="wk-countdown">${cdText}</div>
+  `;
 }
 
 /* ---------- 司辰页：打卡日历（月视图 · 学/眠按天 · 运动/阅读按周） ---------- */
