@@ -417,7 +417,7 @@
       <span class="goal-arrow">→</span>
       <span class="goal-target">600</span>
     </div>
-    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 8/20 正式开干</div>
+    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 8/25 正式开干</div>
   </div>
 
   <div class="countdown-card">
@@ -731,7 +731,7 @@ const REPLIES = {
   lv:[
     {k:["资料","下单","到货","书","买"],t:"资料到位是开局第一关。物理跳跳学长、化学超人、生物李林、语文陈Sir都还没到——这几天先把单下了。到了计划才排得进去。"},
     {k:["进度","落后","差距","计划","排"],t:"计划不是按章节平均排，是按你真实缺口排。开干前先摸清每科哪块是零分，再决定先啃哪。前三天只要『动起来+睡够10h』就算赢。"},
-    {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/20 第一条计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
+    {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/25 第一条计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
     {k:["default"],t:"执行的事归我。你今天动了没？没动就别想太多，先从一个最小动作开始。"}
   ],
   xu:[
@@ -819,15 +819,15 @@ function groupReply(text){
 (function setGoalNote(){
   const el = document.getElementById("goalNote");
   if(!el) return;
-  const start = new Date("2026-08-20T00:00:00");
+  const start = new Date("2026-08-25T00:00:00");
   const now   = new Date();
   const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const diffDays = Math.floor((today-start)/86400000);
   if(diffDays < 0){
     const left = -diffDays;
-    el.textContent = `距 8/20 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
+    el.textContent = `距 8/25 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
   } else if(diffDays === 0){
-    el.textContent = "今天 8/20 · 复读第一天 · 启动";
+    el.textContent = "今天 8/25 · 复读第一天 · 启动";
   } else {
     el.textContent = `复读第 ${diffDays} 天 · 江浙沪 211/985 · 目标 287 → 600`;
   }
@@ -1314,7 +1314,7 @@ document.getElementById("btnExercise").onclick=()=>toggleCheckin("exercise");
 document.getElementById("btnRead").onclick=()=>toggleCheckin("read");
 
 /* ---------- 银简数据层：12 本 × 章节 × 239 段循环读物（本机存储） ---------- */
-const PLAN_START = "2026-08-20";  // 与学习正式开干对齐
+const PLAN_START = "2026-08-25";  // 与学习正式开干对齐
 const READING_BOOKS = [
   {title:"《小狗钱钱》", paras:[
     {ch:"第一章 确立目标与自信", text:"成功日记：每天睡前写下自己当天做到的 5 件事。坚持记录会让你慢慢相信「我能行」，自信是赚钱的第一块地基。"},
