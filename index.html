@@ -415,6 +415,12 @@
   .rd-reccard-b{font-size:13px;color:#5a4422;line-height:1.6;white-space:pre-wrap;word-break:break-word;}
   .rd-recedit{margin-top:8px;border:none;background:#e7d3a6;color:#5a4422;border-radius:8px;padding:5px 13px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;}
 
+
+/* ---------- 闪屏 ---------- */
+.splash-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#f7f6f9 0%,#e7e4ef 60%,#ddd8ec 100%);transition:opacity .6s ease;}
+.splash-screen.hide{opacity:0;pointer-events:none;}
+.splash-cn{font-family:"Songti SC","STSong","SimSun","宋体",serif;font-size:42px;font-weight:500;letter-spacing:16px;text-indent:16px;color:#5b5570;line-height:1;}
+.splash-en{font-family:"Cormorant Garamond","Times New Roman",serif;font-size:14px;letter-spacing:5px;margin-top:16px;color:#8a8498;font-weight:400;}
 </style>
 </head>
 <body>
@@ -2019,6 +2025,26 @@ document.getElementById("listEl").addEventListener("click", e=>{
 });
 loadList();
 
+/* ---------- 拾单：资料种子 ---------- */
+(function seedMaterials(){
+  const existing = listRead();
+  const seeds = [
+    { text: "跳跳学长高考物理系列 + 基础双练物理版", tag: "zl" },
+    { text: "化学超人 高考化学全家桶", tag: "zl" },
+    { text: "李林生物 真题1000题 + 生物笔记 + 一本通", tag: "zl" },
+    { text: "陈Sir 高考语文135", tag: "zl" }
+  ];
+  let changed = false;
+  for (const s of seeds) {
+    if (!existing.find(x => x.text === s.text)) {
+      existing.push({ id: Date.now()+"_seed_"+Math.random().toString(36).slice(2,7), text: s.text, tag: s.tag, done: false });
+      changed = true;
+    }
+  }
+  if (changed) { listWrite(existing); listData = existing; renderList(); }
+})();
+
+
 /* ---------- 数据备份（本机导出/导入） ---------- */
 const BACKUP_PREFIXES=["checkin","yj_chat_v1","yj_rd_v2_","yj_fin_v1","yj_list_v1","yj_todos_v1","yj_agent_log_v1_"];
 function collectBackup(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(BACKUP_PREFIXES.some(p=>k.startsWith(p))) o[k]=localStorage.getItem(k); } return o; }
@@ -2442,6 +2468,10 @@ if(sb){
     .on("postgres_changes",{event:"*",schema:"public",table:PLANS_TABLE}, ()=>{ if(document.getElementById("page-home").classList.contains("active")) loadTodos(); })
     .subscribe();
 }
+
+
+/* ---------- 闪屏隐藏 ---------- */
+window.addEventListener("load", function(){ setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 1200); });
 
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
 if ("serviceWorker" in navigator) {
