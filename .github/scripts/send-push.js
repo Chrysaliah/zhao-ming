@@ -1,5 +1,5 @@
 // ntfy 推送脚本
-// 通过 GitHub Actions cron 触发，向手机弹系统通知
+// 通过 GitHub Actions cron 触发，向手机弹系统通知（带提示音+展开内容）
 const https = require('https');
 
 const TOPIC = process.env.NTFY_TOPIC || 'ruozhao-reminders-2026';
@@ -18,7 +18,7 @@ if (HOUR === '8') {
 }
 
 const clickUrl = 'https://chrysaliah.github.io/zhao-ming/';
-const query = `?title=${encodeURIComponent(title)}&click=${encodeURIComponent(clickUrl)}&tags=bell`;
+const query = `?title=${encodeURIComponent(title)}&click=${encodeURIComponent(clickUrl)}&tags=bell&priority=high`;
 const path = `/${TOPIC}${query}`;
 
 const options = {
