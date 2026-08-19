@@ -21,4 +21,4 @@ jobs:
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           SB_URL: ${{ secrets.SB_URL }}
           SB_ANON_KEY: ${{ secrets.SB_ANON_KEY }}
-        run: node .github/scripts/send-push.js
+        run: node .github/scripts/send-push.j
