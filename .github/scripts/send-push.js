@@ -17,8 +17,7 @@ if (HOUR === '8') {
   body = '去看看今天的打卡和计划';
 }
 
-const clickUrl = 'https://chrysaliah.github.io/zhao-ming/';
-const query = `?title=${encodeURIComponent(title)}&click=${encodeURIComponent(clickUrl)}&tags=bell&priority=high`;
+const query = `?title=${encodeURIComponent(title)}&tags=bell&priority=high`;
 const path = `/${TOPIC}${query}`;
 
 const options = {
