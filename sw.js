@@ -1,5 +1,5 @@
 // 昭明工作台 · Service Worker（仅用于「添加到主屏幕」可安装 + 离线打开 app shell）
-const CACHE = "longming-v54";
+const CACHE = "longming-v55";
 const SHELL = [
   "./",
   "./index.html",
@@ -37,5 +37,35 @@ self.addEventListener("fetch", (e) => {
   // 其余静态资源：缓存优先
   e.respondWith(
     caches.match(e.request).then((cached) => cached || fetch(e.request))
+  );
+});
+
+// ===== Push 通知 =====
+self.addEventListener("push", (e) => {
+  let data = {};
+  try { data = e.data.json(); } catch (_) { data = { body: e.data ? e.data.text() : "" }; }
+  const title = data.title || "拾光提醒";
+  const options = {
+    body: data.body || "去看看今天的打卡",
+    icon: "icon-192.png",
+    badge: "icon-192.png",
+    data: { url: data.url || "https://chrysaliah.github.io/zhao-ming/" },
+    tag: "sichen-reminder",
+    requireInteraction: false,
+    vibrate: [100, 50, 100]
+  };
+  e.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const targetUrl = e.notification.data && e.notification.data.url || "https://chrysaliah.github.io/zhao-ming/";
+  e.waitUntil(
+    self.clients.matchAll({ type: "window" }).then((clientList) => {
+      for (const cl of clientList) {
+        if (cl.url.includes("chrysaliah.github.io") && "focus" in cl) return cl.focus();
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(targetUrl);
+    })
   );
 });
