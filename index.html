@@ -1329,39 +1329,44 @@ function urlBase64ToUint8Array(b64){
 async function setupPushNotifications(){
   const btn=document.getElementById("ntBtn");
   if(btn) btn.textContent="⏳";
-  if(!("Notification" in window)){ alert("你的浏览器不支持通知"); return; }
-  if(!("serviceWorker" in navigator)){ alert("不支持 Service Worker"); return; }
-  const perm=await Notification.requestPermission();
-  if(perm!=="granted"){
-    if(btn) btn.textContent="🔔";
-    return;
-  }
-  const reg=await navigator.serviceWorker.ready;
-  let sub=await reg.pushManager.getSubscription();
-  if(!sub){
-    const key=urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-    sub=await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:key });
-  }
-  // Build subscription JSON for server
-  const subJSON=JSON.stringify({
-    endpoint: sub.endpoint,
-    keys:{
-      p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("p256dh")))),
-      auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("auth"))))
-    }
-  });
-  // Store in Supabase (longming_messages table, sender=push_sub)
+  if(!("Notification" in window)){ alert("你的浏览器不支持通知"); if(btn) btn.textContent="🔔"; return; }
+  if(!("serviceWorker" in navigator)){ alert("不支持 Service Worker"); if(btn) btn.textContent="🔔"; return; }
   try{
-    // Delete old push_sub records first
-    await sb.from(SUPABASE_TABLE).delete().eq("sender","push_sub");
-    await sb.from(SUPABASE_TABLE).insert({ sender:"push_sub", name:"若昭", text:subJSON, ts:new Date().toISOString() });
-  }catch(e){
-    // Fallback: store in localStorage
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted"){
+      if(btn) btn.textContent="🔔";
+      alert("通知权限被拒绝，请在浏览器设置中允许此站点发送通知");
+      return;
+    }
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      const key=urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+      sub=await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:key });
+    }
+    // Build subscription JSON for server
+    const subJSON=JSON.stringify({
+      endpoint: sub.endpoint,
+      keys:{
+        p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("p256dh")))),
+        auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("auth"))))
+      }
+    });
+    // Store in Supabase (longming_messages table, sender=push_sub)
+    try{
+      await sb.from(SUPABASE_TABLE).delete().eq("sender","push_sub");
+      await sb.from(SUPABASE_TABLE).insert({ sender:"push_sub", name:"若昭", text:subJSON, ts:new Date().toISOString() });
+    }catch(e){
+      localStorage.setItem("push_sub", subJSON);
+    }
     localStorage.setItem("push_sub", subJSON);
+    if(btn){ btn.textContent="✅"; btn.classList.add("on"); }
+    setTimeout(()=>{ if(btn) btn.textContent="🔔"; btn.classList.add("on"); }, 2000);
+  }catch(err){
+    console.error("Push订阅失败:", err);
+    if(btn) btn.textContent="🔔";
+    alert("Push订阅失败: "+(err.message||err.name||"未知错误")+"\n\n请截图发给我，我来排查原因。");
   }
-  localStorage.setItem("push_sub", subJSON);
-  if(btn){ btn.textContent="✅"; btn.classList.add("on"); }
-  setTimeout(()=>{ if(btn) btn.textContent="🔔"; }, 2000);
 }
 
 // On load: check if already subscribed, update bell icon
