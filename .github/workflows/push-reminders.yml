@@ -14,11 +14,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm install web-push
-      - name: Send push notification
+      - name: Morning reminder (8:00 Beijing)
         env:
-          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
-          SB_URL: ${{ secrets.SB_URL }}
-          SB_ANON_KEY: ${{ secrets.SB_ANON_KEY }}
-        run: node .github/scripts/send-push.j
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+          PUSH_HOUR: "8"
+        run: node .github/scripts/send-push.js
+      - name: Evening reminder (22:30 Beijing)
+        env:
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+          PUSH_HOUR: "22"
+        run: node .github/scripts/send-push.js
