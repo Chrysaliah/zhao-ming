@@ -91,7 +91,11 @@
   .sichen-prev{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
   .sp-row{display:flex;align-items:center;font-size:12.5px;color:var(--ink);}
   .sp-dot{width:7px;height:7px;border-radius:50%;background:var(--mod,var(--gold));margin-right:9px;flex:0 0 auto;}
-  .sp-t{margin-left:auto;font-size:10px;color:var(--silver-deep);}
+  .sp-t{margin-left:auto;font-size:10px;color:var(--silver-deep);transition:color .2s;}
+.sp-t.done{color:var(--teal);font-weight:700;}
+.sp-t.pending{color:var(--warn);font-weight:700;}
+.sp-dot.done{background:var(--teal) !important;}
+.sp-dot.pending{background:var(--warn) !important;}
   .sichen-go{margin-top:10px;font-size:12px;font-weight:700;color:var(--teal);text-align:right;}
   /* ===== 司辰页面 ===== */
   #page-sichen{background:#f6f5f1;}
@@ -450,9 +454,9 @@
   <div class="card sichen-entry mod-sichen" onclick="goSichen()">
     <div class="sec-title">司辰</div>
     <div class="sichen-prev">
-      <div class="sp-row"><span class="sp-dot"></span>每日学习计划<span class="sp-t">08:00</span></div>
-      <div class="sp-row"><span class="sp-dot"></span>每日学习复盘<span class="sp-t">22:30</span></div>
-      <div class="sp-row"><span class="sp-dot"></span>每周进度检查<span class="sp-t">周日 20:00</span></div>
+      <div class="sp-row"><span class="sp-dot" id="scDotPlan"></span>每日学习计划<span class="sp-t" id="scTimePlan">08:00</span></div>
+      <div class="sp-row"><span class="sp-dot" id="scDotReview"></span>每日学习复盘<span class="sp-t" id="scTimeReview">22:30</span></div>
+      <div class="sp-row"><span class="sp-dot" id="scDotWeekly"></span>每周进度检查<span class="sp-t" id="scTimeWeekly">周日 20:00</span></div>
     </div>
     <div class="sichen-go">进入看进度与动态 →</div>
   </div>
@@ -1247,6 +1251,14 @@ function renderCheckin(){
 }
 /* 打卡提醒：顶部下滑通知弹窗（点图标直接打卡，✕ 关闭本会话不再弹） */
 let ckNoticeClosed=false;
+function getStreakCount(){
+  let s=0; let d=new Date();
+  while(true){
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    if(checkinCache[key]?.study){ s++; d.setDate(d.getDate()-1); } else break;
+  }
+  return s;
+}
 function showCheckinNotice(){
   const box=document.getElementById("ckNotice");
   if(!box) return;
@@ -1256,11 +1268,35 @@ function showCheckinNotice(){
   const names={study:"学习",sleep:"睡眠",exercise:"运动",read:"阅读"};
   const pending=CHECK_FIELDS.filter(f=>!c[f]);
   if(pending.length===0){ box.classList.remove("show"); return; }
-  box.innerHTML=`<span class="nt-ic">🔔</span><div class="nt-body"><b>今日还没打卡</b>（剩 ${pending.length} 项）<div class="nt-chips">${pending.map(f=>`<span class="nt-chip" data-k="${f}">${icons[f]} ${names[f]}</span>`).join("")}</div></div><span class="nt-x" id="ntX">✕</span>`;
+  const streak=getStreakCount();
+  const hour=new Date().getHours();
+  let headline, sub;
+  if(hour<10){
+    headline= pending.length===4 ? "早安 · 今天从一项打卡开始" : "早安 · 上午先动起来";
+    sub=`还剩 ${pending.length} 项 · ${pending.map(f=>names[f]).join("·")}`;
+  }else if(hour<14){
+    headline=`上午过半 · ${names[pending[0]]}还没打`;
+    sub=`还剩 ${pending.length} 项`;
+  }else if(hour<18){
+    headline=`下午了 · 今日还剩 ${pending.length} 项打卡`;
+    sub=pending.map(f=>names[f]).join(" · ");
+  }else if(hour<22){
+    if(streak>0){
+      headline=`连续 ${streak} 天了 · 今天别断`;
+      sub=`还剩 ${pending.length} 项 · ${pending.map(f=>names[f]).join("·")}`;
+    }else{
+      headline=`晚上好 · 今日还剩 ${pending.length} 项`;
+      sub=pending.map(f=>names[f]).join(" · ");
+    }
+  }else{
+    headline="该复盘了 · 22:30的计划等着";
+    sub= streak>0 ? `streak ${streak}天 · 别断在最后` : `还剩 ${pending.length} 项`;
+  }
+  box.innerHTML=`<span class="nt-ic">🔔</span><div class="nt-body"><b>${headline}</b>${sub?`<br><span style="font-size:11.5px;color:var(--muted)">${sub}</span>`:""}<div class="nt-chips">${pending.map(f=>`<span class="nt-chip" data-k="${f}">${icons[f]} ${names[f]}</span>`).join("")}</div></div><span class="nt-x" id="ntX">✕</span>`;
   box.classList.add("show");
   box.querySelector("#ntX").onclick=()=>{ box.classList.remove("show"); ckNoticeClosed=true; };
   box.querySelectorAll(".nt-chip").forEach(ch=>{
-    ch.onclick=()=>{ toggleCheckin(ch.dataset.k); };   // toggleCheckin → renderCheckin → 刷新通知
+    ch.onclick=()=>{ toggleCheckin(ch.dataset.k); };
   });
 }
 async function loadCheckin(){
@@ -1957,7 +1993,7 @@ document.getElementById("backupFile").onchange=e=>{ if(e.target.files[0]) import
 /* ---------- init ---------- */
 document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 renderCheckin();
-if(sb){ loadTodos(); loadCheckin().then(renderCheckin); loadFin(); loadReading(); }
+if(sb){ loadTodos(); loadCheckin().then(renderCheckin); loadFin(); loadReading(); updateSichenStatus(); }
 
 /* ---------- 高考倒计时 ---------- */
 (function(){
@@ -1967,6 +2003,47 @@ if(sb){ loadTodos(); loadCheckin().then(renderCheckin); loadFin(); loadReading()
   const el = document.getElementById("cdNum");
   if(el) el.textContent = (diff >= 0 ? diff : 0);
 })();
+
+/* ---------- 司辰三项状态（主页卡片 · 待推送/待执行/已完成） ---------- */
+async function updateSichenStatus(){
+  const planDot=document.getElementById("scDotPlan");
+  const planTime=document.getElementById("scTimePlan");
+  const revDot=document.getElementById("scDotReview");
+  const revTime=document.getElementById("scTimeReview");
+  const wkDot=document.getElementById("scDotWeekly");
+  const wkTime=document.getElementById("scTimeWeekly");
+  if(!planDot) return;
+  const now=new Date();
+  const hour=now.getHours();
+  const isSunday=now.getDay()===0;
+  // Default states based on time
+  let planState="waiting", revState="waiting", wkState="waiting";
+  if(hour>=8) planState="pending";
+  if(hour>=22) revState="pending";
+  if(isSunday && hour>=20) wkState="pending";
+  // Check cloud for done status
+  if(sb){
+    try{
+      const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+      const {data}=await sb.from(SICHEN_TABLE).select("type,ts").gte("ts",todayStart);
+      const rows=data||[];
+      if(rows.some(r=>r.type==="计划"||r.type==="学习计划")) planState="done";
+      if(rows.some(r=>r.type==="复盘")) revState="done";
+      // Weekly: check this week
+      const weekStart=new Date(now);
+      weekStart.setDate(now.getDate()-now.getDay());
+      const weekTs=weekStart.setHours(0,0,0,0);
+      const {data:wk}=await sb.from(SICHEN_TABLE).select("type,ts").gte("ts",weekTs).filter("type","in",'("周报","周检查","进度检查","weekly")');
+      if(wk && wk.length>0) wkState="done";
+    }catch(e){}
+  }
+  // Apply
+  const setDot=(dot,state)=>{ dot.classList.remove("done","pending"); if(state==="done") dot.classList.add("done"); else if(state==="pending") dot.classList.add("pending"); };
+  const setTime=(el,state,defaultLabel)=>{ el.classList.remove("done","pending"); if(state==="done") el.textContent="✓已完成"; else if(state==="pending") el.textContent="待执行"; else el.textContent=defaultLabel; if(state==="done") el.classList.add("done"); else if(state==="pending") el.classList.add("pending"); };
+  setDot(planDot,planState); setTime(planTime,planState,"08:00");
+  setDot(revDot,revState); setTime(revTime,revState,"22:30");
+  setDot(wkDot,wkState); setTime(wkTime,wkState,"周日 20:00");
+}
 
 /* ---------- 司辰页：复读节奏（进度 / 复盘 / 自动化动态） ---------- */
 const SICHEN_TABLE = "sichen_reports";
