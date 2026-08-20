@@ -912,8 +912,8 @@
           <button class="xg-tmpl" data-tmpl="记账：">记账</button>
         </div>
       <div class="xg-input">
-      <textarea id="xgInput" rows="1" placeholder="写点碎碎念…（自动按内容分类）" autocomplete="off"></textarea>
-      <button class="xg-img-btn" id="xgImgBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
+      <textarea id="xgInput" rows="1" placeholder="记一笔…" autocomplete="off"></textarea>
+      <button class="xg-img-btn" id="xgImgBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
       <button class="send" id="xgSendBtn">↑</button>
     </div>
   </div>
@@ -1286,7 +1286,7 @@ function emptyMsg(){
   xgNotesEl.innerHTML = '<div class="empty">' +
     (xgSearch.trim() ? "没有匹配的碎碎念。"
      : xgFilter==="全部"
-       ? "「隙光」——缝隙里的一点光。<br>写点碎碎念，系统按内容自动分类整理。<br><br>比如「今天又想太多没动」<br>或「突然想到珀缦可以做个书签」"
+       ? "「隙光」——缝隙里的一点光。<br>记一笔，自动分类。<br><br>比如「今天又想太多没动」<br>或「突然想到珀缦可以做个书签」"
        : "这个分类下还没有碎碎念。") + '</div>';
 }
 
@@ -1374,7 +1374,7 @@ function cancelEdit(){
   xgEditId=null;
   const ta=document.getElementById("xgInput");
   ta.value=""; ta.style.height="auto";
-  ta.placeholder="写点碎碎念…（自动按内容分类）";
+  ta.placeholder="记一笔…";
   document.getElementById("xgSendBtn").textContent="↑";
 }
 async function delNote(id){
@@ -2847,7 +2847,7 @@ function xgCompressImg(file){
 }
 async function xgImgInit(){
   var btn=document.getElementById("xgImgBtn");if(!btn)return;
-  var fileInput=document.createElement("input");fileInput.type="file";fileInput.accept="image/*";fileInput.capture="environment";fileInput.style.display="none";document.body.appendChild(fileInput);
+  var fileInput=document.createElement("input");fileInput.type="file";fileInput.accept="image/*";fileInput.style.display="none";document.body.appendChild(fileInput);
   btn.onclick=function(){fileInput.click()};
   fileInput.onchange=async function(){
     if(!fileInput.files[0])return;var dataURL=await xgCompressImg(fileInput.files[0]);
