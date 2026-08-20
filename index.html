@@ -2720,7 +2720,7 @@ if(sb){
 
 
 /* ---------- 闪屏隐藏 ---------- */
-window.addEventListener("load", function(){ setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 600); });
+setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 600);
 
 /* ===== 专注计时器 ===== */
 const FOCUS_KEY="yj_focus_v1";
@@ -3024,6 +3024,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v86</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v87</div>
 </body>
 </html>
