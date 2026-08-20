@@ -548,6 +548,33 @@
 .fold-sub-card{border:none!important;padding:0!important;}
 .fold-sub-card .sec-title{font-size:12px;color:var(--muted);margin-bottom:6px;}
 </style>
+
+<!-- force SW update -->
+<script>
+(function(){
+  var EXPECTED="longming-v69";
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.getRegistration().then(function(reg){
+      if(!reg)return;
+      // Force update: check if SW is outdated
+      navigator.serviceWorker.addEventListener("controllerchange",function(){
+        location.reload();
+      });
+      // If SW exists, force it to update
+      reg.update();
+    });
+    // Also check caches and clear old ones
+    caches.keys().then(function(keys){
+      keys.forEach(function(k){
+        if(k!==EXPECTED){
+          console.log("Deleting old cache:",k);
+          caches.delete(k);
+        }
+      });
+    });
+  }
+})();
+</script>
 </head>
 <body>
 
