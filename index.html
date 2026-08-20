@@ -487,8 +487,8 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;}
 .goal-l3{margin-left:28px;font-size:12px;color:var(--muted);margin-bottom:2px;}
 .goal-bar{height:4px;background:var(--line);border-radius:2px;margin-top:2px;overflow:hidden;}
 .goal-bar-fill{height:100%;background:var(--sichen);border-radius:2px;}
-.goal-add{display:flex;gap:6px;margin-top:8px;}
-.goal-add input,.goal-add select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;font-family:inherit;background:#fff;}
+
+
 .goal-add input{flex:1;}
 .goal-add button{border:none;background:var(--teal);color:#fff;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;flex:0 0 auto;}
 /* ===== 任务标签 ===== */
@@ -521,7 +521,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;}
 .goal-countdown .cd-inline .cd-num{font-size:28px;font-weight:800;color:var(--gold);}
 .goal-countdown .cd-inline .cd-label{font-size:10px;color:var(--muted);}
 .goal-countdown .cd-inline .cd-date{font-size:10px;color:var(--silver-deep);}
-.goal-add{display:flex;gap:6px;margin-top:8px;align-items:center;}
+
 .goal-add input{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;font-family:inherit;background:#fff;}
 .goal-add select{border:1px solid var(--line);border-radius:8px;padding:7px 6px;font-size:12px;font-family:inherit;background:#fff;color:var(--muted);flex:0 0 auto;}
 .goal-add button{border:none;background:var(--teal);color:#fff;border-radius:50%;width:32px;height:32px;font-size:15px;cursor:pointer;flex:0 0 auto;}
@@ -635,11 +635,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;}
   <details class="card fold-card" style="margin-top:12px;">
     <summary class="sec-title">目标拆解</summary>
     <div class="goal-tree" id="goalTree"></div>
-    <div class="goal-add">
-      <input id="goalInput" placeholder="目标/任务…" autocomplete="off">
-      <select id="goalLevel"><option value="l2">学科级</option><option value="l3">章节级</option></select>
-      <button id="goalAddBtn">＋</button>
-    </div>
+    
     <div class="goal-note" style="margin-top:6px">287 → 550 → 600 · 拆到每天可执行</div>
   </details>
 
@@ -2960,7 +2956,7 @@ function goalInit(){
     children.forEach(function(c){html+='<div class="goal-l3">\u2022 '+esc(c.title)+'</div>'})
   });
   el.innerHTML=html;
-  var addBtn=document.getElementById("goalAddBtn");if(addBtn)addBtn.onclick=function(){
+  var addBtn=document.getElementById("if(addBtn)addBtn.onclick=function(){
     var inp=document.getElementById("goalInput");var lvl=document.getElementById("goalLevel").value;var text=inp.value.trim();if(!text)return;
     var a=goalRead();var id="u"+Date.now();a.push({id:id,title:text,type:lvl,parent:"g_math"});goalWrite(a);inp.value="";goalInit()
   }
@@ -3028,6 +3024,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v84</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v85</div>
 </body>
 </html>
