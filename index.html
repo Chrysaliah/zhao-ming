@@ -454,7 +454,6 @@
 .mood-block{margin-top:12px;}
 .mood-row{display:flex;gap:6px;justify-content:center;margin:10px 0;}
 .mood-btn .mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
-.mood-btn svg{width:24px;height:24px;display:block;margin:0 auto}
 .mood-btn.active{border-width:2px;}
 .mood-btn:active{transform:scale(.92);}
 .mood-note{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:40px;background:#fff;margin-top:8px;}
@@ -841,11 +840,11 @@
       <div class="sc-bt">情绪追踪</div>
       <div class="mood-block">
         <div class="mood-row" id="moodRow">
-          <button class="mood-btn" data-mood="1"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><circle fill='#FFCC4D' cx='18' cy='18' r='18'/><path fill='#664500' d='M23.485 28.879C23.474 28.835 22.34 24.5 18 24.5s-5.474 4.335-5.485 4.379c-.053.213.044.431.232.544.188.112.433.086.596-.06.009-.008 1.013-.863 4.657-.863 3.59 0 4.617.83 4.656.863.095.09.219.137.344.137.084 0 .169-.021.246-.064.196-.112.294-.339.239-.557zM11.226 15.512c-.317 0-.636.039-.947.116-2.87.707-3.513 4.121-3.539 4.267-.04.223.076.443.281.54.067.031.14.047.211.047.145 0 .287-.063.385-.18.01-.012 1.01-1.178 3.379-1.761.714-.176 1.412-.265 2.073-.265 1.104 0 1.732.253 1.735.254.067.028.131.04.207.04.272.012.509-.221.509-.5 0-.165-.08-.311-.203-.402-.367-.435-1.953-2.156-4.091-2.156zm13.548 0c.317 0 .636.039.947.116 2.87.707 3.513 4.121 3.539 4.267.04.223-.076.443-.281.54-.067.031-.14.047-.211.047-.145 0-.287-.063-.385-.18-.01-.012-1.01-1.178-3.379-1.761-.714-.176-1.412-.265-2.073-.265-1.104 0-1.731.253-1.735.254-.067.028-.131.04-.206.04-.272.012-.509-.221-.509-.5 0-.165.08-.311.203-.402.366-.435 1.952-2.156 4.09-2.156z'/></svg></button>
-          <button class="mood-btn" data-mood="2"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><path fill='#FFCC4D' d='M36 18c0 9.941-8.059 18-18 18-9.94 0-18-8.059-18-18C0 8.06 8.06 0 18 0c9.941 0 18 8.06 18 18'/><ellipse fill='#664500' cx='11.5' cy='16.5' rx='2.5' ry='3.5'/><ellipse fill='#664500' cx='24.5' cy='16.5' rx='2.5' ry='3.5'/><path fill='#664500' d='M12 28c2-5 13-5 13-3 0 1-8-1-13 3z'/></svg></button>
-          <button class="mood-btn" data-mood="3"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><path fill='#FFCC4D' d='M36 18c0 9.941-8.059 18-18 18-9.94 0-18-8.059-18-18C0 8.06 8.06 0 18 0c9.941 0 18 8.06 18 18'/><ellipse fill='#664500' cx='11.5' cy='16.5' rx='2.5' ry='3.5'/><ellipse fill='#664500' cx='24.5' cy='16.5' rx='2.5' ry='3.5'/><path fill='#664500' d='M25 26H11c-.552 0-1-.447-1-1s.448-1 1-1h14c.553 0 1 .447 1 1s-.447 1-1 1z'/></svg></button>
-          <button class="mood-btn" data-mood="4"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><circle fill='#FFCC4D' cx='18' cy='18' r='18'/><path fill='#664500' d='M10.515 23.621C10.56 23.8 11.683 28 18 28c6.318 0 7.44-4.2 7.485-4.379.055-.217-.043-.442-.237-.554-.195-.111-.439-.078-.6.077C24.629 23.163 22.694 25 18 25s-6.63-1.837-6.648-1.855C11.256 23.05 11.128 23 11 23c-.084 0-.169.021-.246.064-.196.112-.294.339-.239.557z'/><ellipse fill='#664500' cx='12' cy='13.5' rx='2.5' ry='3.5'/><ellipse fill='#664500' cx='24' cy='13.5' rx='2.5' ry='3.5'/></svg></button>
-          <button class="mood-btn" data-mood="5"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><path fill='#FFCC4D' d='M36 18c0 9.941-8.059 18-18 18-9.94 0-18-8.059-18-18C0 8.06 8.06 0 18 0c9.941 0 18 8.06 18 18'/><path fill='#664500' d='M28.457 17.797c-.06-.135-1.499-3.297-4.457-3.297-2.957 0-4.397 3.162-4.457 3.297-.092.207-.032.449.145.591.175.142.426.147.61.014.012-.009 1.262-.902 3.702-.902 2.426 0 3.674.881 3.702.901.088.066.194.099.298.099.11 0 .221-.037.312-.109.177-.142.238-.386.145-.594zm-12 0c-.06-.135-1.499-3.297-4.457-3.297-2.957 0-4.397 3.162-4.457 3.297-.092.207-.032.449.144.591.176.142.427.147.61.014.013-.009 1.262-.902 3.703-.902 2.426 0 3.674.881 3.702.901.088.066.194.099.298.099.11 0 .221-.037.312-.109.178-.142.237-.386.145-.594zM18 22c-3.623 0-6.027-.422-9-1-.679-.131-2 0-2 2 0 4 4.595 9 11 9 6.404 0 11-5 11-9 0-2-1.321-2.132-2-2-2.973.578-5.377 1-9 1z'/><path fill='#FFF' d='M9 23s3 1 9 1 9-1 9-1-2 4-9 4-9-4-9-4z'/></svg></button>
+          <button class="mood-btn" data-mood="1">😞</button>
+          <button class="mood-btn" data-mood="2">😕</button>
+          <button class="mood-btn" data-mood="3">😐</button>
+          <button class="mood-btn" data-mood="4">🙂</button>
+          <button class="mood-btn" data-mood="5">😄</button>
         </div>
         <input class="mood-note" id="moodNote" placeholder="今天的心情（可选）…" maxlength="80">
         <button class="mood-save" id="moodSave">记录今日心情</button>
@@ -960,6 +959,8 @@
 <!-- bottom nav -->
 <div class="nav">
   <button class="active" data-page="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10.5V19h12v-8.5"/><path d="M10 19v-5h4v5"/></svg></span>主页</button>
+  <button data-page="xiguang"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5Z"/><path d="M18.6 14.4c.3 1.7.8 2.2 2.4 2.6-1.6.4-2.1.9-2.4 2.6-.3-1.7-.8-2.2-2.4-2.6 1.6-.4 2.1-.9 2.4-2.6Z"/></svg></span>隙光</button>
+  <button data-page="chat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1.4"/><circle cx="12" cy="13.5" r="1.4"/><circle cx="18" cy="8" r="1.4"/><path d="M7.3 7.7 10.7 12.8M13.3 13.2 16.7 8.3"/></svg></span>列宿</button>
   
   
 </div>
@@ -1472,6 +1473,7 @@ document.querySelectorAll(".nav button").forEach(b=>{
     b.classList.add("active");
     const p=b.dataset.page;
     document.getElementById("page-home").classList.toggle("active",p==="home");
+    var tb=document.querySelector(".topbar");if(tb)tb.style.display=p==="home"?"":"none";
     document.getElementById("page-xiguang").classList.toggle("active",p==="xiguang");
     document.getElementById("page-chat").classList.toggle("active",p==="chat");
     document.getElementById("page-sichen").classList.toggle("active",false);
@@ -2356,6 +2358,7 @@ const PLANS_TABLE = "sichen_plans";
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 function goSichen(){
+  var tb=document.querySelector(".topbar");if(tb)tb.style.display="none";
   ["page-home","page-xiguang","page-chat","page-agent"].forEach(id=>document.getElementById(id).classList.remove("active"));
   document.getElementById("page-sichen").classList.add("active");
   window.scrollTo(0,0);
@@ -3023,6 +3026,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v93</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v94</div>
 </body>
 </html>
