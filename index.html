@@ -876,7 +876,7 @@
         </div>
         <canvas class="trend-chart" id="trendChart"></canvas>
         <div class="trend-legend">
-          <span><i style="background:var(--sichen)"></i>学习打卡</span>
+          <span><i style="background:var(--sichen-data)"></i>学习打卡</span>
           <span><i style="background:var(--yinjian)"></i>阅读打卡</span>
           <span><i style="background:var(--checkin)"></i>专注时长</span>
           <span><i style="background:var(--xiguang)"></i>情绪</span>
@@ -2833,7 +2833,7 @@ function trendRender(){
   var pad=12,bw=(W-pad*2)/days;
   ctx.strokeStyle="#e7e4ef";ctx.lineWidth=1;
   for(var i=0;i<=4;i++){var y=pad+(H-pad*2)*i/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke()}
-  ctx.fillStyle="#6a7a8a";
+  ctx.fillStyle="#7a9a8a";
   study.forEach(function(v,i){if(v){var x=pad+i*bw+bw*0.15;var bh=(H-pad*2)*0.3;ctx.fillRect(x,H-pad-bh,bw*0.7,bh)}});
   ctx.fillStyle="#d4ad5e";
   read.forEach(function(v,i){if(v){var x=pad+i*bw+bw*0.15;var bh=(H-pad*2)*0.2;ctx.fillRect(x,H-pad-bh-50,bw*0.7,bh)}});
@@ -3052,6 +3052,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v74</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v75</div>
 </body>
 </html>
