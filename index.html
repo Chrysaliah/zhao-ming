@@ -1506,7 +1506,6 @@ function renderCheckin(){
     if(c[key]?.study){ streak++; d.setDate(d.getDate()-1); } else break;
   }
   document.getElementById("streakLine").innerHTML = streak>0 ? `🔥 连续学习 <b>${streak}</b> 天` : `还没开始打卡，今天动一下`;
-
 }
 /* 打卡提醒：顶部下滑通知弹窗（点图标直接打卡，✕ 关闭本会话不再弹） */
 
@@ -1518,7 +1517,6 @@ function getStreakCount(){
   }
   return s;
 }
-
 
 /* ---------- Push 通知订阅 ---------- */
 const VAPID_PUBLIC_KEY="BEZ0Y2xrXjLO00BMdRXWytbkP2qOLDamQF2nswBYGWwCZgpjO7oUnepPdA-2gPp8t118VVHH9apnRI-aCCneYEQ";
@@ -3027,7 +3025,5 @@ if ("serviceWorker" in navigator) {
 </script>
 <div class="rd-banner" id="rdBanner"></div>
 
-<!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v94</div>
 </body>
 </html>
