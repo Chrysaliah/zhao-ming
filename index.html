@@ -496,7 +496,7 @@
 .todo-tag-chip{font-size:11px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:3px 8px;cursor:pointer;color:var(--muted);}
 .todo-tag-chip.active{background:var(--teal);color:#fff;}
 /* ===== 快捷打卡 ===== */
-.quick-ck{position:fixed;bottom:80px;right:14px;z-index:40;background:var(--teal);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;}
+.quick-ck{position:fixed;bottom:80px;right:14px;z-index:40;background:var(--teal);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);display:none;align-items:center;justify-content:center;}
 .quick-ck:active{transform:scale(.9);}
 .quick-ck-panel{position:fixed;bottom:136px;right:14px;z-index:40;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 4px 18px rgba(0,0,0,.12);display:none;width:200px;}
 .quick-ck-panel.show{display:block;}
@@ -3002,7 +3002,7 @@ async function autoSnapshot(){
 /* ===== 初始化 ===== */
 function initAllNewFeatures(){
   fcInit();moodInit();trendInit();xgSearchInit();xgImgInit();xgTmplInit();
-  yjProgressInit();goalInit();quickCkInit();bodyInit();
+  yjProgressInit();goalInit();quickCkInit();var _qck=document.getElementById("quickCkBtn");if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("quickCkBtn");if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("quickCkBtn");if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("quickCkBtn");if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("quickCkBtn");if(_qck){_qck.style.display="flex";}bodyInit();
   var xgBtn=document.getElementById("xgSendBtn");
   if(xgBtn) xgBtn.onclick=xgSmartSend;
   setInterval(autoSnapshot,300000)
