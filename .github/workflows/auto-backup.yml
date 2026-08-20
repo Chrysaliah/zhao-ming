@@ -1,0 +1,15 @@
+name: Weekly Backup Reminder
+on:
+  schedule:
+    - cron: '0 12 * * 0'
+  workflow_dispatch:
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send backup reminder
+        run: |
+          curl -H "Priority: high" \
+               -H "Title: 拾光周备份提醒" \
+               -d "该备份了！打开拾光 → 数据备份 → 导出备份。每周一次，换手机也不怕。" \
+               https://ntfy.sh/ruozhao-reminders-2026
