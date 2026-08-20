@@ -568,7 +568,19 @@
   </div>
 
   <div class="card">
+    <div class="sec-title">目标拆解</div>
+    <div class="goal-tree" id="goalTree"></div>
+    <div class="goal-add">
+      <input id="goalInput" placeholder="添加目标/任务…" autocomplete="off">
+      <select id="goalLevel"><option value="l2">学科级</option><option value="l3">章节级</option></select>
+      <button id="goalAddBtn">＋</button>
+    </div>
+    <div class="goal-note" style="margin-top:6px">287 → 550 → 600 · 拆到每天可执行</div>
+  </div>
+
+  <div class="card">
     <div class="sec-title">待办任务</div>
+    <div class="todo-tag-filter" id="todoTagFilter"></div>
     <div class="sc-list" id="todoList"></div>
   </div>
 
@@ -694,6 +706,17 @@
     <div class="roster" id="roster"></div>
   </div>
 
+  <div class="card">
+    <div class="sec-title">体态追踪</div>
+    <div class="body-input-row">
+      <input class="wt" id="bodyWt" type="number" inputmode="decimal" placeholder="体重kg" autocomplete="off">
+      <input class="pt" id="bodyPt" type="text" placeholder="体态备注（如：驼背改善）" autocomplete="off">
+      <button id="bodyAddBtn">＋</button>
+    </div>
+    <canvas class="body-chart" id="bodyChart"></canvas>
+    <div class="body-empty" id="bodyEmpty">记录体重和体态变化，折线图展示趋势</div>
+  </div>
+
   <details class="card backup-details" style="margin-top:12px;">
     <summary class="sec-title backup-summary">数据备份</summary>
     <div class="backup-tip">本机数据（打卡/聊天/阅读/记账/拾单/待办/伙伴记录）导出成文件，换手机或清缓存前先备一份。</div>
@@ -749,6 +772,58 @@
       <div class="sc-prog-note" id="scProgNote"></div>
     </div>
     <div class="sc-block">
+      <div class="sc-bt">专注计时器</div>
+      <div class="fc-block">
+        <div class="fc-mode-row">
+          <button class="fc-mode-btn active" data-mode="countdown" id="fcModeDown">倒计时</button>
+          <button class="fc-mode-btn" data-mode="countup" id="fcModeUp">正计时</button>
+        </div>
+        <div class="fc-display" id="fcDisplay">25:00</div>
+        <div class="fc-controls">
+          <button class="fc-btn start" id="fcStart">▶</button>
+          <button class="fc-btn reset" id="fcReset">↺</button>
+        </div>
+        <div class="fc-dur-row" id="fcDurRow">
+          <button class="fc-dur-btn active" data-dur="1500">25分</button>
+          <button class="fc-dur-btn" data-dur="3000">50分</button>
+          <button class="fc-dur-btn" data-dur="600">10分</button>
+          <button class="fc-dur-btn" data-dur="1800">30分</button>
+        </div>
+        <div class="fc-stats" id="fcStats">今日专注 <b id="fcTodayMin">0</b> 分钟 · 累计 <b id="fcTotalMin">0</b> 分钟</div>
+      </div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">情绪追踪</div>
+      <div class="mood-block">
+        <div class="mood-row" id="moodRow">
+          <button class="mood-btn" data-mood="1">😞</button>
+          <button class="mood-btn" data-mood="2">😕</button>
+          <button class="mood-btn" data-mood="3">😐</button>
+          <button class="mood-btn" data-mood="4">🙂</button>
+          <button class="mood-btn" data-mood="5">😄</button>
+        </div>
+        <input class="mood-note" id="moodNote" placeholder="今天的心情（可选）…" maxlength="80">
+        <button class="mood-save" id="moodSave">记录今日心情</button>
+        <div class="mood-saved" id="moodSaved" style="display:none">✓ 已记录</div>
+      </div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">学习趋势</div>
+      <div class="trend-block">
+        <div class="trend-tabs" id="trendTabs">
+          <button class="trend-tab active" data-trend="week">本周</button>
+          <button class="trend-tab" data-trend="month">本月</button>
+        </div>
+        <canvas class="trend-chart" id="trendChart"></canvas>
+        <div class="trend-legend">
+          <span><i style="background:var(--sichen)"></i>学习打卡</span>
+          <span><i style="background:var(--yinjian)"></i>阅读打卡</span>
+          <span><i style="background:var(--checkin)"></i>专注时长</span>
+          <span><i style="background:var(--xiguang)"></i>情绪</span>
+        </div>
+      </div>
+    </div>
+    <div class="sc-block">
       <div class="sc-bt">打卡日历</div>
       <div class="cal-head">
         <div class="cal-nav"><button id="calPrev">‹</button></div>
@@ -802,7 +877,13 @@
       </div>
     </div>
     <div class="xg-notes" id="xgNotes"></div>
-    <div class="xg-input">
+    <div class="xg-tmpl-row" id="xgTmplRow">
+          <button class="xg-tmpl" data-tmpl="今日思考：">思考</button>
+          <button class="xg-tmpl" data-tmpl="灵感：">灵感</button>
+          <button class="xg-tmpl" data-tmpl="待办：">待办</button>
+          <button class="xg-tmpl" data-tmpl="记账：">记账</button>
+        </div>
+      <div class="xg-input">
       <textarea id="xgInput" rows="1" placeholder="写点碎碎念…（自动按内容分类）" autocomplete="off"></textarea>
       <button class="xg-img-btn" id="xgImgBtn">📷</button>
       <button class="send" id="xgSendBtn">↑</button>
@@ -1139,7 +1220,7 @@ function renderXgFilter(){
 
 function makeXgCard(n){
   const d = document.createElement("div");
-  d.className = "xg-card";
+  d.className = "xg-card" + (xgPinRead().includes(n.id) ? " pinned" : "");
   d.dataset.id = n.id;
   const you = document.createElement("div"); you.className="you"; you.textContent = n.content || "";
   d.appendChild(you);
@@ -1150,11 +1231,12 @@ function makeXgCard(n){
   tag.title="点此改分类";
   tag.onclick = (e)=>{ e.stopPropagation(); openReassign(n.id, cat); };
   const acts = document.createElement("span"); acts.className="xg-actions";
+  const pinBtn = document.createElement("button"); pinBtn.className="xg-pin"+(xgPinRead().includes(n.id)?" on":""); pinBtn.textContent="📌"; pinBtn.onclick=(e)=>{e.stopPropagation();xgTogglePin(n.id)};
   const editBtn = document.createElement("button"); editBtn.className="xg-act"; editBtn.textContent="改";
   editBtn.onclick=(e)=>{ e.stopPropagation(); startEdit(n); };
   const delBtn = document.createElement("button"); delBtn.className="xg-act"; delBtn.textContent="删";
   delBtn.onclick=(e)=>{ e.stopPropagation(); delNote(n.id); };
-  acts.appendChild(editBtn); acts.appendChild(delBtn);
+  acts.appendChild(pinBtn); acts.appendChild(editBtn); acts.appendChild(delBtn);
   const tm = document.createElement("span"); tm.className="xg-time";
   tm.textContent = n.ts ? new Date(n.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "";
   meta.appendChild(tag); meta.appendChild(tm); meta.appendChild(acts);
@@ -1183,7 +1265,7 @@ function emptyMsg(){
 function renderXgFrom(notes){
   xgCache = notes || [];
   xgNotesEl.innerHTML = "";
-  let list = xgCache.slice();
+  let list = xgCache.slice().sort(function(a,b){var pa=xgPinRead().includes(a.id)?1:0,pb=xgPinRead().includes(b.id)?1:0;return pb-pa});
   if(xgSearch.trim()){
     const q = xgSearch.trim().toLowerCase();
     list = list.filter(n=> (n.content||"").toLowerCase().includes(q));
@@ -1895,7 +1977,7 @@ document.getElementById("rdToday").addEventListener("click", e=>{
     const ta=document.getElementById("rdNoteInput");
     saved.done=true; if(!saved.time) saved.time=nowHM();
     saved.note=ta?ta.value.trim():"";
-    setRd(r.date,saved); rdEditMode=false; renderReading(); updateStreak();
+    setRd(r.date,saved); rdEditMode=false; renderReading(); updateStreak(); yjSyncToXg(saved.note);
     return;
   }
   if(e.target.closest("#rdNoteCancel")){ rdEditMode=false; renderReading(); return; }
@@ -2896,6 +2978,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW 注册失败:", e));
   });
+  initAllNewFeatures();
 }
 </script>
 <div class="rd-banner" id="rdBanner"></div>
