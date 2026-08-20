@@ -432,6 +432,93 @@
 .backup-details > summary::after{content:"▸";margin-left:auto;font-size:12px;color:var(--silver-deep);transition:transform .2s;}
 .backup-details[open] > summary::after{transform:rotate(90deg);}
 .backup-details[open] > summary{margin-bottom:8px;}
+
+/* ===== 专注计时器 ===== */
+.fc-block{margin-top:12px;}
+.fc-mode-row{display:flex;gap:8px;margin-bottom:12px;}
+.fc-mode-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;font-size:13px;font-family:inherit;cursor:pointer;color:var(--muted);transition:.15s;}
+.fc-mode-btn.active{background:var(--sichen);color:#fff;border-color:var(--sichen);}
+.fc-display{text-align:center;font-size:42px;font-weight:700;color:var(--sichen);font-variant-numeric:tabular-nums;letter-spacing:2px;padding:10px 0;}
+.fc-controls{display:flex;gap:8px;justify-content:center;}
+.fc-btn{border:none;border-radius:50%;width:52px;height:52px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.fc-btn.start{background:var(--sichen);color:#fff;}
+.fc-btn.pause{background:var(--warn);color:#fff;}
+.fc-btn.reset{background:#eee;color:var(--muted);}
+.fc-btn:active{transform:scale(.92);}
+.fc-dur-row{display:flex;gap:6px;justify-content:center;margin-top:10px;}
+.fc-dur-btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--muted);}
+.fc-dur-btn.active{background:var(--sichen);color:#fff;border-color:var(--sichen);}
+.fc-stats{display:flex;gap:12px;justify-content:center;margin-top:10px;font-size:12px;color:var(--muted);}
+.fc-stats b{color:var(--sichen);font-size:15px;}
+/* ===== 情绪追踪 ===== */
+.mood-block{margin-top:12px;}
+.mood-row{display:flex;gap:6px;justify-content:center;margin:10px 0;}
+.mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
+.mood-btn.active{border-width:2px;}
+.mood-btn:active{transform:scale(.92);}
+.mood-note{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:40px;background:#fff;margin-top:8px;}
+.mood-save{margin-top:8px;border:none;background:var(--sichen);color:#fff;border-radius:9px;padding:8px 16px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;}
+.mood-saved{text-align:center;color:var(--ok);font-size:12px;margin-top:6px;}
+/* ===== 趋势图 ===== */
+.trend-block{margin-top:12px;}
+.trend-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.trend-tab{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--muted);}
+.trend-tab.active{background:var(--sichen);color:#fff;border-color:var(--sichen);}
+.trend-chart{width:100%;height:160px;}
+.trend-legend{display:flex;gap:12px;justify-content:center;font-size:11px;color:var(--muted);margin-top:6px;flex-wrap:wrap;}
+.trend-legend span{display:flex;align-items:center;gap:4px;}
+.trend-legend i{width:10px;height:3px;border-radius:2px;display:inline-block;}
+/* ===== 隙光增强 ===== */
+.xg-tmpl-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.xg-tmpl{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--muted);font-family:inherit;}
+.xg-tmpl:active{transform:scale(.94);}
+.xg-img-btn{border:none;background:transparent;color:var(--xiguang);font-size:18px;cursor:pointer;padding:0 4px;flex:0 0 auto;}
+.xg-card.pinned{order:-1;border-left:3px solid var(--xiguang);}
+.xg-pin{border:none;background:transparent;font-size:13px;cursor:pointer;padding:0 2px;color:var(--muted);}
+.xg-pin.on{color:var(--xiguang);}
+.xg-thumb{width:100%;border-radius:8px;margin-top:6px;max-height:200px;object-fit:cover;}
+/* ===== 目标拆解 ===== */
+.goal-tree{margin-top:8px;}
+.goal-node{margin-left:0;}
+.goal-l1{font-weight:700;font-size:13px;color:var(--teal);margin-bottom:4px;}
+.goal-l2{margin-left:14px;font-size:12.5px;color:var(--ink);margin-bottom:3px;}
+.goal-l3{margin-left:28px;font-size:12px;color:var(--muted);margin-bottom:2px;}
+.goal-bar{height:4px;background:var(--line);border-radius:2px;margin-top:2px;overflow:hidden;}
+.goal-bar-fill{height:100%;background:var(--teal);border-radius:2px;}
+.goal-add{display:flex;gap:6px;margin-top:8px;}
+.goal-add input,.goal-add select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;font-family:inherit;background:#fff;}
+.goal-add input{flex:1;}
+.goal-add button{border:none;background:var(--teal);color:#fff;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;flex:0 0 auto;}
+/* ===== 任务标签 ===== */
+.todo-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
+.todo-tag{font-size:10px;background:var(--line);color:var(--muted);border-radius:6px;padding:1px 6px;}
+.todo-tag-filter{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.todo-tag-chip{font-size:11px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:3px 8px;cursor:pointer;color:var(--muted);}
+.todo-tag-chip.active{background:var(--teal);color:#fff;}
+/* ===== 快捷打卡 ===== */
+.quick-ck{position:fixed;bottom:80px;right:14px;z-index:40;background:var(--teal);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;}
+.quick-ck:active{transform:scale(.9);}
+.quick-ck-panel{position:fixed;bottom:136px;right:14px;z-index:40;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 4px 18px rgba(0,0,0,.12);display:none;width:200px;}
+.quick-ck-panel.show{display:block;}
+.quick-ck-panel .qck-item{display:flex;align-items:center;gap:8px;padding:8px 4px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--line);}
+.quick-ck-panel .qck-item:last-child{border:none;}
+.quick-ck-panel .qck-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.quick-ck-panel .qck-done{text-decoration:line-through;color:var(--muted);}
+/* ===== 体重追踪 ===== */
+.body-card{margin-top:12px;}
+.body-input-row{display:flex;gap:7px;align-items:center;}
+.body-input-row input{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:13px;font-family:inherit;background:#fff;}
+.body-input-row .wt{width:72px;}
+.body-input-row .pt{flex:1;}
+.body-input-row button{border:none;background:var(--teal);color:#fff;border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;flex:0 0 auto;}
+.body-chart{width:100%;height:80px;margin-top:8px;}
+.body-empty{text-align:center;font-size:12px;color:var(--muted);padding:10px 0;}
+/* ===== 数据备份折叠 ===== */
+.backup-card summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--teal);list-style:none;display:flex;align-items:center;gap:6px;}
+.backup-card summary::before{content:"";width:4px;height:13px;background:var(--teal);border-radius:2px;}
+.backup-card summary::-webkit-details-marker{display:none;}
+.backup-card[open] summary{margin-bottom:8px;}
+
 </style>
 </head>
 <body>
@@ -499,6 +586,7 @@
     <div class="sec-title">银简 <span class="yj-streak" id="yjStreak">连续 0 天</span></div>
 
     <div id="rdToday"></div>
+    <div class="yj-progress" id="yjProgress" style="margin-top:6px;font-size:11px;color:var(--muted);"></div>
 
     <div class="yj-actions">
       <button class="yj-act-btn" id="openYuehen">
@@ -616,6 +704,15 @@
     </div>
   </details>
 
+  
+<button class="quick-ck" id="quickCkBtn">✓</button>
+<div class="quick-ck-panel" id="quickCkPanel">
+  <div class="qck-item" data-ck="study"><span class="qck-dot" style="background:var(--checkin)"></span>学习打卡</div>
+  <div class="qck-item" data-ck="sleep"><span class="qck-dot" style="background:var(--checkin)"></span>睡眠达标</div>
+  <div class="qck-item" data-ck="exercise"><span class="qck-dot" style="background:var(--checkin)"></span>运动打卡</div>
+  <div class="qck-item" data-ck="read"><span class="qck-dot" style="background:var(--yinjian)"></span>阅读打卡</div>
+</div>
+
   <div class="footnote">拾光 · Chrysaliah 的个人运营系统</div>
 </div>
 
@@ -707,6 +804,7 @@
     <div class="xg-notes" id="xgNotes"></div>
     <div class="xg-input">
       <textarea id="xgInput" rows="1" placeholder="写点碎碎念…（自动按内容分类）" autocomplete="off"></textarea>
+      <button class="xg-img-btn" id="xgImgBtn">📷</button>
       <button class="send" id="xgSendBtn">↑</button>
     </div>
   </div>
@@ -2061,7 +2159,7 @@ loadList();
 
 
 /* ---------- 数据备份（本机导出/导入） ---------- */
-const BACKUP_PREFIXES=["checkin","yj_chat_v1","yj_rd_v2_","yj_fin_v1","yj_list_v1","yj_todos_v1","yj_agent_log_v1_"];
+const BACKUP_PREFIXES=["checkin","yj_chat_v1","yj_rd_v2_","yj_fin_v1","yj_list_v1","yj_todos_v1","yj_agent_log_v1_","yj_focus_v1","yj_mood_v1","yj_body_v1","yj_goals_v1","yj_todo_tags_v1","yj_xg_pinned_v1"];
 function collectBackup(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(BACKUP_PREFIXES.some(p=>k.startsWith(p))) o[k]=localStorage.getItem(k); } return o; }
 function exportBackup(){ const d=collectBackup(); const b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"}); const a=document.createElement("a"); const ts=new Date().toISOString().slice(0,16).replace(/[:T]/g,""); a.href=URL.createObjectURL(b); a.download=`拾光备份_${ts}.json`; a.click(); URL.revokeObjectURL(a.href); }
 function importBackup(file){ const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); Object.keys(d).forEach(k=>localStorage.setItem(k,d[k])); alert("导入成功，即将刷新应用备份。"); location.reload(); }catch(e){ alert("导入失败：文件格式不对。"); } }; r.readAsText(file); }
@@ -2487,6 +2585,311 @@ if(sb){
 
 /* ---------- 闪屏隐藏 ---------- */
 window.addEventListener("load", function(){ setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 1200); });
+
+/* ===== 专注计时器 ===== */
+const FOCUS_KEY="yj_focus_v1";
+function focusRead(){try{return JSON.parse(localStorage.getItem(FOCUS_KEY)||"[]")}catch(e){return[]}}
+function focusWrite(a){try{localStorage.setItem(FOCUS_KEY,JSON.stringify(a))}catch(e){}}
+let fcMode="countdown",fcDur=1500,fcRemain=1500,fcRunning=false,fcTimer=null;
+function fcFmt(s){var m=Math.floor(s/60),ss=s%60;return String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0")}
+function fcUpdateDisplay(){var el=document.getElementById("fcDisplay");if(!el)return;el.textContent=fcFmt(fcMode==="countdown"?fcRemain:fcRemain)}
+function fcStart(){
+  if(fcRunning){clearInterval(fcTimer);fcRunning=false;document.getElementById("fcStart").textContent="\u25B6";return}
+  fcRunning=true;document.getElementById("fcStart").textContent="\u23F8";
+  if(fcMode==="countdown"&&fcRemain<=0)fcRemain=fcDur;
+  fcTimer=setInterval(function(){
+    if(fcMode==="countdown"){
+      fcRemain--;if(fcRemain<=0){fcRemain=0;clearInterval(fcTimer);fcRunning=false;document.getElementById("fcStart").textContent="\u25B6";fcRecord();if(navigator.vibrate)navigator.vibrate([100,50,100])}
+    }else{fcRemain++}
+    fcUpdateDisplay()
+  },1000)
+}
+function fcReset(){clearInterval(fcTimer);fcRunning=false;document.getElementById("fcStart").textContent="\u25B6";fcRemain=fcMode==="countdown"?fcDur:0;fcUpdateDisplay()}
+function fcRecord(){
+  var min=Math.round((fcMode==="countdown"?fcDur:fcRemain)/60);
+  if(min<=0)return;
+  var a=focusRead();a.push({date:todayStr(),mode:fcMode,duration:min,ts:Date.now()});focusWrite(a.slice(-500));fcUpdateStats()
+}
+function fcUpdateStats(){
+  var a=focusRead();var today=todayStr();
+  var tm=a.filter(function(x){return x.date===today}).reduce(function(s,x){return s+x.duration},0);
+  var total=a.reduce(function(s,x){return s+x.duration},0);
+  var tmEl=document.getElementById("fcTodayMin"),totEl=document.getElementById("fcTotalMin");
+  if(tmEl)tmEl.textContent=tm;if(totEl)totEl.textContent=total
+}
+function fcInit(){
+  var md=document.getElementById("fcModeDown"),mu=document.getElementById("fcModeUp");
+  if(!md)return;
+  md.onclick=function(){fcMode="countdown";fcRemain=fcDur;md.classList.add("active");mu.classList.remove("active");fcUpdateDisplay()};
+  mu.onclick=function(){fcMode="countup";fcRemain=0;mu.classList.add("active");md.classList.remove("active");fcUpdateDisplay()};
+  document.getElementById("fcDurRow").querySelectorAll(".fc-dur-btn").forEach(function(b){
+    b.onclick=function(){document.querySelectorAll(".fc-dur-btn").forEach(function(x){x.classList.remove("active")});b.classList.add("active");fcDur=parseInt(b.dataset.dur);if(fcMode==="countdown")fcRemain=fcDur;fcUpdateDisplay()}
+  });
+  document.getElementById("fcStart").onclick=fcStart;
+  document.getElementById("fcReset").onclick=fcReset;
+  fcRemain=fcDur;fcUpdateDisplay();fcUpdateStats()
+}
+/* ===== 情绪追踪 ===== */
+const MOOD_KEY="yj_mood_v1";
+function moodRead(){try{return JSON.parse(localStorage.getItem(MOOD_KEY)||"{}")}catch(e){return{}}}
+function moodWrite(o){try{localStorage.setItem(MOOD_KEY,JSON.stringify(o))}catch(e){}}
+function moodInit(){
+  var row=document.getElementById("moodRow");if(!row)return;
+  var data=moodRead()[todayStr()];
+  var selMood=data?data.mood:0;
+  row.querySelectorAll(".mood-btn").forEach(function(b){
+    var m=parseInt(b.dataset.mood);
+    if(m===selMood)b.classList.add("active");
+    var colors=["#c2703f","#cf9a4e","#8a9a98","#6f9079","#3f8a6d"];
+    b.onclick=function(){
+      selMood=m;row.querySelectorAll(".mood-btn").forEach(function(x){x.classList.remove("active");x.style.borderColor=""});
+      b.classList.add("active");b.style.borderColor=colors[m-1]
+    }
+  });
+  if(data&&data.note)document.getElementById("moodNote").value=data.note;
+  document.getElementById("moodSave").onclick=function(){
+    if(!selMood){alert("先选一个心情");return}
+    var note=document.getElementById("moodNote").value.trim();
+    var all=moodRead();all[todayStr()]={mood:selMood,note:note,ts:Date.now()};moodWrite(all);
+    document.getElementById("moodSaved").style.display="block";
+    setTimeout(function(){var el=document.getElementById("moodSaved");if(el)el.style.display="none"},2000)
+  }
+}
+function moodTrendData(days){
+  var all=moodRead();var arr=[];
+  for(var i=days-1;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");var m=all[ds];arr.push(m?m.mood:0)}
+  return arr
+}
+/* ===== 趋势图 ===== */
+function trendInit(){
+  var tabs=document.getElementById("trendTabs");if(!tabs)return;
+  tabs.querySelectorAll(".trend-tab").forEach(function(t){t.onclick=function(){tabs.querySelectorAll(".trend-tab").forEach(function(x){x.classList.remove("active")});t.classList.add("active");trendRender()}});
+  trendRender()
+}
+function trendRender(){
+  var cv=document.getElementById("trendChart");if(!cv)return;
+  var ctx=cv.getContext("2d");var w=cv.width=cv.offsetWidth*2,h=cv.height=cv.offsetHeight*2;ctx.scale(2,2);
+  var W=w/2,H=h/2;ctx.clearRect(0,0,W,H);
+  var active=document.querySelector(".trend-tab.active");
+  var days=active&&active.dataset.trend==="week"?7:30;
+  var labels=[];
+  for(var i=days-1;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);labels.push((d.getMonth()+1)+"/"+d.getDate())}
+  var study=[],read=[];
+  for(var i=days-1;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");var c=checkinCache[ds]||{};study.push(c.study?1:0);read.push(c.read?1:0)}
+  var fa=focusRead();var focus=[];
+  for(var i=days-1;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");var min=fa.filter(function(x){return x.date===ds}).reduce(function(s,x){return s+x.duration},0);focus.push(min)}
+  var maxFocus=Math.max.apply(null,focus.concat([60]));
+  var moods=moodTrendData(days);
+  var pad=12,bw=(W-pad*2)/days;
+  ctx.strokeStyle="#e7e4ef";ctx.lineWidth=1;
+  for(var i=0;i<=4;i++){var y=pad+(H-pad*2)*i/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke()}
+  ctx.fillStyle="#6a7a8a";
+  study.forEach(function(v,i){if(v){var x=pad+i*bw+bw*0.15;var bh=(H-pad*2)*0.3;ctx.fillRect(x,H-pad-bh,bw*0.7,bh)}});
+  ctx.fillStyle="#d4ad5e";
+  read.forEach(function(v,i){if(v){var x=pad+i*bw+bw*0.15;var bh=(H-pad*2)*0.2;ctx.fillRect(x,H-pad-bh-50,bw*0.7,bh)}});
+  ctx.strokeStyle="#6f9079";ctx.lineWidth=2;ctx.beginPath();
+  focus.forEach(function(v,i){var x=pad+i*bw+bw/2;var y=H-pad-(v/maxFocus)*(H-pad*2)*0.8;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
+  ctx.strokeStyle="#c29aa6";ctx.lineWidth=2;ctx.setLineDash([3,3]);ctx.beginPath();
+  moods.forEach(function(v,i){if(v){var x=pad+i*bw+bw/2;var y=pad+(H-pad*2)*(1-v/5);if(i===0||!moods[i-1])ctx.moveTo(x,y);else ctx.lineTo(x,y)}});ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle="#7a7686";ctx.font="10px sans-serif";ctx.textAlign="center";
+  var step=Math.ceil(days/7);
+  labels.forEach(function(l,i){if(i%step===0)ctx.fillText(l,pad+i*bw+bw/2,H-2)})
+}
+/* ===== 隙光搜索 ===== */
+function xgSearchInit(){
+  var inp=document.getElementById("xgSearch");if(!inp)return;
+  inp.addEventListener("input",function(e){xgSearch=e.target.value;renderXgFrom(xgCache)})
+}
+/* ===== 隙光图片上传 ===== */
+var XG_IMG_DB="longming-img";var XG_IMG_STORE="images";
+function xgImgIDB(){
+  return new Promise(function(resolve,reject){
+    var r=indexedDB.open(XG_IMG_DB,1);
+    r.onupgradeneeded=function(e){e.target.result.createObjectStore(XG_IMG_STORE,{keyPath:"id"})};
+    r.onsuccess=function(e){resolve(e.target.result)};r.onerror=reject
+  })
+}
+async function xgSaveImg(id,dataURL){
+  try{var db=await xgImgIDB();var tx=db.transaction([XG_IMG_STORE],"readwrite");tx.objectStore(XG_IMG_STORE).put({id:id,dataURL:dataURL});return true}catch(e){return false}
+}
+async function xgGetImg(id){
+  try{var db=await xgImgIDB();return new Promise(function(r){var tx=db.transaction([XG_IMG_STORE],"readonly");var req=tx.objectStore(XG_IMG_STORE).get(id);req.onsuccess=function(){r(req.result?req.result.dataURL:null)};req.onerror=function(){r(null)}})}catch(e){return null}
+}
+function xgCompressImg(file){
+  return new Promise(function(r){
+    var reader=new FileReader();reader.onload=function(){
+      var img=new Image();img.onload=function(){
+        var cv=document.createElement("canvas");var maxW=800;var w=img.width,h=img.height;
+        if(w>maxW){h=h*maxW/w;w=maxW}
+        cv.width=w;cv.height=h;var ctx=cv.getContext("2d");ctx.drawImage(img,0,0,w,h);
+        r(cv.toDataURL("image/jpeg",0.6))
+      };img.src=reader.result
+    };reader.readAsDataURL(file)
+  })
+}
+async function xgImgInit(){
+  var btn=document.getElementById("xgImgBtn");if(!btn)return;
+  var fileInput=document.createElement("input");fileInput.type="file";fileInput.accept="image/*";fileInput.capture="environment";fileInput.style.display="none";document.body.appendChild(fileInput);
+  btn.onclick=function(){fileInput.click()};
+  fileInput.onchange=async function(){
+    if(!fileInput.files[0])return;var dataURL=await xgCompressImg(fileInput.files[0]);
+    var ta=document.getElementById("xgInput");ta.value="[图片]";ta.dataset.img=dataURL;
+    fileInput.value=""
+  }
+}
+/* ===== 隙光置顶 ===== */
+var XG_PIN_KEY="yj_xg_pinned_v1";
+function xgPinRead(){try{return JSON.parse(localStorage.getItem(XG_PIN_KEY)||"[]")}catch(e){return[]}}
+function xgPinWrite(a){try{localStorage.setItem(XG_PIN_KEY,JSON.stringify(a))}catch(e){}}
+function xgTogglePin(id){var a=xgPinRead();var i=a.indexOf(id);if(i>=0)a.splice(i,1);else a.push(id);xgPinWrite(a);renderXgFrom(xgCache)}
+/* ===== 隙光快速模板 ===== */
+function xgTmplInit(){
+  var row=document.getElementById("xgTmplRow");if(!row)return;
+  row.querySelectorAll(".xg-tmpl").forEach(function(b){b.onclick=function(){var ta=document.getElementById("xgInput");ta.value=b.dataset.tmpl;ta.focus()}})
+}
+/* ===== 隙光智能解析 ===== */
+function xgParse(text){
+  var timeRe=/(明天|后天|今天|大后天|\d{1,2}号)\s*(上午|下午|晚上|早[上晨])?\s*(\d{1,2})\s*[点时:](\d{1,2})?/;
+  var moneyRe=/(\d+(?:\.\d+)?)\s*[元块]/;
+  if(timeRe.test(text))return{type:"todo",text:text};
+  var mm=text.match(moneyRe);
+  if(mm)return{type:"fin",amount:parseFloat(mm[1]),text:text};
+  return{type:"note"}
+}
+async function xgSmartSend(){
+  var ta=document.getElementById("xgInput");var text=ta.value.trim();if(!text)return;
+  var imgData=ta.dataset.img||"";
+  var cleanText=text.replace("[图片]","").trim();
+  var parsed=xgParse(cleanText);
+  if(parsed.type==="todo"&&sb){
+    await sb.from(PLANS_TABLE).insert({content:parsed.text,done:false,ts:Date.now()});
+    ta.value="";ta.style.height="auto";delete ta.dataset.img;
+    showRdBanner("\u2713 已加入待办："+parsed.text);return
+  }
+  if(parsed.type==="fin"){
+    var a=getFin();a.push({id:Date.now(),type:"expense",amount:parsed.amount,note:parsed.text,cat:"其他",nature:"消费",date:todayStr(),ts:Date.now()});setFin(a);
+    ta.value="";ta.style.height="auto";delete ta.dataset.img;
+    showRdBanner("\u2713 已记账："+parsed.amount+"元");return
+  }
+  if(xgEditId){var id=xgEditId;if(sb){await sb.from(XG_TABLE).update({content:text}).eq("id",id)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0)xgLocal[i].content=text}cancelEdit();renderXg();return}
+  var ts=Date.now();var cat=classifyXg(cleanText);ta.value="";ta.style.height="auto";delete ta.dataset.img;
+  var noteId=sb?ts:"local_"+ts;
+  if(sb){await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts})}
+  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts})}
+  if(imgData)await xgSaveImg(noteId,imgData);
+  renderXg()
+}
+/* ===== 银简进度可视化 ===== */
+function yjProgressInit(){
+  var el=document.getElementById("yjProgress");if(!el)return;
+  var r=todayReading();
+  var curBookUnit=0;for(var i=0;i<=r.idx;i++)if(UNITS[i].book===r.book)curBookUnit++;
+  var total=bookUnitCount[r.book]||1;
+  var pct=Math.round(curBookUnit/total*100);
+  el.textContent="\u300A"+r.bookTitle.replace(/[\u300A\u300B]/g,"")+"\u300B"+curBookUnit+"/"+total+"单元("+pct+"%) \u00B7 已读"+0+"/12本"
+}
+/* ===== 银简→隙光联动 ===== */
+async function yjSyncToXg(note){
+  if(!sb||!note)return;
+  try{await sb.from(XG_TABLE).insert({content:"#银简 "+note,category:"灵感想法",ts:Date.now()})}catch(e){}
+}
+/* ===== 目标拆解 ===== */
+var GOAL_KEY="yj_goals_v1";
+function goalRead(){try{return JSON.parse(localStorage.getItem(GOAL_KEY)||"[]")}catch(e){return[]}}
+function goalWrite(a){try{localStorage.setItem(GOAL_KEY,JSON.stringify(a))}catch(e){}}
+var GOAL_TREE=[
+  {id:"root",title:"高考总分 287\u2192550\u2192600",target:600,current:287,type:"root"},
+  {id:"g_math",title:"数学 23\u2192100",target:100,current:23,type:"subject",parent:"root"},
+  {id:"g_phy",title:"物理 14\u219270",target:70,current:14,type:"subject",parent:"root"},
+  {id:"g_chem",title:"化学 59\u219280",target:80,current:59,type:"subject",parent:"root"},
+  {id:"g_bio",title:"生物 44\u219270",target:70,current:44,type:"subject",parent:"root"},
+  {id:"g_eng",title:"英语 54\u2192110",target:110,current:54,type:"subject",parent:"root"},
+  {id:"g_chn",title:"语文 93\u2192110",target:110,current:93,type:"subject",parent:"root"}
+];
+function goalInit(){
+  var data=goalRead();if(data.length===0){data=GOAL_TREE.slice();goalWrite(data)}
+  var el=document.getElementById("goalTree");if(!el)return;
+  var userGoals=data.filter(function(g){return g.type!=="root"&&g.type!=="subject"});
+  var html="";
+  var root=data.find(function(g){return g.type==="root"});
+  if(root){var pct=Math.round(root.current/root.target*100);html+='<div class="goal-l1">'+root.title+' <span style="color:var(--muted);font-size:11px">'+pct+'%</span><div class="goal-bar"><div class="goal-bar-fill" style="width:'+pct+'%"></div></div></div>'}
+  data.filter(function(g){return g.type==="subject"}).forEach(function(s){
+    var pct=Math.round(s.current/s.target*100);
+    html+='<div class="goal-l2">'+s.title+' <span style="color:var(--muted);font-size:10px">'+pct+'%</span><div class="goal-bar"><div class="goal-bar-fill" style="width:'+pct+'%"></div></div></div>';
+    var children=userGoals.filter(function(g){return g.parent===s.id});
+    children.forEach(function(c){html+='<div class="goal-l3">\u2022 '+esc(c.title)+'</div>'})
+  });
+  el.innerHTML=html;
+  var addBtn=document.getElementById("goalAddBtn");if(addBtn)addBtn.onclick=function(){
+    var inp=document.getElementById("goalInput");var lvl=document.getElementById("goalLevel").value;var text=inp.value.trim();if(!text)return;
+    var a=goalRead();var id="u"+Date.now();a.push({id:id,title:text,type:lvl,parent:"g_math"});goalWrite(a);inp.value="";goalInit()
+  }
+}
+/* ===== 快捷打卡 ===== */
+function quickCkInit(){
+  var btn=document.getElementById("quickCkBtn");var panel=document.getElementById("quickCkPanel");if(!btn)return;
+  btn.onclick=function(){panel.classList.toggle("show")};
+  panel.querySelectorAll(".qck-item").forEach(function(item){
+    item.onclick=async function(){var kind=item.dataset.ck;await toggleCheckin(kind);renderQuickCk()}
+  })
+}
+function renderQuickCk(){
+  var panel=document.getElementById("quickCkPanel");if(!panel)return;
+  var c=checkinCache[todayStr()]||{};
+  panel.querySelectorAll(".qck-item").forEach(function(item){
+    var kind=item.dataset.ck;var done=c[kind];
+    if(done)item.classList.add("qck-done");else item.classList.remove("qck-done")
+  })
+}
+/* ===== 体重追踪 ===== */
+var BODY_KEY="yj_body_v1";
+function bodyRead(){try{return JSON.parse(localStorage.getItem(BODY_KEY)||"[]")}catch(e){return[]}}
+function bodyWrite(a){try{localStorage.setItem(BODY_KEY,JSON.stringify(a))}catch(e){}}
+function bodyInit(){
+  var btn=document.getElementById("bodyAddBtn");if(!btn)return;
+  btn.onclick=function(){
+    var wt=document.getElementById("bodyWt").value;var pt=document.getElementById("bodyPt").value;
+    if(!wt)return;var a=bodyRead();a.push({weight:parseFloat(wt),note:pt,date:todayStr(),ts:Date.now()});bodyWrite(a.slice(-200));
+    document.getElementById("bodyWt").value="";document.getElementById("bodyPt").value="";bodyRender()
+  };bodyRender()
+}
+function bodyRender(){
+  var cv=document.getElementById("bodyChart");var empty=document.getElementById("bodyEmpty");if(!cv)return;
+  var data=bodyRead();if(data.length===0){cv.style.display="none";if(empty)empty.style.display="block";return}
+  cv.style.display="block";if(empty)empty.style.display="none";
+  var ctx=cv.getContext("2d");var w=cv.width=cv.offsetWidth*2,h=cv.height=cv.offsetHeight*2;ctx.scale(2,2);
+  var W=w/2,H=h/2;ctx.clearRect(0,0,W,H);
+  var recent=data.slice(-20);var weights=recent.map(function(d){return d.weight});
+  var minW=Math.min.apply(null,weights)-1,maxW=Math.max.apply(null,weights)+1;
+  if(maxW<=minW)maxW=minW+1;
+  var pad=10;
+  ctx.strokeStyle="#5b5570";ctx.lineWidth=2;ctx.beginPath();
+  recent.forEach(function(d,i){var x=pad+i*(W-pad*2)/Math.max(recent.length-1,1);var y=pad+(H-pad*2)*(1-(d.weight-minW)/(maxW-minW));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
+  ctx.fillStyle="#5b5570";recent.forEach(function(d,i){var x=pad+i*(W-pad*2)/Math.max(recent.length-1,1);var y=pad+(H-pad*2)*(1-(d.weight-minW)/(maxW-minW));ctx.beginPath();ctx.arc(x,y,3,0,2*Math.PI);ctx.fill()});
+  ctx.fillStyle="#7a7686";ctx.font="10px sans-serif";ctx.textAlign="left";
+  ctx.fillText(weights[weights.length-1]+"kg",W-40,15)
+}
+/* ===== 自动备份（IndexedDB快照） ===== */
+var BACKUP_DB="longming-backup";var BACKUP_STORE="snapshots";
+function backupIDB(){
+  return new Promise(function(r,j){var req=indexedDB.open(BACKUP_DB,1);req.onupgradeneeded=function(e){e.target.result.createObjectStore(BACKUP_STORE)};req.onsuccess=function(e){r(e.target.result)};req.onerror=j})
+}
+async function autoSnapshot(){
+  try{
+    var o={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);o[k]=localStorage.getItem(k)}
+    var db=await backupIDB();var tx=db.transaction([BACKUP_STORE],"readwrite");
+    tx.objectStore(BACKUP_STORE).put(JSON.stringify(o),todayStr());
+    tx.objectStore(BACKUP_STORE).put(JSON.stringify(o),"latest")
+  }catch(e){}
+}
+/* ===== 初始化 ===== */
+function initAllNewFeatures(){
+  fcInit();moodInit();trendInit();xgSearchInit();xgImgInit();xgTmplInit();
+  yjProgressInit();goalInit();quickCkInit();bodyInit();
+  var xgBtn=document.getElementById("xgSendBtn");
+  if(xgBtn) xgBtn.onclick=xgSmartSend;
+  setInterval(autoSnapshot,300000)
+}
 
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
 if ("serviceWorker" in navigator) {
