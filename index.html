@@ -550,7 +550,7 @@
 <!-- force SW update -->
 <script>
 (function(){
-  var EXPECTED="longming-v69";
+  var EXPECTED="longming-v94";
   if("serviceWorker" in navigator){
     navigator.serviceWorker.getRegistration().then(function(reg){
       if(!reg)return;
@@ -1505,7 +1505,8 @@ function renderCheckin(){
     const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     if(c[key]?.study){ streak++; d.setDate(d.getDate()-1); } else break;
   }
-  document.getElementById("streakLine").innerHTML = streak>0 ? `🔥 连续学习 <b>${streak}</b> 天` : `还没开始打卡，今天动一下`;
+  document.getElementById("streakLine").innerHTML = streak>0 ? `🔥 连续学习 <b>${streak}</b> 天` : `还没开始打卡，今天动一下`;
+
 }
 /* 打卡提醒：顶部下滑通知弹窗（点图标直接打卡，✕ 关闭本会话不再弹） */
 
@@ -1516,7 +1517,8 @@ function getStreakCount(){
     if(checkinCache[key]?.study){ s++; d.setDate(d.getDate()-1); } else break;
   }
   return s;
-}
+}
+
 
 /* ---------- Push 通知订阅 ---------- */
 const VAPID_PUBLIC_KEY="BEZ0Y2xrXjLO00BMdRXWytbkP2qOLDamQF2nswBYGWwCZgpjO7oUnepPdA-2gPp8t118VVHH9apnRI-aCCneYEQ";
