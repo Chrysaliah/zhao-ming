@@ -781,12 +781,7 @@
 
   
 
-<div class="quick-ck-panel" id="quickCkPanel">
-  <div class="qck-item" data-ck="study"><span class="qck-dot" style="background:var(--checkin)"></span>学习打卡</div>
-  <div class="qck-item" data-ck="sleep"><span class="qck-dot" style="background:var(--checkin)"></span>睡眠达标</div>
-  <div class="qck-item" data-ck="exercise"><span class="qck-dot" style="background:var(--checkin)"></span>运动打卡</div>
-  <div class="qck-item" data-ck="read"><span class="qck-dot" style="background:var(--yinjian)"></span>阅读打卡</div>
-</div>
+
 
   <div class="footnote">拾光 · Chrysaliah 的个人运营系统</div>
 </div>
@@ -1485,7 +1480,7 @@ document.querySelectorAll(".nav button").forEach(b=>{
     document.getElementById("page-agent").classList.toggle("active",false);
     if(p==="chat") renderMessages();
     if(p==="xiguang") renderXg();
-    var qck=document.getElementById("if(qck){qck.style.display=(p==="home")?"flex":"none";var qckP=document.getElementById("quickCkPanel");if(qckP&&p!=="home")qckP.classList.remove("show")}  
+    var qck=document.getElementById("if(qck){if(qck)qck.style.display=(p==="home")?"flex":"none";var qckP=document.getElementById("quickCkPanel");if(qckP&&p!=="home")qckP.classList.remove("show")}  
   };
 });
 
@@ -2968,23 +2963,8 @@ function goalInit(){
   }
 }
 /* ===== 快捷打卡 ===== */
-function quickCkInit(){
-  var btn=document.getElementById("var panel=document.getElementById("quickCkPanel");if(!btn)return;
-  btn.onclick=function(){panel.classList.toggle("show")};
-  panel.querySelectorAll(".qck-item").forEach(function(item){
-    item.onclick=async function(){var kind=item.dataset.ck;await toggleCheckin(kind);renderQuickCk()}
-  })
-}
-function renderQuickCk(){
-  var panel=document.getElementById("quickCkPanel");if(!panel)return;
-  var c=checkinCache[todayStr()]||{};
-  panel.querySelectorAll(".qck-item").forEach(function(item){
-    var kind=item.dataset.ck;var done=c[kind];
-    if(done)item.classList.add("qck-done");else item.classList.remove("qck-done")
-  })
-}
-/* ===== 体重追踪 ===== */
-var BODY_KEY="yj_body_v1";
+function quickCkInit(){}
+function renderQuickCk(){}
 function bodyRead(){try{return JSON.parse(localStorage.getItem(BODY_KEY)||"[]")}catch(e){return[]}}
 function bodyWrite(a){try{localStorage.setItem(BODY_KEY,JSON.stringify(a))}catch(e){}}
 function bodyInit(){
@@ -3027,7 +3007,7 @@ async function autoSnapshot(){
 /* ===== 初始化 ===== */
 function initAllNewFeatures(){
   fcInit();moodInit();trendInit();xgSearchInit();xgImgInit();xgTmplInit();
-  yjProgressInit();goalInit();quickCkInit();var _qck=document.getElementById("if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("if(_qck){_qck.style.display="flex";}var _qck=document.getElementById("if(_qck){_qck.style.display="flex";}bodyInit();
+  yjProgressInit();goalInit();bodyInit();
   var xgBtn=document.getElementById("xgSendBtn");
   if(xgBtn) xgBtn.onclick=xgSmartSend;
   setInterval(autoSnapshot,300000)
@@ -3044,6 +3024,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v79</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v80</div>
 </body>
 </html>
