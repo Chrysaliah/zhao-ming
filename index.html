@@ -2956,7 +2956,8 @@ function goalInit(){
     children.forEach(function(c){html+='<div class="goal-l3">\u2022 '+esc(c.title)+'</div>'})
   });
   el.innerHTML=html;
-  var addBtn=document.getElementById("if(addBtn)addBtn.onclick=function(){
+  var addBtn=document.getElementById("goal-add");
+if(addBtn)addBtn.onclick=function(){
     var inp=document.getElementById("goalInput");var lvl=document.getElementById("goalLevel").value;var text=inp.value.trim();if(!text)return;
     var a=goalRead();var id="u"+Date.now();a.push({id:id,title:text,type:lvl,parent:"g_math"});goalWrite(a);inp.value="";goalInit()
   }
@@ -3023,6 +3024,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v91</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v92</div>
 </body>
 </html>
