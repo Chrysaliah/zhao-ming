@@ -454,6 +454,7 @@
 .mood-block{margin-top:12px;}
 .mood-row{display:flex;gap:6px;justify-content:center;margin:10px 0;}
 .mood-btn .mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
+.mood-btn svg{width:24px;height:24px;display:block;margin:0 auto}
 .mood-btn.active{border-width:2px;}
 .mood-btn:active{transform:scale(.92);}
 .mood-note{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:40px;background:#fff;margin-top:8px;}
@@ -607,8 +608,6 @@
     </div>
     <div><span class="cd-num" id="cdNum">—</span><span class="cd-unit">天</span></div>
   </div>
-
-  
 
   <div class="card mod-checkin">
     <div class="sec-title">今日打卡</div>
@@ -961,8 +960,8 @@
 <!-- bottom nav -->
 <div class="nav">
   <button class="active" data-page="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10.5V19h12v-8.5"/><path d="M10 19v-5h4v5"/></svg></span>主页</button>
-  <button data-page="xiguang"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5Z"/><path d="M18.6 14.4c.3 1.7.8 2.2 2.4 2.6-1.6.4-2.1.9-2.4 2.6-.3-1.7-.8-2.2-2.4-2.6 1.6-.4 2.1-.9 2.4-2.6Z"/></svg></span>隙光</button>
-  <button data-page="chat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1.4"/><circle cx="12" cy="13.5" r="1.4"/><circle cx="18" cy="8" r="1.4"/><path d="M7.3 7.7 10.7 12.8M13.3 13.2 16.7 8.3"/></svg></span>列宿</button>
+  
+  
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3024,6 +3023,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v92</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v93</div>
 </body>
 </html>
