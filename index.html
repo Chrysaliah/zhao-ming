@@ -453,9 +453,7 @@
 /* ===== 情绪追踪 ===== */
 .mood-block{margin-top:12px;}
 .mood-row{display:flex;gap:6px;justify-content:center;margin:10px 0;}
-img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;}
-.mood-btn img.emoji{height:24px;width:24px;}
-.mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
+.mood-btn .mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
 .mood-btn.active{border-width:2px;}
 .mood-btn:active{transform:scale(.92);}
 .mood-note{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:40px;background:#fff;margin-top:8px;}
@@ -967,7 +965,6 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script async src="https://cdn.jsdelivr.net/npm/twemoji@14.15.0/dist/twemoji.min.js"></script>
 <script>
 /* ---------- 角色配置 ---------- */
 const ROLES = {
@@ -2770,7 +2767,7 @@ function fcInit(){
 const MOOD_KEY="yj_mood_v1";
 function moodRead(){try{return JSON.parse(localStorage.getItem(MOOD_KEY)||"{}")}catch(e){return{}}}
 function moodWrite(o){try{localStorage.setItem(MOOD_KEY,JSON.stringify(o))}catch(e){}}
-function moodInit(){setTimeout(function(){try{if(window.twemoji)twemoji.parse(document.getElementById("moodRow"),{folder:"svg",ext:".svg"})}catch(e){}},200);
+function moodInit(){
   var row=document.getElementById("moodRow");if(!row)return;
   var data=moodRead()[todayStr()];
   var selMood=data?data.mood:0;
@@ -3018,12 +3015,12 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW 注册失败:", e));
   });
-  initAllNewFeatures();setTimeout(function(){try{if(window.twemoji)twemoji.parse(document.body,{folder:"svg",ext:".svg"})}catch(e){}},100);
+  initAllNewFeatures();
 }
 </script>
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v88</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v89</div>
 </body>
 </html>
