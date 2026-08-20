@@ -967,6 +967,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/twemoji@14.15.0/dist/twemoji.min.js"></script>
 <script>
 /* ---------- 角色配置 ---------- */
 const ROLES = {
@@ -3019,11 +3020,10 @@ if ("serviceWorker" in navigator) {
   });
   initAllNewFeatures();setTimeout(function(){try{if(window.twemoji)twemoji.parse(document.body,{folder:"svg",ext:".svg"})}catch(e){}},100);
 }
-<script async src="https://cdn.jsdelivr.net/npm/twemoji@14.15.0/dist/twemoji.min.js"></script>
 </script>
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v87</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v88</div>
 </body>
 </html>
