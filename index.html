@@ -2720,7 +2720,7 @@ if(sb){
 
 
 /* ---------- 闪屏隐藏 ---------- */
-window.addEventListener("load", function(){ setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 1200); });
+window.addEventListener("load", function(){ setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 600); });
 
 /* ===== 专注计时器 ===== */
 const FOCUS_KEY="yj_focus_v1";
@@ -2769,7 +2769,7 @@ function fcInit(){
 const MOOD_KEY="yj_mood_v1";
 function moodRead(){try{return JSON.parse(localStorage.getItem(MOOD_KEY)||"{}")}catch(e){return{}}}
 function moodWrite(o){try{localStorage.setItem(MOOD_KEY,JSON.stringify(o))}catch(e){}}
-function moodInit(){if(window.twemoji){twemoji.parse(document.getElementById("moodRow"),{folder:"svg",ext:".svg"});}
+function moodInit(){setTimeout(function(){try{if(window.twemoji)twemoji.parse(document.getElementById("moodRow"),{folder:"svg",ext:".svg"})}catch(e){}},200);
   var row=document.getElementById("moodRow");if(!row)return;
   var data=moodRead()[todayStr()];
   var selMood=data?data.mood:0;
@@ -3017,13 +3017,13 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW 注册失败:", e));
   });
-  initAllNewFeatures();if(window.twemoji){twemoji.parse(document.body,{folder:"svg",ext:".svg"});}
+  initAllNewFeatures();setTimeout(function(){try{if(window.twemoji)twemoji.parse(document.body,{folder:"svg",ext:".svg"})}catch(e){}},100);
 }
-<script src="https://cdn.jsdelivr.net/npm/twemoji@14.15.0/dist/twemoji.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/twemoji@14.15.0/dist/twemoji.min.js"></script>
 </script>
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v85</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v86</div>
 </body>
 </html>
