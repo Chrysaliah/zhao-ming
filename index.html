@@ -453,7 +453,7 @@
 /* ===== 情绪追踪 ===== */
 .mood-block{margin-top:12px;}
 .mood-row{display:flex;gap:6px;justify-content:center;margin:10px 0;}
-.mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:0;cursor:pointer;transition:.15s;text-align:center;display:flex;align-items:center;justify-content:center;}
+.mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
 .mood-btn.active{border-width:2px;}
 .mood-btn:active{transform:scale(.92);}
 .mood-note{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:40px;background:#fff;margin-top:8px;}
@@ -531,7 +531,7 @@
 
 .xg-img-btn{border:none;background:transparent;color:var(--xiguang);cursor:pointer;padding:0 4px;flex:0 0 auto;display:flex;align-items:center;}
 .xg-img-btn svg{width:20px;height:20px;}
-.fold-card{padding:0;margin-bottom:12px;}
+.fold-card{padding:0;margin-bottom:12px;overflow:hidden;}
 .fold-card summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--sichen);list-style:none;display:flex;align-items:center;gap:6px;padding:14px;}
 .fold-card summary::before{content:"";width:4px;height:13px;background:var(--sichen);border-radius:2px;}
 .fold-card summary::-webkit-details-marker{display:none;}
@@ -844,11 +844,11 @@
       <div class="sc-bt">情绪追踪</div>
       <div class="mood-block">
         <div class="mood-row" id="moodRow">
-          <button class="mood-btn" data-mood="1"><svg viewBox="0 0 48 48" width="26" height="26" fill="none" stroke="#6b5b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="20" stroke-width="1.5" opacity="0.3"/><path d="M16 20c1.5-2 4-2 5.5 0"/><path d="M27 20c1.5-2 4-2 5.5 0"/><path d="M17 35c3-4 11-4 14 0" transform="rotate(180 24 32)"/><path d="M31 26c2 1 3 4 2 7" stroke-width="1.2" opacity="0.5"/></svg></button>
-          <button class="mood-btn" data-mood="2"><svg viewBox="0 0 48 48" width="26" height="26" fill="none" stroke="#6b5b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="20" stroke-width="1.5" opacity="0.3"/><path d="M16 20c1-1.5 3.5-1.5 4.5 0"/><path d="M27 20c1-1.5 3.5-1.5 4.5 0"/><path d="M18 33c2-2 10-2 12 0"/></svg></button>
-          <button class="mood-btn" data-mood="3"><svg viewBox="0 0 48 48" width="26" height="26" fill="none" stroke="#6b5b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="20" stroke-width="1.5" opacity="0.3"/><circle cx="18" cy="20" r="1.2" fill="#6b5b6b" stroke="none"/><circle cx="30" cy="20" r="1.2" fill="#6b5b6b" stroke="none"/><path d="M18 32h12"/></svg></button>
-          <button class="mood-btn" data-mood="4"><svg viewBox="0 0 48 48" width="26" height="26" fill="none" stroke="#6b5b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="20" stroke-width="1.5" opacity="0.3"/><path d="M15 19c1 2 4 2 5 0"/><path d="M28 19c1 2 4 2 5 0"/><path d="M18 30c2 2.5 10 2.5 12 0"/></svg></button>
-          <button class="mood-btn" data-mood="5"><svg viewBox="0 0 48 48" width="26" height="26" fill="none" stroke="#6b5b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="20" stroke-width="1.5" opacity="0.3"/><path d="M14 18c1.5 2.5 5 2.5 6.5 0"/><path d="M27 18c1.5 2.5 5 2.5 6.5 0"/><path d="M16 28c3 4 13 4 16 0"/><path d="M19 14c0-1.5 10-1.5 10 0" stroke-width="1.2" opacity="0.4"/></svg></button>
+          <button class="mood-btn" data-mood="1">😞</button>
+          <button class="mood-btn" data-mood="2">😕</button>
+          <button class="mood-btn" data-mood="3">😐</button>
+          <button class="mood-btn" data-mood="4">🙂</button>
+          <button class="mood-btn" data-mood="5">😄</button>
         </div>
         <input class="mood-note" id="moodNote" placeholder="今天的心情（可选）…" maxlength="80">
         <button class="mood-save" id="moodSave">记录今日心情</button>
@@ -3025,6 +3025,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v82</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v83</div>
 </body>
 </html>
