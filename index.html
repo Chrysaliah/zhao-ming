@@ -1,15 +1,4 @@
-<details class="card fold-card" style="margin-top:12px;">
-      <summary class="sec-title">目标拆解</summary>
-      <div class="sec-title">司辰</div>
-    <div class="sichen-prev">
-      <div class="sp-row"><span class="sp-dot" id="scDotPlan"></span>每日学习计划<span class="sp-t" id="scTimePlan">08:00</span></div>
-      <div class="sp-row"><span class="sp-dot" id="scDotReview"></span>每日学习复盘<span class="sp-t" id="scTimeReview">22:30</span></div>
-      <div class="sp-row"><span class="sp-dot" id="scDotWeekly"></span>每周进度检查<span class="sp-t" id="scTimeWeekly">周日 20:00</span></div>
-    </div>
-    <div class="sichen-go">进入看进度与动态 →</div>
-  </div>
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -600,7 +589,6 @@
 
 <!-- ============ 主页 ============ -->
 <div class="page active" id="page-home">
-    </details>
   <div class="card">
     <div class="goal-row">
       <span class="goal-big">287</span>
@@ -651,7 +639,15 @@
     <div class="sc-list" id="todoList"></div>
   </div>
 
-  
+  <div class="card sichen-entry mod-sichen" onclick="goSichen()">
+    <div class="sec-title">司辰</div>
+    <div class="sichen-prev">
+      <div class="sp-row"><span class="sp-dot" id="scDotPlan"></span>每日学习计划<span class="sp-t" id="scTimePlan">08:00</span></div>
+      <div class="sp-row"><span class="sp-dot" id="scDotReview"></span>每日学习复盘<span class="sp-t" id="scTimeReview">22:30</span></div>
+      <div class="sp-row"><span class="sp-dot" id="scDotWeekly"></span>每周进度检查<span class="sp-t" id="scTimeWeekly">周日 20:00</span></div>
+    </div>
+    <div class="sichen-go">进入看进度与动态 →</div>
+  </div>
 
     <div class="card mod-yinjian">
     <div class="sec-title">银简 <span class="yj-streak" id="yjStreak">连续 0 天</span></div>
@@ -765,9 +761,8 @@
     <div class="roster" id="roster"></div>
   </div>
 
-  <details class="card fold-card" style="margin-top:12px;">
-      <summary class="sec-title">体态追踪</summary>
-      <div class="sec-title">体态追踪</div>
+  <div class="card">
+    <div class="sec-title">体态追踪</div>
     <div class="body-input-row">
       <input class="wt" id="bodyWt" type="number" inputmode="decimal" placeholder="体重kg" autocomplete="off">
       <input class="pt" id="bodyPt" type="text" placeholder="体态备注（如：驼背改善）" autocomplete="off">
@@ -775,7 +770,7 @@
     </div>
     <canvas class="body-chart" id="bodyChart"></canvas>
     <div class="body-empty" id="bodyEmpty">记录体重和体态变化，折线图展示趋势</div>
-    </details>
+  </div>
 
   <details class="card backup-details" style="margin-top:12px;">
     <summary class="sec-title backup-summary">数据备份</summary>
@@ -3052,6 +3047,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v70</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v69</div>
 </body>
 </html>
