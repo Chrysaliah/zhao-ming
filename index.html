@@ -18,7 +18,7 @@
     --teal:#5b5570; --teal-soft:#736c8c; --silver:#c4c1d3; --silver-deep:#8a8498;
     --bg:#f7f6f9; --card:#ffffff; --ink:#2b2b2b; --muted:#7a7686; --line:#e7e4ef;
     --gold:#9a8fb0; --warn:#c2703f; --ok:#3f8a6d;
-    --checkin:#6f9079; --sichen:#6a7a8a; --yinjian:#d4ad5e; --xiguang:#c29aa6; --liexu:#5b5570;
+    --checkin:#6f9079; --sichen:#6a7a8a; --sichen-data:#7a9a8a; --yinjian:#d4ad5e; --xiguang:#c29aa6; --liexu:#5b5570;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
@@ -125,7 +125,7 @@
 .wk-item{flex:1 1 calc(50% - 4px);display:flex;align-items:center;gap:7px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:12.5px;}
 .wk-item.done{background:#f0eef6;border-color:#e3def0;}
 .wk-ic{font-size:16px;flex:0 0 auto;}
-.wk-val{font-weight:700;color:var(--sichen);}
+.wk-val{font-weight:700;color:var(--sichen-data);}
 .wk-lbl{font-size:10.5px;color:var(--muted);}
 .wk-countdown{flex:1 1 100%;text-align:center;padding:8px 10px;border:1px dashed var(--line);border-radius:10px;font-size:12px;color:var(--muted);background:#faf9fc;margin-top:2px;}
 .wk-countdown b{color:var(--warn);font-size:14px;}
@@ -155,7 +155,7 @@
   .cal-wk-ok{margin-left:auto;color:var(--ok);font-weight:700;font-size:11px;}
   .cal-wk-no{margin-left:auto;color:var(--silver-deep);font-size:11px;}
   .sc-list{display:flex;flex-direction:column;gap:10px;}
-  .sc-item{border-left:3px solid var(--sichen);background:#eef0f2;border-radius:0 8px 8px 0;padding:9px 11px;}
+  .sc-item{border-left:3px solid var(--sichen-data);background:#eef0f2;border-radius:0 8px 8px 0;padding:9px 11px;}
   .sc-item-t{font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:4px;}
   .sc-item-c{font-size:12.5px;line-height:1.6;color:#3a3a3a;white-space:pre-wrap;word-break:break-word;}
   .sc-tag{font-size:9px;background:var(--mod,var(--gold));color:#fff;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:700;}
@@ -519,6 +519,34 @@
 .backup-card summary::-webkit-details-marker{display:none;}
 .backup-card[open] summary{margin-bottom:8px;}
 
+
+/* ===== 排版优化 v2 ===== */
+.goal-countdown{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.goal-countdown .goal-left{flex:1;}
+.goal-countdown .cd-inline{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+.goal-countdown .cd-inline .cd-num{font-size:28px;font-weight:800;color:var(--gold);}
+.goal-countdown .cd-inline .cd-label{font-size:10px;color:var(--muted);}
+.goal-countdown .cd-inline .cd-date{font-size:10px;color:var(--silver-deep);}
+.goal-add{display:flex;gap:6px;margin-top:8px;align-items:center;}
+.goal-add input{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:13px;font-family:inherit;background:#fff;}
+.goal-add select{border:1px solid var(--line);border-radius:8px;padding:7px 6px;font-size:12px;font-family:inherit;background:#fff;color:var(--muted);flex:0 0 auto;}
+.goal-add button{border:none;background:var(--teal);color:#fff;border-radius:50%;width:32px;height:32px;font-size:15px;cursor:pointer;flex:0 0 auto;}
+.body-input-row{display:flex;gap:7px;align-items:center;margin-top:8px;}
+.body-input-row input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:#fff;}
+.body-input-row .wt{width:80px;flex:0 0 auto;}
+.body-input-row .pt{flex:1;}
+.body-input-row button{border:none;background:var(--teal);color:#fff;border-radius:50%;width:32px;height:32px;font-size:15px;cursor:pointer;flex:0 0 auto;}
+.quick-ck svg{width:22px;height:22px;}
+.xg-img-btn{border:none;background:transparent;color:var(--xiguang);cursor:pointer;padding:0 4px;flex:0 0 auto;display:flex;align-items:center;}
+.xg-img-btn svg{width:20px;height:20px;}
+.fold-card summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--teal);list-style:none;display:flex;align-items:center;gap:6px;padding:4px 0;}
+.fold-card summary::before{content:"";width:4px;height:13px;background:var(--teal);border-radius:2px;}
+.fold-card summary::-webkit-details-marker{display:none;}
+.fold-card[open] summary{margin-bottom:10px;}
+.fold-card .fold-body>div{margin-bottom:10px;}
+.fold-card .fold-body>div:last-child{margin-bottom:0;}
+.fold-sub-card{border:none!important;padding:0!important;}
+.fold-sub-card .sec-title{font-size:12px;color:var(--muted);margin-bottom:6px;}
 </style>
 </head>
 <body>
@@ -728,7 +756,7 @@
   </details>
 
   
-<button class="quick-ck" id="quickCkBtn">✓</button>
+<button class="quick-ck" id="quickCkBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></button>
 <div class="quick-ck-panel" id="quickCkPanel">
   <div class="qck-item" data-ck="study"><span class="qck-dot" style="background:var(--checkin)"></span>学习打卡</div>
   <div class="qck-item" data-ck="sleep"><span class="qck-dot" style="background:var(--checkin)"></span>睡眠达标</div>
@@ -885,7 +913,7 @@
         </div>
       <div class="xg-input">
       <textarea id="xgInput" rows="1" placeholder="写点碎碎念…（自动按内容分类）" autocomplete="off"></textarea>
-      <button class="xg-img-btn" id="xgImgBtn">📷</button>
+      <button class="xg-img-btn" id="xgImgBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
       <button class="send" id="xgSendBtn">↑</button>
     </div>
   </div>
@@ -2525,7 +2553,7 @@ async function loadTodos(){
   const listEl = document.getElementById("todoList");
   if(!sb){
     // 云端未连 → 走本地
-    const local = todoLocalRead();
+    const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
     if(local.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'; return; }
     listEl.innerHTML = local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
@@ -2538,7 +2566,7 @@ async function loadTodos(){
   let {data,error} = await sb.from(PLANS_TABLE).select("*").order("ts",{ascending:false});
   if(error){
     // 云端失败 → 落本地兜底
-    const local = todoLocalRead();
+    const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
     if(local.length===0){ listEl.innerHTML='<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'; return; }
     listEl.innerHTML = local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
@@ -2548,7 +2576,14 @@ async function loadTodos(){
       </div>`).join("");
     return;
   }
-  const items = data || [];
+  const rawItems = data || [];
+  const _seen = new Set();
+  const items = rawItems.filter(p => {
+    var key = (p.content || "").trim().toLowerCase();
+    if (_seen.has(key)) return false;
+    _seen.add(key);
+    return true;
+  });
   // 同步一份到本地作为缓存
   todoLocalWrite(items.map(p=>({id:p.id,content:p.content,done:p.done,ts:p.ts})));
   if(items.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'; }
