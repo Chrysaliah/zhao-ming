@@ -202,7 +202,7 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   .badge{margin-left:auto;font-size:11px;font-weight:600;color:#9a8fb0;background:#f3f0f8;border-radius:8px;padding:2px 8px;}
   .add-row{display:flex;gap:7px;margin-bottom:10px;}
-  .add-row input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;background:#faf9fc;outline:none;font-family:inherit;}
+  .add-row input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;background:#faf9fc;outline:none;font-family:inherit;}
   .add-row select{border:1px solid var(--line);border-radius:10px;padding:0 6px;font-size:12px;background:#faf9fc;color:#5b5570;font-family:inherit;}
   .add-row .add{width:38px;border:0;border-radius:10px;background:var(--teal);color:#fff;font-size:18px;font-weight:700;cursor:pointer;flex:0 0 auto;}
   .add-row .add:active{transform:scale(.94);}
@@ -528,10 +528,10 @@
 .goal-countdown .cd-inline .cd-label{font-size:10px;color:var(--muted);}
 .goal-countdown .cd-inline .cd-date{font-size:10px;color:var(--silver-deep);}
 .goal-add{display:flex;gap:6px;margin-top:8px;align-items:center;}
-.goal-add input{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:13px;font-family:inherit;background:#fff;}
+.goal-add input{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;font-family:inherit;background:#fff;}
 .goal-add select{border:1px solid var(--line);border-radius:8px;padding:7px 6px;font-size:12px;font-family:inherit;background:#fff;color:var(--muted);flex:0 0 auto;}
 .goal-add button{border:none;background:var(--teal);color:#fff;border-radius:50%;width:32px;height:32px;font-size:15px;cursor:pointer;flex:0 0 auto;}
-.body-input-row{display:flex;gap:7px;align-items:center;margin-top:8px;}
+.body-input-row{display:flex;gap:7px;align-items:center;margin-top:8px;}.body-input-row .pt{flex:1;max-width:180px;}
 .body-input-row input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:#fff;}
 .body-input-row .wt{width:80px;flex:0 0 auto;}
 .body-input-row .pt{flex:1;}
@@ -641,7 +641,7 @@
     <summary class="sec-title">目标拆解</summary>
     <div class="goal-tree" id="goalTree"></div>
     <div class="goal-add">
-      <input id="goalInput" placeholder="添加目标/任务…" autocomplete="off">
+      <input id="goalInput" placeholder="目标/任务…" autocomplete="off">
       <select id="goalLevel"><option value="l2">学科级</option><option value="l3">章节级</option></select>
       <button id="goalAddBtn">＋</button>
     </div>
@@ -770,7 +770,7 @@
     <summary class="sec-title">体态追踪</summary>
     <div class="body-input-row">
       <input class="wt" id="bodyWt" type="number" inputmode="decimal" placeholder="体重kg" autocomplete="off">
-      <input class="pt" id="bodyPt" type="text" placeholder="体态备注（如：驼背改善）" autocomplete="off">
+      <input class="pt" id="bodyPt" type="text" placeholder="体态备注" autocomplete="off">
       <button id="bodyAddBtn">＋</button>
     </div>
     <canvas class="body-chart" id="bodyChart"></canvas>
@@ -933,7 +933,7 @@
           <button data-mode="cat" class="active">分类</button>
           <button data-mode="time">时间</button>
         </div>
-        <input id="xgSearch" class="xg-search" type="text" placeholder="搜索碎碎念…" autocomplete="off">
+        <input id="xgSearch" class="xg-search" type="text" placeholder="搜索…" autocomplete="off">
       </div>
     </div>
     <div class="xg-notes" id="xgNotes"></div>
@@ -3052,6 +3052,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v76</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v77</div>
 </body>
 </html>
