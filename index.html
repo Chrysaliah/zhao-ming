@@ -18,7 +18,7 @@
     --teal:#5b5570; --teal-soft:#736c8c; --silver:#c4c1d3; --silver-deep:#8a8498;
     --bg:#f7f6f9; --card:#ffffff; --ink:#2b2b2b; --muted:#7a7686; --line:#e7e4ef;
     --gold:#9a8fb0; --warn:#c2703f; --ok:#3f8a6d;
-    --checkin:#6f9079; --sichen:#6a7a8a; --sichen-data:#7a9a8a; --yinjian:#d4ad5e; --xiguang:#c29aa6; --liexu:#5b5570;
+    --checkin:#6f9079; --sichen:#6a7a8a; --sichen-data:#c4a265; --yinjian:#d4ad5e; --xiguang:#c29aa6; --liexu:#5b5570;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
@@ -140,7 +140,7 @@
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
   .cal-cell{border:1px solid var(--line);border-radius:7px;padding:3px 1px;min-height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:#fff;}
   .cal-cell.empty{border:none;background:transparent;min-height:0;}
-  .cal-cell.today{border-color:var(--sichen);background:#eef0f2;}
+  .cal-cell.today{border-color:var(--sichen);background:#faf6ef;}
   .cal-d{font-size:12px;color:var(--ink);font-weight:600;line-height:1;}
   .cal-dots{display:flex;gap:3px;}
   .cal-dot{font-size:8px;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--line);color:transparent;line-height:1;}
@@ -155,7 +155,7 @@
   .cal-wk-ok{margin-left:auto;color:var(--ok);font-weight:700;font-size:11px;}
   .cal-wk-no{margin-left:auto;color:var(--silver-deep);font-size:11px;}
   .sc-list{display:flex;flex-direction:column;gap:10px;}
-  .sc-item{border-left:3px solid var(--sichen-data);background:#eef0f2;border-radius:0 8px 8px 0;padding:9px 11px;}
+  .sc-item{border-left:3px solid var(--sichen-data);background:#faf6ef;border-radius:0 8px 8px 0;padding:9px 11px;}
   .sc-item-t{font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:4px;}
   .sc-item-c{font-size:12.5px;line-height:1.6;color:#3a3a3a;white-space:pre-wrap;word-break:break-word;}
   .sc-tag{font-size:9px;background:var(--mod,var(--gold));color:#fff;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:700;}
@@ -2833,7 +2833,7 @@ function trendRender(){
   var pad=12,bw=(W-pad*2)/days;
   ctx.strokeStyle="#e7e4ef";ctx.lineWidth=1;
   for(var i=0;i<=4;i++){var y=pad+(H-pad*2)*i/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke()}
-  ctx.fillStyle="#7a9a8a";
+  ctx.fillStyle="#c4a265";
   study.forEach(function(v,i){if(v){var x=pad+i*bw+bw*0.15;var bh=(H-pad*2)*0.3;ctx.fillRect(x,H-pad-bh,bw*0.7,bh)}});
   ctx.fillStyle="#d4ad5e";
   read.forEach(function(v,i){if(v){var x=pad+i*bw+bw*0.15;var bh=(H-pad*2)*0.2;ctx.fillRect(x,H-pad-bh-50,bw*0.7,bh)}});
@@ -3052,6 +3052,6 @@ if ("serviceWorker" in navigator) {
 <div class="rd-banner" id="rdBanner"></div>
 
 <!-- version badge -->
-<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v75</div>
+<div id="verBadge" style="position:fixed;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;color:#ccc;z-index:9999;pointer-events:none;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:4px;">v76</div>
 </body>
 </html>
