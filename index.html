@@ -252,6 +252,14 @@
   .input-bar .send{background:var(--teal);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:18px;display:flex;align-items:center;justify-content:center;}
   .input-bar .send:active{transform:scale(.92);}
   .empty{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px;line-height:1.8;}
+  .ds-wrap{padding:16px 4px;}
+  .ds-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center;margin-bottom:12px;}
+  .ds-bal{font-size:30px;font-weight:800;color:var(--teal);letter-spacing:.5px;}
+  .ds-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+  .ds-row{display:flex;gap:10px;margin-top:14px;}
+  .ds-row div{flex:1;background:#faf9fd;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:11px;color:var(--muted);}
+  .ds-row b{display:block;font-size:16px;color:var(--ink);margin-top:2px;}
+  .ds-note{font-size:10.5px;color:var(--silver-deep);text-align:center;line-height:1.6;padding:0 6px;}
   .footnote{font-size:10.5px;color:var(--silver-deep);text-align:center;padding:14px;line-height:1.6;}
   /* ===== 通用弹窗（查看 Agent 详情） ===== */
   .modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:24px;}
@@ -956,12 +964,27 @@
   </div>
 </div>
 
+<!-- ============ 深度（DeepSeek 账户余额） ============ -->
+<div class="page" id="page-ds">
+  <div class="xg-head">
+    <div class="xgicon">🧠</div>
+    <div>
+      <div class="xgname">深度</div>
+      <div class="xgmeta">DeepSeek 账户 · 余额实时查询</div>
+    </div>
+    <button class="syncbadge" id="dsRefresh" style="margin-left:auto;border:none;cursor:pointer;font-weight:600;">刷新</button>
+  </div>
+  <div class="ds-wrap" id="dsWrap">
+    <div class="empty">加载中…</div>
+  </div>
+</div>
+
 <!-- bottom nav -->
 <div class="nav">
   <button class="active" data-page="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10.5V19h12v-8.5"/><path d="M10 19v-5h4v5"/></svg></span>主页</button>
   <button data-page="xiguang"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5Z"/><path d="M18.6 14.4c.3 1.7.8 2.2 2.4 2.6-1.6.4-2.1.9-2.4 2.6-.3-1.7-.8-2.2-2.4-2.6 1.6-.4 2.1-.9 2.4-2.6Z"/></svg></span>隙光</button>
   <button data-page="chat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1.4"/><circle cx="12" cy="13.5" r="1.4"/><circle cx="18" cy="8" r="1.4"/><path d="M7.3 7.7 10.7 12.8M13.3 13.2 16.7 8.3"/></svg></span>列宿</button>
-  
+  <button data-page="ds"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.8"/></svg></span>深度</button>
   
 </div>
 
@@ -1513,13 +1536,43 @@ document.querySelectorAll(".nav button").forEach(b=>{
     var tb=document.querySelector(".topbar");if(tb)tb.style.display=p==="home"?"":"none";
     document.getElementById("page-xiguang").classList.toggle("active",p==="xiguang");
     document.getElementById("page-chat").classList.toggle("active",p==="chat");
+    document.getElementById("page-ds").classList.toggle("active",p==="ds");
     document.getElementById("page-sichen").classList.toggle("active",false);
     document.getElementById("page-agent").classList.toggle("active",false);
     if(p==="chat") renderMessages();
     if(p==="xiguang") renderXg();
+    if(p==="ds") renderDs();
       
   };
 });
+
+/* ---------- 深度：DeepSeek 账户余额 ---------- */
+async function renderDs(){
+  const wrap=document.getElementById("dsWrap");
+  if(!wrap) return;
+  if(!sb){ wrap.innerHTML='<div class="empty">云端未连接，无法查询余额。</div>'; return; }
+  wrap.innerHTML='<div class="empty">查询中…</div>';
+  try{
+    const {data,error} = await sb.functions.invoke("deepseek-usage",{});
+    if(error || !data || typeof data.total_balance==="undefined"){
+      wrap.innerHTML='<div class="empty">查询失败：'+(error?JSON.stringify(error).slice(0,120):"返回数据异常")+'</div>';
+      return;
+    }
+    wrap.innerHTML =
+      '<div class="ds-card">'+
+        '<div class="ds-bal">¥ '+(data.total_balance||"0")+'</div>'+
+        '<div class="ds-sub">DeepSeek 账户总余额'+(data.is_available===false?' · 不可用':'')+'</div>'+
+        '<div class="ds-row">'+
+          '<div>充值余额<b>¥ '+(data.topped_up_balance||"0")+'</b></div>'+
+          '<div>赠送余额<b>¥ '+(data.granted_balance||"0")+'</b></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="ds-note">数据来自 DeepSeek 官方余额接口，实时查询。<br>这是模型调用的额度，不是现金。</div>';
+  }catch(e){
+    wrap.innerHTML='<div class="empty">查询失败：'+String(e).slice(0,120)+'</div>';
+  }
+}
+document.getElementById("dsRefresh").onclick=renderDs;
 
 /* ---------- 打卡 streak（云端 + 本机兜底） ---------- */
 const CHECKIN_TABLE = "checkin";
