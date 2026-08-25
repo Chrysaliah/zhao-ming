@@ -265,6 +265,12 @@
   .ds-topup-btn{display:inline-block;background:var(--teal);color:#fff;font-size:12px;font-weight:700;border-radius:10px;padding:7px 16px;text-decoration:none;text-align:center;}
   .ds-topup-btn:active{transform:scale(.96);}
   .footnote{font-size:10.5px;color:var(--silver-deep);text-align:center;padding:14px;line-height:1.6;}
+  .action-bar{margin:4px 0 2px;display:flex;flex-direction:column;gap:6px;padding:8px 10px;background:#faf9fd;border:1px dashed var(--line);border-radius:12px;}
+  .action-item{display:flex;align-items:center;gap:8px;justify-content:space-between;}
+  .action-tx{flex:1;font-size:12px;color:var(--ink);line-height:1.5;word-break:break-word;}
+  .action-btn{flex:0 0 auto;background:var(--teal);color:#fff;border:none;border-radius:10px;font-size:11px;font-weight:700;padding:6px 10px;cursor:pointer;}
+  .action-btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line);align-self:flex-start;font-weight:600;}
+  .action-btn.done{background:#cfe3de;color:var(--teal);}
   /* ===== 通用弹窗（查看 Agent 详情） ===== */
   .modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:24px;}
   .modal.show{display:flex;}
@@ -1201,18 +1207,87 @@ function removeMsg(m){
   if(idx>=0) chatLog.splice(idx,1);
   chatSave(chatLog);
 }
+/* ---------- AI 群回复（DeepSeek v2：感知状态 + 意图识别 + 动作候选，失败降级关键词） ---------- */
+async function collectContext(){
+  const ctx = {checkin:null, notes:[], todos:[]};
+  try{
+    const t = todayStr();
+    if(typeof checkinCache!=="undefined" && checkinCache[t]) ctx.checkin = checkinCache[t];
+    if(sb){
+      const {data:n} = await sb.from(XG_TABLE).select("content,category").order("ts",{ascending:false}).limit(3);
+      if(n) ctx.notes = n.map(x=>({content:x.content, category:x.category}));
+      const {data:p} = await sb.from(PLANS_TABLE).select("content,done").eq("done",false).order("ts",{ascending:false}).limit(5);
+      if(p) ctx.todos = p.map(x=>x.content);
+    } else {
+      const arr = todoLocalRead();
+      ctx.todos = arr.filter(x=>!x.done).slice(0,5).map(x=>x.content);
+    }
+  }catch(_){}
+  return ctx;
+}
+async function execAction(a){
+  if(!a || !a.text) return false;
+  if(a.type==="plan"){
+    try{
+      if(sb){ await sb.from(PLANS_TABLE).insert({content:a.text,done:false,ts:Date.now()}); }
+      else { const arr=todoLocalRead(); arr.push({id:Date.now(),content:a.text,done:false,ts:Date.now()}); todoLocalWrite(arr); }
+      if(typeof loadTodos==="function") loadTodos();
+      showRdBanner("✓ 已加入待办："+a.text);
+      return true;
+    }catch(_){ return false; }
+  }
+  if(a.type==="note"){
+    try{
+      const cat = classifyXg(a.text);
+      const ts = Date.now();
+      if(sb){ await sb.from(XG_TABLE).insert({id:ts, content:a.text, category:cat, ts}); }
+      else { xgLocal.push({id:"local_"+ts, content:a.text, category:cat, ts:ts}); }
+      if(typeof renderXg==="function") renderXg();
+      showRdBanner("📝 已记进隙光："+a.text);
+      return true;
+    }catch(_){ return false; }
+  }
+  return false;
+}
+function renderActionBar(actions, msgTs){
+  const bar = document.createElement("div");
+  bar.className = "action-bar";
+  bar.dataset.key = "act|"+(msgTs||Date.now());
+  bar.innerHTML =
+    actions.map((a,i)=>
+      '<div class="action-item"><span class="action-tx">'+esc(a.text)+'</span>'+
+      '<button class="action-btn" data-i="'+i+'">'+(a.type==="plan"?"✓ 采纳为计划":"📝 记进隙光")+'</button></div>'
+    ).join("") +
+    '<button class="action-btn ghost" data-skip="1">💬 继续讨论</button>';
+  messagesEl.appendChild(bar);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  bar.querySelectorAll("[data-i]").forEach(b=>{
+    b.onclick = async ()=>{
+      const a = actions[+b.dataset.i];
+      const ok = await execAction(a);
+      if(ok){ b.textContent = "✓ 已执行"; b.classList.add("done"); b.disabled = true; }
+    };
+  });
+  bar.querySelector("[data-skip]").onclick = ()=>{ bar.remove(); };
+}
 async function aiGroupReply(text){
   // 先用关键词引擎选出"该谁回"（保持"相关的人接话"逻辑），再让 AI 以这些身份真回
   const fallback = groupReply(text);
-  if(!sb) return fallback;                       // 未连云端：纯关键词
+  if(!sb) return {intent:"chat", replies:fallback, actions:[]};   // 未连云端：纯关键词
   const roles = fallback.map(r=>r.role);
   try{
+    const context = await collectContext();
     const {data, error} = await sb.functions.invoke("deepseek-chat", {
-      body:{ roles, userText:text }
+      body:{ roles, userText:text, context }
     });
-    if(error || !data || !Array.isArray(data.replies) || data.replies.length===0) return fallback;
-    return data.replies;                         // [{role, text}]
-  }catch(_){ return fallback; }
+    if(error || !data || !Array.isArray(data.replies) || data.replies.length===0)
+      return {intent:"chat", replies:fallback, actions:[]};
+    return {
+      intent: data.intent || "chat",
+      replies: data.replies,
+      actions: Array.isArray(data.actions) ? data.actions : []
+    };
+  }catch(_){ return {intent:"chat", replies:fallback, actions:[]}; }
 }
 
 async function send(){
@@ -1230,15 +1305,19 @@ async function send(){
   // —— 伙伴回话（AI 优先，降级关键词）——
   const thinking={from:"agent",role:"zhao",text:"🤔 伙伴们正在想怎么接你…",ts:Date.now()};
   appendMsg(thinking, false);
-  const replies = await aiGroupReply(text);
+  const res = await aiGroupReply(text);
   removeMsg(thinking);
-  for(const r of replies){
+  for(const r of res.replies){
     const rts=Date.now()+1;
     appendMsg({from:"agent",role:r.role,text:r.text,ts:rts});
     if(sb){
       try{ await sb.from(SUPABASE_TABLE).insert({sender:r.role,name:(ROLES[r.role]||{}).name||r.role,text:r.text,ts:rts}); }
       catch(_){}
     }
+  }
+  // —— 求助型：出按钮（采纳/记录/继续讨论），其余类型只回话 ——
+  if(res.intent==="advice" && res.actions && res.actions.length){
+    renderActionBar(res.actions, Date.now());
   }
 }
 async function flushPending(){
