@@ -1170,6 +1170,30 @@ async function renderMessages(){
   chatLog.forEach(m=>appendMsg(m, false));
 }
 
+/* ---------- AI 群回复（DeepSeek，失败自动降级为关键词引擎） ---------- */
+function removeMsg(m){
+  const key=(m.ts||0)+"|"+m.text;
+  rendered.delete(key);
+  const els=[...messagesEl.children].filter(e=>e.dataset.key===key);
+  els.forEach(e=>e.remove());
+  const idx=chatLog.findIndex(x=>(x.ts||0)+"|"+x.text===key);
+  if(idx>=0) chatLog.splice(idx,1);
+  chatSave(chatLog);
+}
+async function aiGroupReply(text){
+  // 先用关键词引擎选出"该谁回"（保持"相关的人接话"逻辑），再让 AI 以这些身份真回
+  const fallback = groupReply(text);
+  if(!sb) return fallback;                       // 未连云端：纯关键词
+  const roles = fallback.map(r=>r.role);
+  try{
+    const {data, error} = await sb.functions.invoke("deepseek-chat", {
+      body:{ roles, userText:text }
+    });
+    if(error || !data || !Array.isArray(data.replies) || data.replies.length===0) return fallback;
+    return data.replies;                         // [{role, text}]
+  }catch(_){ return fallback; }
+}
+
 async function send(){
   const inp=document.getElementById("msgInput");
   const text=inp.value.trim();
@@ -1181,6 +1205,19 @@ async function send(){
   inp.value="";
   if(sb){
     await sb.from(SUPABASE_TABLE).insert({sender:"user",name:"若昭",text,ts});
+  }
+  // —— 伙伴回话（AI 优先，降级关键词）——
+  const thinking={from:"agent",role:"zhao",text:"🤔 伙伴们正在想怎么接你…",ts:Date.now()};
+  appendMsg(thinking, false);
+  const replies = await aiGroupReply(text);
+  removeMsg(thinking);
+  for(const r of replies){
+    const rts=Date.now()+1;
+    appendMsg({from:"agent",role:r.role,text:r.text,ts:rts});
+    if(sb){
+      try{ await sb.from(SUPABASE_TABLE).insert({sender:r.role,name:(ROLES[r.role]||{}).name||r.role,text:r.text,ts:rts}); }
+      catch(_){}
+    }
   }
 }
 async function flushPending(){
