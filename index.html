@@ -10,6 +10,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon-512.png">
+  <!-- iOS native launch screens (iOS ignores manifest splash, needs apple-touch-startup-image) -->
+  <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1170x2532.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1284x2778.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1290x2796.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1125x2436.png">
 <style>
 @font-face{font-family:'Noto Serif SC';font-style:normal;font-weight:500;font-display:block;src:url('shiguang-serif.ttf') format('truetype');}
 
@@ -3000,8 +3005,24 @@ if(sb){
 }
 
 
-/* ---------- 闪屏隐藏 ---------- */
-setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 600);
+/* ---------- 闪屏隐藏（等加载完成 + 最短停留 + 6s 安全网，避免卡屏）---------- */
+(function(){
+  var s=document.getElementById("splashScreen");
+  if(!s)return;
+  var MIN=700, SAFETY=6000, t0=Date.now();
+  function hide(){
+    var wait=Math.max(0, MIN-(Date.now()-t0));
+    setTimeout(function(){
+      if(!s||!s.parentNode)return;
+      s.classList.add("hide");
+      setTimeout(function(){ if(s&&s.parentNode)s.remove(); }, 700);
+    }, wait);
+  }
+  if(document.readyState==="complete") hide();
+  else window.addEventListener("load", hide);
+  // 兜底：无论发生什么，6 秒后强制隐藏
+  setTimeout(hide, SAFETY);
+})();
 
 /* ===== 专注计时器 ===== */
 const FOCUS_KEY="yj_focus_v1";
