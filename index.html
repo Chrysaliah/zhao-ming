@@ -485,9 +485,12 @@
 .fc-stats b{color:var(--sichen);font-size:15px;}
 /* ===== 情绪追踪 ===== */
 .mood-block{margin-top:12px;}
-.mood-row{display:flex;gap:6px;justify-content:center;margin:10px 0;}
-.mood-btn .mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
-.mood-btn.active{border-width:2px;}
+.mood-row{display:flex;gap:8px;justify-content:center;margin:10px 0;}
+.mood-btn{flex:1;border:none;background:transparent;border-radius:14px;padding:8px 2px;cursor:pointer;transition:.15s;text-align:center;color:#bcb6c8;line-height:0;}
+.mood-btn svg{display:block;margin:0 auto;transition:transform .15s;}
+.mood-btn:hover{background:#f6f4f9;}
+.mood-btn.active{background:#f3eef7;}
+.mood-btn.active svg{transform:scale(1.12);}
 .mood-btn:active{transform:scale(.92);}
 .mood-note{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:40px;background:#fff;margin-top:8px;}
 .mood-save{margin-top:8px;border:none;background:var(--sichen);color:#fff;border-radius:9px;padding:8px 16px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;}
@@ -958,11 +961,21 @@
       <div class="sc-bt">情绪追踪</div>
       <div class="mood-block">
         <div class="mood-row" id="moodRow">
-          <button class="mood-btn" data-mood="1">😞</button>
-          <button class="mood-btn" data-mood="2">😕</button>
-          <button class="mood-btn" data-mood="3">😐</button>
-          <button class="mood-btn" data-mood="4">🙂</button>
-          <button class="mood-btn" data-mood="5">😄</button>
+          <button class="mood-btn" data-mood="1" aria-label="低落">
+            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 39 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </button>
+          <button class="mood-btn" data-mood="2" aria-label="偏低">
+            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 34 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </button>
+          <button class="mood-btn" data-mood="3" aria-label="平静">
+            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 L33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </button>
+          <button class="mood-btn" data-mood="4" aria-label="不错">
+            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 26 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </button>
+          <button class="mood-btn" data-mood="5" aria-label="很好">
+            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 21 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </button>
         </div>
         <input class="mood-note" id="moodNote" placeholder="今天的心情（可选）…" maxlength="80">
         <button class="mood-save" id="moodSave">记录今日心情</button>
@@ -3083,11 +3096,11 @@ function moodInit(){
   var selMood=data?data.mood:0;
   row.querySelectorAll(".mood-btn").forEach(function(b){
     var m=parseInt(b.dataset.mood);
-    if(m===selMood)b.classList.add("active");
     var colors=["#c2703f","#cf9a4e","#8a9a98","#6f9079","#3f8a6d"];
+    if(m===selMood){b.classList.add("active");b.style.color=colors[m-1];}
     b.onclick=function(){
-      selMood=m;row.querySelectorAll(".mood-btn").forEach(function(x){x.classList.remove("active");x.style.borderColor=""});
-      b.classList.add("active");b.style.borderColor=colors[m-1]
+      selMood=m;row.querySelectorAll(".mood-btn").forEach(function(x){x.classList.remove("active");x.style.color=""});
+      b.classList.add("active");b.style.color=colors[m-1]
     }
   });
   if(data&&data.note)document.getElementById("moodNote").value=data.note;
