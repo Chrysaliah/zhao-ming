@@ -628,7 +628,7 @@
       <span class="goal-arrow">→</span>
       <span class="goal-target">600</span>
     </div>
-    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 8/20 正式开干</div>
+    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 9/5 正式开干</div>
   </div>
 
   <div class="countdown-card">
@@ -646,7 +646,7 @@
       <span class="stage-left" id="stageLeft">—</span>
     </div>
     <div class="stage-track">
-      <div class="stage-seg" data-s="0">启动<br><em>8/20-9/10</em></div>
+      <div class="stage-seg" data-s="0">启动<br><em>9/5-9/26</em></div>
       <div class="stage-seg" data-s="1">地基<br><em>9/11-12/31</em></div>
       <div class="stage-seg" data-s="2">加速<br><em>1/1-3/31</em></div>
       <div class="stage-seg" data-s="3">冲刺<br><em>4/1-6/6</em></div>
@@ -685,14 +685,14 @@
 
   <!-- ===== 启动计划 · 前2周 ===== -->
   <details class="card fold-card" style="margin-top:12px;">
-    <summary class="sec-title">启动计划 · 前2周 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">8/20 → 9/2</span></summary>
+    <summary class="sec-title">启动计划 · 前2周 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">9/5 → 9/18</span></summary>
     <div class="fold-body" style="padding:0 14px 14px;">
       <!-- 第1周 -->
       <div style="padding:14px 0 10px;border-bottom:1px solid #f0f0f0;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <div style="width:8px;height:8px;border-radius:50%;background:#d4ad5e;flex-shrink:0;"></div>
           <span style="font-size:14px;font-weight:600;color:#2c3e4e;">第1周 · 开步</span>
-          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">8/20 周四 — 8/26 周三</span>
+          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">9/5 周六 — 9/11 周五</span>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
           <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">2h</strong>/天</span>
@@ -1227,12 +1227,18 @@ function groupReply(text){
   for(let i=0;i<STAGES.length;i++){
     if(today >= new Date(STAGES[i].from) && today <= new Date(STAGES[i].to)){ idx = i; break; }
   }
-  if(idx < 0) idx = today < new Date("2026-09-05") ? 0 : STAGES.length-1;
+  const planStart = new Date("2026-09-05");
+  if(idx < 0) idx = today < planStart ? 0 : STAGES.length-1;
   const s = STAGES[idx];
   nameEl.textContent = s.name;
   subEl.textContent = s.plan;
-  const leftDays = Math.max(0, Math.ceil((new Date(s.to) - today)/86400000));
-  leftEl.textContent = `剩 ${leftDays} 天`;
+  if(today < planStart){
+    const toStart = Math.ceil((planStart - today)/86400000);
+    leftEl.textContent = `距开干 ${toStart} 天`;
+  } else {
+    const leftDays = Math.max(0, Math.ceil((new Date(s.to) - today)/86400000));
+    leftEl.textContent = `剩 ${leftDays} 天`;
+  }
   const segs = document.querySelectorAll(".stage-seg");
   segs.forEach((seg,i)=>seg.classList.toggle("on", i===idx));
 })();
