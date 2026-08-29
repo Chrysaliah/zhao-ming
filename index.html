@@ -1196,15 +1196,15 @@ function groupReply(text){
 (function setGoalNote(){
   const el = document.getElementById("goalNote");
   if(!el) return;
-  const start = new Date("2026-08-20T00:00:00");
+  const start = new Date("2026-09-05T00:00:00");
   const now   = new Date();
   const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const diffDays = Math.floor((today-start)/86400000);
   if(diffDays < 0){
     const left = -diffDays;
-    el.textContent = `距 8/20 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
+    el.textContent = `距 9/5 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
   } else if(diffDays === 0){
-    el.textContent = "今天 8/20 · 复读第一天 · 启动";
+    el.textContent = "今天 9/5 · 复读第一天 · 启动";
   } else {
     el.textContent = `复读第 ${diffDays} 天 · 江浙沪 211/985 · 目标 287 → 600`;
   }
@@ -1217,8 +1217,8 @@ function groupReply(text){
   const leftEl = document.getElementById("stageLeft");
   if(!nameEl) return;
   const STAGES = [
-    {name:"启动期", from:"2026-08-20", to:"2026-09-10", plan:"第1周2h→第3周4h"},
-    {name:"地基期", from:"2026-09-11", to:"2026-12-31", plan:"5h/天 · 六科铺开"},
+    {name:"启动期", from:"2026-09-05", to:"2026-09-26", plan:"第1周2h→第3周4h"},
+    {name:"地基期", from:"2026-09-27", to:"2026-12-31", plan:"5h/天 · 六科铺开"},
     {name:"加速期", from:"2027-01-01", to:"2027-03-31", plan:"真题套卷 · 错题系统化"},
     {name:"冲刺期", from:"2027-04-01", to:"2027-06-06", plan:"全真模拟 · 错题总复习"}
   ];
@@ -1227,7 +1227,7 @@ function groupReply(text){
   for(let i=0;i<STAGES.length;i++){
     if(today >= new Date(STAGES[i].from) && today <= new Date(STAGES[i].to)){ idx = i; break; }
   }
-  if(idx < 0) idx = today < new Date("2026-08-20") ? 0 : STAGES.length-1;
+  if(idx < 0) idx = today < new Date("2026-09-05") ? 0 : STAGES.length-1;
   const s = STAGES[idx];
   nameEl.textContent = s.name;
   subEl.textContent = s.plan;
@@ -1918,7 +1918,7 @@ document.getElementById("btnExercise").onclick=()=>toggleCheckin("exercise");
 document.getElementById("btnRead").onclick=()=>toggleCheckin("read");
 
 /* ---------- 银简数据层：12 本 × 章节 × 239 段循环读物（本机存储） ---------- */
-const PLAN_START = "2026-08-20";  // 与复读计划启动对齐
+const PLAN_START = "2026-09-05";  // 与复读计划启动对齐
 const READING_BOOKS = [
   {title:"《小狗钱钱》", paras:[
     {ch:"第一章 确立目标与自信", text:"成功日记：每天睡前写下自己当天做到的 5 件事。坚持记录会让你慢慢相信「我能行」，自信是赚钱的第一块地基。"},
@@ -2769,13 +2769,13 @@ function renderWeeklySummary(){
   }
   const streak=getStreakCount();
   // Countdown
-  const planStart=new Date("2026-08-20T00:00:00");
+  const planStart=new Date("2026-09-05T00:00:00");
   const gaokao=new Date("2027-06-07T00:00:00");
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const dPlan=Math.ceil((planStart-today)/86400000);
   const dGk=Math.ceil((gaokao-today)/86400000);
   let cdText;
-  if(dPlan>0){ cdText=`距 8/20 开干 <b>${dPlan}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
+  if(dPlan>0){ cdText=`距 9/5 开干 <b>${dPlan}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
   else if(dPlan===0){ cdText=`今天开干 · 距高考 <b>${dGk}</b> 天`; }
   else { cdText=`复读第 <b>${-dPlan+1}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
   const stDone=stDays>=5;
@@ -3320,9 +3320,9 @@ const NTFY_TOPIC = 'ruozhao-reminders-2026';
 
 function getStudyPlanWeek(){
   const now = new Date();
-  const start = new Date('2026-08-20T00:00:00');
+  const start = new Date('2026-09-05T00:00:00');
   const diff = Math.floor((now - start) / 86400000);
-  if(diff < 0) return {week:0, label:'未启动', tasks:['复读计划尚未开始，8月20日启动']};
+  if(diff < 0) return {week:0, label:'未启动', tasks:['复读计划尚未开始，9月5日启动']};
   if(diff < 7) return {
     week:1,
     label:'第1周 · 开步',
