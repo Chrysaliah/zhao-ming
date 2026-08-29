@@ -623,7 +623,7 @@
       <span class="goal-arrow">→</span>
       <span class="goal-target">600</span>
     </div>
-    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 8/25 正式开干</div>
+    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 8/20 正式开干</div>
   </div>
 
   <div class="countdown-card">
@@ -680,17 +680,17 @@
 
   <!-- ===== 启动计划 · 前2周 ===== -->
   <details class="card fold-card" style="margin-top:12px;">
-    <summary class="sec-title">启动计划 · 前2周 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">9/5 → 9/18</span></summary>
+    <summary class="sec-title">启动计划 · 前2周 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">8/20 → 9/2</span></summary>
     <div class="fold-body" style="padding:0 14px 14px;">
       <!-- 第1周 -->
       <div style="padding:14px 0 10px;border-bottom:1px solid #f0f0f0;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <div style="width:8px;height:8px;border-radius:50%;background:#d4ad5e;flex-shrink:0;"></div>
           <span style="font-size:14px;font-weight:600;color:#2c3e4e;">第1周 · 开步</span>
-          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">9/5 周六 — 9/11 周五</span>
+          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">8/20 周四 — 8/26 周三</span>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">3h</strong>/天</span>
+          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">2h</strong>/天</span>
           <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">📖 <strong style="color:#6a7a8a;">数学 + 英语</strong></span>
           <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">🌅 目标起床 <strong style="color:#6a7a8a;">→11:00</strong></span>
         </div>
@@ -709,7 +709,7 @@
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <div style="width:8px;height:8px;border-radius:50%;background:#6a8a6a;flex-shrink:0;"></div>
           <span style="font-size:14px;font-weight:600;color:#2c3e4e;">第2周 · 加码</span>
-          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">9/12 周六 — 9/18 周五</span>
+          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">8/27 周四 — 9/2 周三</span>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
           <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">3h</strong>/天</span>
@@ -1103,7 +1103,7 @@ const REPLIES = {
   lv:[
     {k:["资料","下单","到货","书","买"],t:"资料到位是开局第一关。物理跳跳学长、化学超人、生物李林、语文陈Sir都还没到——这几天先把单下了。到了计划才排得进去。"},
     {k:["进度","落后","差距","计划","排"],t:"计划不是按章节平均排，是按你真实缺口排。开干前先摸清每科哪块是零分，再决定先啃哪。前三天只要『动起来+睡够10h』就算赢。"},
-    {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/25 第一条计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
+    {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/20 第一天计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
     {k:["default"],t:"执行的事归我。你今天动了没？没动就别想太多，先从一个最小动作开始。"}
   ],
   xu:[
@@ -1191,15 +1191,15 @@ function groupReply(text){
 (function setGoalNote(){
   const el = document.getElementById("goalNote");
   if(!el) return;
-  const start = new Date("2026-08-25T00:00:00");
+  const start = new Date("2026-08-20T00:00:00");
   const now   = new Date();
   const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const diffDays = Math.floor((today-start)/86400000);
   if(diffDays < 0){
     const left = -diffDays;
-    el.textContent = `距 8/25 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
+    el.textContent = `距 8/20 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
   } else if(diffDays === 0){
-    el.textContent = "今天 8/25 · 复读第一天 · 启动";
+    el.textContent = "今天 8/20 · 复读第一天 · 启动";
   } else {
     el.textContent = `复读第 ${diffDays} 天 · 江浙沪 211/985 · 目标 287 → 600`;
   }
@@ -1913,7 +1913,7 @@ document.getElementById("btnExercise").onclick=()=>toggleCheckin("exercise");
 document.getElementById("btnRead").onclick=()=>toggleCheckin("read");
 
 /* ---------- 银简数据层：12 本 × 章节 × 239 段循环读物（本机存储） ---------- */
-const PLAN_START = "2026-08-25";  // 与学习正式开干对齐
+const PLAN_START = "2026-08-20";  // 与复读计划启动对齐
 const READING_BOOKS = [
   {title:"《小狗钱钱》", paras:[
     {ch:"第一章 确立目标与自信", text:"成功日记：每天睡前写下自己当天做到的 5 件事。坚持记录会让你慢慢相信「我能行」，自信是赚钱的第一块地基。"},
@@ -2764,13 +2764,13 @@ function renderWeeklySummary(){
   }
   const streak=getStreakCount();
   // Countdown
-  const planStart=new Date("2026-08-25T00:00:00");
+  const planStart=new Date("2026-08-20T00:00:00");
   const gaokao=new Date("2027-06-07T00:00:00");
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const dPlan=Math.ceil((planStart-today)/86400000);
   const dGk=Math.ceil((gaokao-today)/86400000);
   let cdText;
-  if(dPlan>0){ cdText=`距 8/25 开干 <b>${dPlan}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
+  if(dPlan>0){ cdText=`距 8/20 开干 <b>${dPlan}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
   else if(dPlan===0){ cdText=`今天开干 · 距高考 <b>${dGk}</b> 天`; }
   else { cdText=`复读第 <b>${-dPlan+1}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
   const stDone=stDays>=5;
@@ -3299,9 +3299,9 @@ const NTFY_TOPIC = 'ruozhao-reminders-2026';
 
 function getStudyPlanWeek(){
   const now = new Date();
-  const start = new Date('2026-09-05T00:00:00');
+  const start = new Date('2026-08-20T00:00:00');
   const diff = Math.floor((now - start) / 86400000);
-  if(diff < 0) return {week:0, label:'未启动', tasks:['复读计划尚未开始，9月5日启动']};
+  if(diff < 0) return {week:0, label:'未启动', tasks:['复读计划尚未开始，8月20日启动']};
   if(diff < 7) return {
     week:1,
     label:'第1周 · 开步',
@@ -3311,7 +3311,7 @@ function getStudyPlanWeek(){
       '📖 英语 · 词汇：词根词缀法，每天20词，3次默写过关',
       '📖 英语 · 听力：听→读→做题，每天15min'
     ],
-    tip:'数学动作：代表题→试5min→答案找缺口→教材补概念→回来解→双练巩固'
+    tip:'每日2h（数学+英语）· 起床目标11:00 · 数学动作：代表题→试5min→答案找缺口→教材补概念→回来解→双练巩固'
   };
   if(diff < 14) return {
     week:2,
@@ -3322,15 +3322,28 @@ function getStudyPlanWeek(){
       '⚡ 物理 · 力学基础：黄夫人视频对应章节，画画面（什么动/什么推/方向）',
       '⚡ 物理 · 公式是画面的数学翻译，先理解再记公式'
     ],
-    tip:'物理动作：代表题→画画面→卡→黄夫人对应讲→回来画→解'
+    tip:'每日3h（数学+英语+物理）· 起床目标10:30 · 物理动作：代表题→画画面→卡→黄夫人对应讲→回来画→解'
   };
-  return {week:3, label:'第3周+', tasks:['启动期已过，查看拾光司辰页面的完整计划'], tip:''};
+  if(diff < 21) return {
+    week:3,
+    label:'第3周 · 六科全开',
+    tasks:[
+      '📐 数学 · 逆向法走通：代表题→双练巩固，选择填空优先',
+      '📖 英语 · 词汇+听力+阅读/写作轮换，语法当字典查',
+      '⚡ 物理 · 力学图像化：画画面→解，公式是画面的数学翻译',
+      '🧪 化学 · 先建词汇：元素符号→化合价→化学式→方程式配平',
+      '🧬 生物 · 正向读课本：概念接到自然经验上，30天速记',
+      '📝 语文 · 阅读看骨架，写作从提纲入手'
+    ],
+    tip:'每日4h · 六科全开 · 起床目标10:00 · 5分钟启动 / 只盯本周 / 完成>完美'
+  };
+  return {week:4, label:'启动期结束', tasks:['启动期已过，查看拾光司辰页面的完整计划'], tip:''};
 }
 
 async function pushStudyPlan(mode){
   const plan = getStudyPlanWeek();
   if(plan.week === 0){
-    alert('复读计划尚未启动（9月5日开始）');
+    alert('复读计划尚未启动（8月20日开始）');
     return;
   }
   
