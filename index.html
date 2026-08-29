@@ -185,6 +185,16 @@
   .countdown-card .cd-date{font-size:11px;opacity:.7;}
   .countdown-card .cd-num{font-size:40px;font-weight:800;line-height:1;letter-spacing:1px;}
   .countdown-card .cd-unit{font-size:12px;opacity:.85;margin-left:4px;font-weight:600;}
+  .stage-card{padding:12px 14px;}
+  .stage-line{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;}
+  .stage-name{font-size:15px;font-weight:800;color:var(--teal);}
+  .stage-sub{font-size:11px;color:var(--muted);flex:1;}
+  .stage-left{font-size:12px;font-weight:700;color:var(--teal);}
+  .stage-track{position:relative;display:flex;gap:4px;}
+  .stage-seg{flex:1;text-align:center;font-size:10px;color:var(--muted);line-height:1.4;padding:6px 2px;border-radius:8px;background:#f3f1f8;}
+  .stage-seg em{display:block;font-style:normal;font-size:9px;opacity:.7;}
+  .stage-seg.on{background:var(--teal);color:#fff;font-weight:700;}
+  .stage-seg.on em{opacity:.85;}
   .roster{display:flex;flex-wrap:wrap;gap:8px;}
   .role-chip{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:6px 11px;background:#fff;font-size:12px;}
   .role-chip .dot{width:10px;height:10px;border-radius:50%;}
@@ -622,6 +632,21 @@
       <span class="cd-date" id="cdDate">2027 年 6 月 7 日</span>
     </div>
     <div><span class="cd-num" id="cdNum">—</span><span class="cd-unit">天</span></div>
+  </div>
+
+  <div class="card stage-card">
+    <div class="stage-line">
+      <span class="stage-name" id="stageName">启动期</span>
+      <span class="stage-sub" id="stageSub">第 1 周 · 每日 2h · 起床 11:00</span>
+      <span class="stage-left" id="stageLeft">—</span>
+    </div>
+    <div class="stage-track">
+      <div class="stage-seg" data-s="0">启动<br><em>8/20-9/10</em></div>
+      <div class="stage-seg" data-s="1">地基<br><em>9/11-12/31</em></div>
+      <div class="stage-seg" data-s="2">加速<br><em>1/1-3/31</em></div>
+      <div class="stage-seg" data-s="3">冲刺<br><em>4/1-6/6</em></div>
+      <div class="stage-bar" id="stageBar"></div>
+    </div>
   </div>
 
   <div class="card mod-checkin">
@@ -1180,6 +1205,33 @@ function groupReply(text){
   }
 })();
 
+/* ---------- 主页：复读阶段进度（四段节奏） ---------- */
+(function renderStage(){
+  const nameEl = document.getElementById("stageName");
+  const subEl  = document.getElementById("stageSub");
+  const leftEl = document.getElementById("stageLeft");
+  if(!nameEl) return;
+  const STAGES = [
+    {name:"启动期", from:"2026-08-20", to:"2026-09-10", plan:"第1周2h→第3周4h"},
+    {name:"地基期", from:"2026-09-11", to:"2026-12-31", plan:"5h/天 · 六科铺开"},
+    {name:"加速期", from:"2027-01-01", to:"2027-03-31", plan:"真题套卷 · 错题系统化"},
+    {name:"冲刺期", from:"2027-04-01", to:"2027-06-06", plan:"全真模拟 · 错题总复习"}
+  ];
+  const today = new Date();
+  let idx = -1;
+  for(let i=0;i<STAGES.length;i++){
+    if(today >= new Date(STAGES[i].from) && today <= new Date(STAGES[i].to)){ idx = i; break; }
+  }
+  if(idx < 0) idx = today < new Date("2026-08-20") ? 0 : STAGES.length-1;
+  const s = STAGES[idx];
+  nameEl.textContent = s.name;
+  subEl.textContent = s.plan;
+  const leftDays = Math.max(0, Math.ceil((new Date(s.to) - today)/86400000));
+  leftEl.textContent = `剩 ${leftDays} 天`;
+  const segs = document.querySelectorAll(".stage-seg");
+  segs.forEach((seg,i)=>seg.classList.toggle("on", i===idx));
+})();
+
 /* ---------- Supabase 连接 ---------- */
 const sb = (typeof supabase!=="undefined" && typeof SUPABASE_URL!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0)
   ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -1337,8 +1389,13 @@ async function aiGroupReply(text){
   const roles = fallback.map(r=>r.role);
   try{
     const context = await collectContext();
+    // 取最近 20 条对话历史，让 AI 记得之前聊过什么（不含当前这条）
+    const history = chatLog.slice(-20).filter(m=>m.ts && m.ts!==Date.now()).map(m=>({
+      role: m.from==="user" ? "user" : "assistant",
+      content: m.text
+    }));
     const {data, error} = await sb.functions.invoke("deepseek-chat", {
-      body:{ roles, userText:text, context }
+      body:{ roles, userText:text, context, history }
     });
     if(error || !data || !Array.isArray(data.replies) || data.replies.length===0)
       return {intent:"chat", replies:fallback, actions:[]};
@@ -3330,8 +3387,34 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW 注册失败:", e));
   });
-  initAllNewFeatures();
 }
+
+/* ---------- 打卡断签提醒（21:30 后当天未打卡则通知） ---------- */
+(function setupMissCheckinAlert(){
+  const KEY = "yj_miss_alert_" + todayStr();
+  if(localStorage.getItem(KEY)) return;   // 今天已提醒过
+  function check(){
+    try{
+      const now = new Date();
+      const hh = now.getHours() + now.getMinutes()/60;
+      if(hh < 21.5) return;                // 21:30 前不打扰
+      const ck = checkinCache[todayStr()];
+      if(ck && (ck.study || ck.read || ck.exercise)) return;   // 已打卡
+      if("Notification" in window && Notification.permission === "granted"){
+        new Notification("⏰ 今天还没打卡", {
+          body: "学习/运动/阅读都还没记录。不用完美，勾一项就算数。",
+          icon: "icon-192.png",
+          tag: "miss-checkin"
+        });
+      }
+      localStorage.setItem(KEY, "1");
+    }catch(e){}
+  }
+  setInterval(check, 600000);   // 每 10 分钟查一次
+  setTimeout(check, 5000);      // 进页面 5 秒后先查一次
+})();
+
+  initAllNewFeatures();
 </script>
 <div class="rd-banner" id="rdBanner"></div>
 
