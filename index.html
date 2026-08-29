@@ -568,7 +568,7 @@
 <!-- force SW update -->
 <script>
 (function(){
-  var EXPECTED="longming-v95";
+  var EXPECTED="longming-v96";
   if("serviceWorker" in navigator){
     navigator.serviceWorker.getRegistration().then(function(reg){
       if(!reg)return;
@@ -651,6 +651,66 @@
     <div class="goal-tree" id="goalTree"></div>
     
     <div class="goal-note" style="margin-top:6px">287 → 550 → 600 · 拆到每天可执行</div>
+  </details>
+
+  <!-- ===== 启动计划 · 前2周 ===== -->
+  <details class="card fold-card" style="margin-top:12px;">
+    <summary class="sec-title">启动计划 · 前2周 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">9/5 → 9/18</span></summary>
+    <div class="fold-body" style="padding:0 14px 14px;">
+      <!-- 第1周 -->
+      <div style="padding:14px 0 10px;border-bottom:1px solid #f0f0f0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#d4ad5e;flex-shrink:0;"></div>
+          <span style="font-size:14px;font-weight:600;color:#2c3e4e;">第1周 · 开步</span>
+          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">9/5 周六 — 9/11 周五</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">3h</strong>/天</span>
+          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">📖 <strong style="color:#6a7a8a;">数学 + 英语</strong></span>
+          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">🌅 目标起床 <strong style="color:#6a7a8a;">→11:00</strong></span>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 8px;">
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 数学 · 逆向法：找初二函数代表题，试5min→答案找缺口→补教材概念</li>
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 数学 · 函数断口修补：变量关系→函数定义→图像理解</li>
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 英语 · 词汇：词根词缀法，每天20词，3次默写过关</li>
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 英语 · 听力：听→读→做题，每天15min</li>
+        </ul>
+        <div style="padding:8px 12px;background:#faf6ef;border-radius:8px;font-size:12px;color:#6a7a8a;line-height:1.6;">
+          <strong style="color:#c4a265;">数学动作：</strong>代表题→试5min→答案找缺口→教材补概念→回来解→双练巩固
+        </div>
+      </div>
+      <!-- 第2周 -->
+      <div style="padding:14px 0 10px;border-bottom:1px solid #f0f0f0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#6a8a6a;flex-shrink:0;"></div>
+          <span style="font-size:14px;font-weight:600;color:#2c3e4e;">第2周 · 加码</span>
+          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">9/12 周六 — 9/18 周五</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">3h</strong>/天</span>
+          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">📖 <strong style="color:#6a7a8a;">+ 物理</strong></span>
+          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">🌅 目标起床 <strong style="color:#6a7a8a;">10:30</strong></span>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 8px;">
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 数学 · 继续函数修补 + 选择填空专项训练</li>
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 英语 · 词汇积累继续 + 阅读/写作隔天轮换</li>
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 物理 · 力学基础：黄夫人视频对应章节，画画面（什么动/什么推/方向）</li>
+          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 物理 · 公式是画面的数学翻译，先理解再记公式</li>
+        </ul>
+        <div style="padding:8px 12px;background:#faf6ef;border-radius:8px;font-size:12px;color:#6a7a8a;line-height:1.6;">
+          <strong style="color:#c4a265;">物理动作：</strong>代表题→画画面→卡→黄夫人对应讲→回来画→解
+        </div>
+      </div>
+      <!-- 小贴士 -->
+      <div style="padding:10px 12px 0;font-size:12px;color:#8a9baa;line-height:1.5;display:flex;align-items:flex-start;gap:6px;">
+        <span>💡</span>
+        <span>5分钟启动：不想学只承诺"看5分钟" · 完成&gt;完美 · 出门走走让DMN后台处理</span>
+      </div>
+    </div>
+    <div style="padding:8px 14px 14px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="fd-push-btn" onclick="pushStudyPlan()" style="flex:1;border:1px solid var(--sichen);background:#fff;color:var(--sichen);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📨 推送今日任务</button>
+      <button class="fd-push-btn" onclick="pushStudyPlan('tomorrow')" style="flex:1;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📅 推送明日任务</button>
+    </div>
   </details>
 
   <div class="card">
@@ -3175,6 +3235,94 @@ function initAllNewFeatures(){
   var xgBtn=document.getElementById("xgSendBtn");
   if(xgBtn) xgBtn.onclick=xgSmartSend;
   setInterval(autoSnapshot,300000)
+}
+
+/* ---------- 启动计划推送（ntfy） ---------- */
+const NTFY_TOPIC = 'ruozhao-reminders-2026';
+
+function getStudyPlanWeek(){
+  const now = new Date();
+  const start = new Date('2026-09-05T00:00:00');
+  const diff = Math.floor((now - start) / 86400000);
+  if(diff < 0) return {week:0, label:'未启动', tasks:['复读计划尚未开始，9月5日启动']};
+  if(diff < 7) return {
+    week:1,
+    label:'第1周 · 开步',
+    tasks:[
+      '📐 数学 · 逆向法：找初二函数代表题，试5min→答案找缺口→补教材概念',
+      '📐 数学 · 函数断口修补：变量关系→函数定义→图像理解',
+      '📖 英语 · 词汇：词根词缀法，每天20词，3次默写过关',
+      '📖 英语 · 听力：听→读→做题，每天15min'
+    ],
+    tip:'数学动作：代表题→试5min→答案找缺口→教材补概念→回来解→双练巩固'
+  };
+  if(diff < 14) return {
+    week:2,
+    label:'第2周 · 加码',
+    tasks:[
+      '📐 数学 · 继续函数修补 + 选择填空专项训练',
+      '📖 英语 · 词汇积累继续 + 阅读/写作隔天轮换',
+      '⚡ 物理 · 力学基础：黄夫人视频对应章节，画画面（什么动/什么推/方向）',
+      '⚡ 物理 · 公式是画面的数学翻译，先理解再记公式'
+    ],
+    tip:'物理动作：代表题→画画面→卡→黄夫人对应讲→回来画→解'
+  };
+  return {week:3, label:'第3周+', tasks:['启动期已过，查看拾光司辰页面的完整计划'], tip:''};
+}
+
+async function pushStudyPlan(mode){
+  const plan = getStudyPlanWeek();
+  if(plan.week === 0){
+    alert('复读计划尚未启动（9月5日开始）');
+    return;
+  }
+  
+  let title, body;
+  if(mode === 'tomorrow'){
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    title = '📅 明日任务 · ' + plan.label;
+    body = '明天（' + (tomorrow.getMonth()+1)+'/'+tomorrow.getDate()+'）的任务：\n\n' +
+      plan.tasks.join('\n') + '\n\n' + plan.tip;
+  } else {
+    title = '📨 今日任务 · ' + plan.label;
+    body = '今天的任务：\n\n' +
+      plan.tasks.join('\n') + '\n\n' + plan.tip;
+  }
+  
+  try{
+    const resp = await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
+      method: 'POST',
+      body: body,
+      headers: {
+        'Title': title,
+        'Tags': 'bell',
+        'Priority': 'high',
+        'Content-Type': 'text/plain; charset=utf-8'
+      }
+    });
+    if(resp.ok){
+      alert('✅ 已推送至手机 · ' + title);
+      // 更新所有按钮状态
+      document.querySelectorAll('.fd-push-btn').forEach(b => {
+        const orig = b.textContent;
+        b.textContent = '✓ 已推送';
+        b.style.background = 'var(--ok)';
+        b.style.color = '#fff';
+        b.style.borderColor = 'var(--ok)';
+        setTimeout(() => {
+          b.textContent = orig;
+          b.style.background = '';
+          b.style.color = '';
+          b.style.borderColor = '';
+        }, 2000);
+      });
+    } else {
+      alert('推送失败，请稍后重试');
+    }
+  } catch(e) {
+    alert('网络错误，推送失败');
+  }
 }
 
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
