@@ -581,6 +581,25 @@
 .fold-card .fold-body>div:last-child{margin-bottom:0;}
 .fold-sub-card{border:none!important;padding:0!important;}
 .fold-sub-card .sec-title{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .fin-import{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding:10px 12px;background:var(--bg-2,#faf8fc);border-radius:12px;border:1px solid var(--border,#ece8ee);}
+  .fin-import-btn{font:inherit;font-size:13px;padding:9px 14px;border:none;border-radius:10px;background:#534AB7;color:#fff;cursor:pointer;font-weight:500;align-self:flex-start;}
+  .fin-import-btn:active{transform:scale(.98);}
+  .fin-import-tip{font-size:11px;color:var(--muted,#8a8594);line-height:1.5;}
+  .fin-import-preview{margin-top:10px;border:1px solid var(--border,#ece8ee);border-radius:12px;overflow:hidden;}
+  .fin-imp-loading,.fin-imp-empty,.fin-imp-err{padding:16px;font-size:13px;color:var(--muted,#8a8594);text-align:center;}
+  .fin-imp-err{color:#a32d2d;}
+  .fin-imp-hd{padding:10px 12px;background:var(--bg-2,#faf8fc);font-size:12px;color:var(--muted,#8a8594);border-bottom:1px solid var(--border,#ece8ee);}
+  .fin-imp-list{max-height:280px;overflow:auto;}
+  .fin-imp-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border,#f2eef5);font-size:12px;}
+  .fi-date{color:var(--muted,#8a8594);width:84px;flex:none;}
+  .fi-amt{width:80px;flex:none;font-weight:500;}
+  .fi-amt.pos{color:#3f8a6d;}
+  .fi-amt.neg{color:#b5524e;}
+  .fi-mer{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink,#2c2c2a);}
+  .fi-cat{flex:none;font:inherit;font-size:12px;padding:3px 4px;border:1px solid var(--border,#ece8ee);border-radius:7px;background:#fff;}
+  .fin-imp-acts{display:flex;gap:8px;padding:10px 12px;}
+  .fin-imp-ok{font:inherit;font-size:13px;padding:8px 16px;border:none;border-radius:9px;background:#3f8a6d;color:#fff;cursor:pointer;font-weight:500;}
+  .fin-imp-cancel{font:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--border,#ece8ee);border-radius:9px;background:#fff;color:var(--muted,#8a8594);cursor:pointer;}
 </style>
 
 <!-- force SW update -->
@@ -798,6 +817,12 @@
     <div class="sheet-panel">
       <div class="sheet-hd">银流<span class="sheet-close" data-close="yinliuSheet">✕</span></div>
       <div class="fin-sub">收入/支出 · 分类 + 资产·负债标注</div>
+      <div class="fin-import">
+        <button class="fin-import-btn" id="finImportBtn">📥 导入微信账单</button>
+        <span class="fin-import-tip">微信→我→服务→钱包→账单→导出 Excel，下载后这里一键导入</span>
+        <input type="file" id="finImportFile" accept=".xlsx,.xls,.csv" style="display:none">
+      </div>
+      <div class="fin-import-preview" id="finImportPreview" style="display:none;"></div>
       <div class="fin-balance" id="finBalance"></div>
       <div class="fin-add">
         <select id="finType">
@@ -2408,6 +2433,112 @@ const FIN_KEY="yj_fin_v1";
 const CATCOL={"餐饮":"#e8a87c","交通":"#8ab0d8","学习资料":"#d4ad5e","购物":"#c29aa6","娱乐":"#9a8fb0","其他":"#b6b2bd"};
 function getFin(){try{return JSON.parse(localStorage.getItem(FIN_KEY)||"[]");}catch(e){return[];}}
 function setFin(a){localStorage.setItem(FIN_KEY,JSON.stringify(a));}
+function smartFinCat(text){
+  var t=(text||"").toLowerCase();
+  var cat="其他";
+  if(/(饭|餐|吃|外卖|食堂|奶茶|咖啡|星巴克|瑞幸|肯德基|麦当劳|必胜客|小吃|烧烤|火锅|面|粥|早饭|午饭|晚饭|夜宵|面包|蛋糕|甜品|餐厅)/.test(t)) cat="餐饮";
+  else if(/(地铁|公交|打车|滴滴|出租|高铁|火车|飞机|机票|加油|停车|过路|骑行|单车|uber|的士|网约车|车票|的票)/.test(t)) cat="交通";
+  else if(/(书|课|教材|教辅|网课|资料|课本|试卷|课程|考研|单词|笔记|文具|打印|知乎|得到|微信读书|kindle)/.test(t)) cat="学习资料";
+  else if(/(买|购|淘宝|京东|拼多多|天猫|衣服|鞋|包|护肤|化妆|数码|手机|电脑|家电|日用|百货|口罩|快递|唯品|超市|便利店|商城)/.test(t)) cat="购物";
+  else if(/(电影|游戏|演唱会|会员|视频|音乐|综艺|展览|门票|ktv|密室|桌游|动漫|b站|网易云|steam|爱奇艺|优酷)/.test(t)) cat="娱乐";
+  var nature="消费";
+  if(/(基金|股票|理财|黄金|证券|定投|etf|债|投资|投保)/.test(t)) nature="投资";
+  else if(/(房租|收租|房贷|车贷|存款|房产|车位|置业|还债|借款|借贷|还款|月供)/.test(t)) nature="资产";
+  return {cat:cat, nature:nature};
+}
+let _xlsxLoading=null;
+function loadXLSX(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  if(_xlsxLoading) return _xlsxLoading;
+  _xlsxLoading=new Promise(function(res,rej){
+    var s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+    s.onload=function(){res(window.XLSX);};
+    s.onerror=function(){rej(new Error("解析库加载失败，请检查网络"));};
+    document.head.appendChild(s);
+  });
+  return _xlsxLoading;
+}
+function _billCol(rows,names){
+  if(!rows||!rows.length) return null;
+  var keys=Object.keys(rows[0]);
+  for(var i=0;i<names.length;i++){
+    var k=keys.find(function(k){return k.indexOf(names[i])>=0;});
+    if(k) return k;
+  }
+  return null;
+}
+async function parseBillFile(file){
+  var XLSX=await loadXLSX();
+  var buf=await file.arrayBuffer();
+  var wb=XLSX.read(buf,{type:"array"});
+  var ws=wb.Sheets[wb.SheetNames[0]];
+  var rows=XLSX.utils.sheet_to_json(ws,{defval:""});
+  if(!rows.length) return [];
+  var amtKey=_billCol(rows,["金额"]);
+  var typeKey=_billCol(rows,["收/支","收支","类型"]);
+  var timeKey=_billCol(rows,["交易时间","时间","日期"]);
+  var merKey=_billCol(rows,["交易对方","商品","商户","对方","备注"]);
+  if(!amtKey) throw new Error("没找到金额列，请确认导出的是微信账单");
+  var out=[];
+  rows.forEach(function(r){
+    var amt=parseFloat(String(r[amtKey]||"").replace(/[^\d.\-]/g,""));
+    if(!amt) return;
+    var tstr=String(r[typeKey]||"");
+    var type=tstr.indexOf("收入")>=0?"income":"expense";
+    var timeStr=String(r[timeKey]||"");
+    var date=timeStr.slice(0,10);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) date=todayStr();
+    var mer=String(r[merKey]||"").trim();
+    if(!mer) mer=(type==="income"?"微信收款":"微信支付");
+    var c=smartFinCat(mer);
+    out.push({date:date,type:type,amount:amt,note:mer,cat:c.cat,nature:type==="income"?"资产":c.nature});
+  });
+  return out;
+}
+let _importDraft=null;
+async function finDoImport(file){
+  var prev=document.getElementById("finImportPreview");
+  prev.style.display="block";
+  prev.innerHTML='<div class="fin-imp-loading">解析中…</div>';
+  try{
+    var data=await parseBillFile(file);
+    if(!data.length){ prev.innerHTML='<div class="fin-imp-empty">没解析出任何交易，确认文件是微信导出的账单？</div>'; return; }
+    _importDraft=data;
+    finRenderImportPreview(data);
+  }catch(e){
+    prev.innerHTML='<div class="fin-imp-err">'+esc(e.message||"解析失败")+'</div>';
+  }
+}
+function finRenderImportPreview(data){
+  var prev=document.getElementById("finImportPreview");
+  var cats=["餐饮","交通","学习资料","购物","娱乐","其他"];
+  var html='<div class="fin-imp-hd">识别到 '+data.length+' 笔，确认分类后导入（分类可改）</div><div class="fin-imp-list">';
+  data.forEach(function(d,i){
+    html+='<div class="fin-imp-row">'+
+      '<span class="fi-date">'+d.date+'</span>'+
+      '<span class="fi-amt '+(d.type==="income"?"pos":"neg")+'">'+(d.type==="income"?"+":"-")+'¥'+d.amount.toFixed(2)+'</span>'+
+      '<span class="fi-mer" title="'+esc(d.note)+'">'+esc(d.note)+'</span>'+
+      '<select class="fi-cat" data-i="'+i+'">'+cats.map(function(c){return '<option value="'+c+'"'+(c===d.cat?' selected':'')+'>'+c+'</option>';}).join("")+'</select>'+
+    '</div>';
+  });
+  html+='</div><div class="fin-imp-acts"><button class="fin-imp-ok" id="finImpOk">确认导入 '+data.length+' 笔</button><button class="fin-imp-cancel" id="finImpCancel">取消</button></div>';
+  prev.innerHTML=html;
+  prev.querySelectorAll(".fi-cat").forEach(function(s){s.onchange=function(){var i=+s.dataset.i;_importDraft[i].cat=s.value;};});
+  document.getElementById("finImpOk").onclick=function(){
+    var items=getFin();
+    _importDraft.forEach(function(d){
+      items.push({id:Date.now()+Math.floor(Math.random()*1000),type:d.type,amount:d.amount,note:d.note,cat:d.cat,nature:d.type==="income"?"资产":d.nature,date:d.date,ts:Date.now(),src:"import"});
+    });
+    var n=_importDraft.length;
+    setFin(items);
+    _importDraft=null;
+    prev.style.display="none";prev.innerHTML="";
+    buildMonthSel();loadFin();
+    showRdBanner("✓ 已导入 "+n+" 笔账单");
+  };
+  document.getElementById("finImpCancel").onclick=function(){_importDraft=null;prev.style.display="none";prev.innerHTML="";};
+}
 function ymOf(r){return r.slice(0,7);}
 function loadFin(){
   const items=getFin();
@@ -2468,6 +2599,8 @@ function addFin(){
 }
 function loadReading(){ renderReading(); }
 document.getElementById("finAddBtn").onclick=addFin;
+document.getElementById("finImportBtn").onclick=function(){document.getElementById("finImportFile").click();};
+document.getElementById("finImportFile").onchange=function(){var f=this.files[0];if(f)finDoImport(f);this.value="";};
 document.getElementById("monthSel").onchange=loadFin;
 document.getElementById("finList").addEventListener("click",e=>{
   const del=e.target.closest(".plan-del");if(!del)return;
@@ -3224,7 +3357,9 @@ async function xgSmartSend(){
     showRdBanner("\u2713 已加入待办："+parsed.text);return
   }
   if(parsed.type==="fin"){
-    var a=getFin();a.push({id:Date.now(),type:"expense",amount:parsed.amount,note:parsed.text,cat:"其他",nature:"消费",date:todayStr(),ts:Date.now()});setFin(a);
+    var c=smartFinCat(parsed.text);
+    var t=/收入|赚|收到|工资|收款|退款|卖出|回款|奖金|分红|进账/.test(parsed.text)?"income":"expense";
+    var a=getFin();a.push({id:Date.now(),type:t,amount:parsed.amount,note:parsed.text,cat:c.cat,nature:t==="income"?"资产":c.nature,date:todayStr(),ts:Date.now()});setFin(a);
     ta.value="";ta.style.height="auto";delete ta.dataset.img;
     showRdBanner("\u2713 已记账："+parsed.amount+"元");return
   }
