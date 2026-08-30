@@ -1,71 +1,27 @@
-// 昭明工作台 · Service Worker（仅用于「添加到主屏幕」可安装 + 离线打开 app shell）
-const CACHE = "longming-v96";
-const SHELL = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./supabase-config.js"
-];
-
-self.addEventListener("install", (e) => {
+/* 拾光 Service Worker —— network-first，导航请求永远走网络，杜绝旧 HTML 缓存导致闪屏卡死 */
+const CACHE = 'zhao-ming-v2';
+self.addEventListener('install', function(){ self.skipWaiting(); });
+self.addEventListener('activate', function(e){
   e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())
+    caches.keys().then(function(keys){
+      return Promise.all(keys.map(function(k){ if(k !== CACHE) return caches.delete(k); }));
+    }).then(function(){ return self.clients.claim(); })
   );
 });
-
-self.addEventListener("activate", (e) => {
-  e.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener("fetch", (e) => {
-  const url = new URL(e.request.url);
-  // 云端数据与第三方库不缓存，始终走网络（保证聊天实时）
-  if (url.hostname.includes("supabase.co") || url.hostname.includes("jsdelivr.net")) {
+self.addEventListener('fetch', function(e){
+  var req = e.request;
+  if(req.method !== 'GET') return;
+  if(req.mode === 'navigate'){
+    /* 页面本身永远拿网络最新版；网络失败才回退缓存 */
+    e.respondWith(fetch(req).catch(function(){ return caches.match(req); }));
     return;
   }
-  // 页面导航：网络优先，离线再回退缓存（确保前端更新能即时生效）
-  if (e.request.mode === "navigate") {
-    e.respondWith(fetch(e.request,{cache:"no-store"}).catch(() => caches.match("./index.html")));
-    return;
-  }
-  // 其余静态资源：缓存优先
+  /* 静态资源：网络优先，成功则更新缓存，失败回退缓存 */
   e.respondWith(
-    caches.match(e.request).then((cached) => cached || fetch(e.request))
-  );
-});
-
-// ===== Push 通知 =====
-self.addEventListener("push", (e) => {
-  let data = {};
-  try { data = e.data.json(); } catch (_) { data = { body: e.data ? e.data.text() : "" }; }
-  const title = data.title || "拾光提醒";
-  const options = {
-    body: data.body || "去看看今天的打卡",
-    icon: "icon-192.png",
-    badge: "icon-192.png",
-    data: { url: data.url || "https://chrysaliah.github.io/zhao-ming/" },
-    tag: "sichen-reminder",
-    requireInteraction: false,
-    vibrate: [100, 50, 100]
-  };
-  e.waitUntil(self.registration.showNotification(title, options));
-});
-
-self.addEventListener("notificationclick", (e) => {
-  e.notification.close();
-  const targetUrl = e.notification.data && e.notification.data.url || "https://chrysaliah.github.io/zhao-ming/";
-  e.waitUntil(
-    self.clients.matchAll({ type: "window" }).then((clientList) => {
-      for (const cl of clientList) {
-        if (cl.url.includes("chrysaliah.github.io") && "focus" in cl) return cl.focus();
-      }
-      if (self.clients.openWindow) return self.clients.openWindow(targetUrl);
-    })
+    fetch(req).then(function(r){
+      var c = r.clone();
+      caches.open(CACHE).then(function(ca){ ca.put(req, c); });
+      return r;
+    }).catch(function(){ return caches.match(req); })
   );
 });
