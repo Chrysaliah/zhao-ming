@@ -600,6 +600,14 @@
   .fin-imp-acts{display:flex;gap:8px;padding:10px 12px;}
   .fin-imp-ok{font:inherit;font-size:13px;padding:8px 16px;border:none;border-radius:9px;background:#3f8a6d;color:#fff;cursor:pointer;font-weight:500;}
   .fin-imp-cancel{font:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--border,#ece8ee);border-radius:9px;background:#fff;color:var(--muted,#8a8594);cursor:pointer;}
+  .fin-report{margin:10px 0 4px;}
+  .fin-report-btn{width:100%;padding:10px;border:0;border-radius:10px;background:#534AB7;color:#fff;font-size:13px;cursor:pointer;}
+  .fin-report-btn:disabled{opacity:.6;}
+  .fin-report-body{margin-top:10px;padding:12px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;line-height:1.7;font-size:13px;}
+  .fr-month{font-weight:600;color:#26215C;margin-bottom:6px;}
+  .fr-row{color:#444;}
+  .fr-cats{color:#888;font-size:12px;margin:4px 0;}
+  .fr-text{margin-top:6px;color:#333;}
 </style>
 
 <!-- force SW update -->
@@ -848,6 +856,10 @@
         <div class="legend" id="legend"></div>
       </div>
       <div class="month-sel">查看月份 <select id="monthSel"></select></div>
+      <div class="fin-report" id="finReport">
+        <button class="fin-report-btn" id="finReportBtn">📊 生成 AI 月报</button>
+        <div class="fin-report-body" id="finReportBody" style="display:none;"></div>
+      </div>
       <div class="fin-list" id="finList"></div>
       <div class="note-tip">性质标注呼应读物：买课/教辅=投资，吃饭=消费，囤货=资产，借贷=负债。月末可看「消费 vs 投资」对比。</div>
     </div>
@@ -1282,11 +1294,18 @@ function groupReply(text){
 })();
 
 /* ---------- Supabase 连接 ---------- */
+const SUPABASE_URL="https://osmzjxuxaneqzaqtnkjj.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zbXpqeHV4YW5lcXphcXRua2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE3MzEsImV4cCI6MjEwMjQzNzczMX0.TLZyCQIHjcu0PpTalrpL5glmXvrKfiBob1iEJzY4f_0";
 const sb = (typeof supabase!=="undefined" && typeof SUPABASE_URL!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0)
   ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
+function cloudFinWrite(rec){
+  if(!sb) return;
+  try{ sb.from('yinliu').insert({uid:'ruzhao',type:rec.type,amount:rec.amount,cat:rec.cat||'其他',nature:rec.nature||'消费',date:rec.date,note:rec.note||'',src:rec.src||'yinliu'}); }catch(e){ console.warn('cloudFinWrite',e); }
+}
 const syncBadge = document.getElementById("syncBadge");
 function setSync(on){ syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
+if(sb) setSync(true);
 
 /* ---------- 渲染 ---------- */
 const rosterEl = document.getElementById("roster");
@@ -2532,6 +2551,7 @@ function finRenderImportPreview(data){
     });
     var n=_importDraft.length;
     setFin(items);
+    _importDraft.forEach(function(d){ cloudFinWrite({type:d.type,amount:d.amount,note:d.note,cat:d.cat,nature:d.type==="income"?"资产":d.nature,date:d.date,src:"import"}); });
     _importDraft=null;
     prev.style.display="none";prev.innerHTML="";
     buildMonthSel();loadFin();
@@ -2594,11 +2614,27 @@ function addFin(){
   const id=Date.now();
   items.push({id,type,amount:amt,note,cat,nature:type==="income"?"资产":nat,date:todayStr(),ts:id});
   setFin(items);
+  cloudFinWrite({type,amount:amt,note,cat,nature:type==="income"?"资产":nat,date:todayStr(),src:"yinliu"});
   document.getElementById("finAmt").value="";document.getElementById("finNote").value="";
   buildMonthSel();loadFin();
 }
 function loadReading(){ renderReading(); }
 document.getElementById("finAddBtn").onclick=addFin;
+document.getElementById("finReportBtn").onclick=async function(){
+  if(!sb){ alert("未连接云端，无法生成月报"); return; }
+  this.disabled=true; this.textContent="生成中…";
+  try{
+    var r=await sb.functions.invoke('yinliu-analysis',{body:{uid:'ruzhao',month:todayStr().slice(0,7)}});
+    var data=r.data||{};
+    var agg=data.aggregate||{};
+    var html='<div class="fr-month">'+(agg.month||"")+' 月报</div>';
+    html+='<div class="fr-row">收入 ¥'+(agg.income||0)+' · 支出 ¥'+(agg.expense||0)+' · 结余 ¥'+(agg.balance||0)+'</div>';
+    if(agg.byCat) html+='<div class="fr-cats">'+agg.byCat.map(function(c){return c.cat+' '+c.pct+'%';}).join(' · ')+'</div>';
+    if(data.report) html+='<div class="fr-text">'+esc(data.report)+'</div>';
+    var body=document.getElementById("finReportBody"); body.innerHTML=html; body.style.display="block";
+  }catch(e){ alert("生成失败："+e.message); }
+  this.disabled=false; this.textContent="📊 生成 AI 月报";
+};
 document.getElementById("finImportBtn").onclick=function(){document.getElementById("finImportFile").click();};
 document.getElementById("finImportFile").onchange=function(){var f=this.files[0];if(f)finDoImport(f);this.value="";};
 document.getElementById("monthSel").onchange=loadFin;
@@ -3360,6 +3396,7 @@ async function xgSmartSend(){
     var c=smartFinCat(parsed.text);
     var t=/收入|赚|收到|工资|收款|退款|卖出|回款|奖金|分红|进账/.test(parsed.text)?"income":"expense";
     var a=getFin();a.push({id:Date.now(),type:t,amount:parsed.amount,note:parsed.text,cat:c.cat,nature:t==="income"?"资产":c.nature,date:todayStr(),ts:Date.now()});setFin(a);
+    cloudFinWrite({type:t,amount:parsed.amount,note:parsed.text,cat:c.cat,nature:t==="income"?"资产":c.nature,date:todayStr(),src:"xiguang"});
     ta.value="";ta.style.height="auto";delete ta.dataset.img;
     showRdBanner("\u2713 已记账："+parsed.amount+"元");return
   }
