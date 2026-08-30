@@ -51,8 +51,7 @@
     box-shadow:0 2px 10px rgba(0,0,0,.12);
     display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
   }
-  .nt-btn{background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center;margin-top:2px;}
-  .nt-btn:active{transform:scale(.92);}
+    .nt-btn:active{transform:scale(.92);}
   .nt-btn.on{background:rgba(255,255,255,.25);}
   .topbar h1{margin:0;font-size:17px;font-weight:600;letter-spacing:.5px;}
   .topbar .sub{font-size:11px;color:var(--silver);margin-top:2px;}
@@ -666,8 +665,7 @@
   <div>
     <h1>拾光</h1>
     <div class="sub" id="dateSub"></div>
-    <button id="ntBtn" class="nt-btn" onclick="setupPushNotifications()">🔔</button>
-  </div>
+      </div>
   
 </div>
 
@@ -791,9 +789,7 @@
       </div>
     </div>
     <div style="padding:8px 14px 14px;display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="fd-push-btn" onclick="pushStudyPlan()" style="flex:1;border:1px solid var(--sichen);background:#fff;color:var(--sichen);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📨 推送今日任务</button>
-      <button class="fd-push-btn" onclick="pushStudyPlan('tomorrow')" style="flex:1;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📅 推送明日任务</button>
-    </div>
+                </div>
   </details>
 
   <div class="card">
@@ -1945,59 +1941,8 @@ function urlBase64ToUint8Array(b64){
   return out;
 }
 
-async function setupPushNotifications(){
-  const btn=document.getElementById("ntBtn");
-  if(btn) btn.textContent="⏳";
-  if(!("Notification" in window)){ alert("你的浏览器不支持通知"); if(btn) btn.textContent="🔔"; return; }
-  if(!("serviceWorker" in navigator)){ alert("不支持 Service Worker"); if(btn) btn.textContent="🔔"; return; }
-  try{
-    const perm=await Notification.requestPermission();
-    if(perm!=="granted"){
-      if(btn) btn.textContent="🔔";
-      alert("通知权限被拒绝，请在浏览器设置中允许此站点发送通知");
-      return;
-    }
-    const reg=await navigator.serviceWorker.ready;
-    let sub=await reg.pushManager.getSubscription();
-    if(!sub){
-      const key=urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-      sub=await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:key });
-    }
-    // Build subscription JSON for server
-    const subJSON=JSON.stringify({
-      endpoint: sub.endpoint,
-      keys:{
-        p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("p256dh")))),
-        auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("auth"))))
-      }
-    });
-    // Store in Supabase (longming_messages table, sender=push_sub)
-    try{
-      await sb.from(SUPABASE_TABLE).delete().eq("sender","push_sub");
-      await sb.from(SUPABASE_TABLE).insert({ sender:"push_sub", name:"若昭", text:subJSON, ts:new Date().toISOString() });
-    }catch(e){
-      localStorage.setItem("push_sub", subJSON);
-    }
-    localStorage.setItem("push_sub", subJSON);
-    if(btn){ btn.textContent="✅"; btn.classList.add("on"); }
-    setTimeout(()=>{ if(btn) btn.textContent="🔔"; btn.classList.add("on"); }, 2000);
-  }catch(err){
-    console.error("Push订阅失败:", err);
-    if(btn) btn.textContent="🔔";
-    alert("Push订阅失败: "+(err.message||err.name||"未知错误")+"\n\n请截图发给我，我来排查原因。");
-  }
-}
 
 // On load: check if already subscribed, update bell icon
-async function checkPushStatus(){
-  if(!("serviceWorker" in navigator)) return;
-  try{
-    const reg=await navigator.serviceWorker.ready;
-    const sub=await reg.pushManager.getSubscription();
-    const btn=document.getElementById("ntBtn");
-    if(btn && sub){ btn.classList.add("on"); }
-  }catch(e){}
-}
 async function loadCheckin(){
   let local={};
   try{ local=JSON.parse(localStorage.getItem("checkin")||"{}"); }catch(e){}
@@ -3650,61 +3595,7 @@ function getStudyPlanWeek(){
   return {week:4, label:'启动期结束', tasks:['启动期已过，查看拾光司辰页面的完整计划'], tip:''};
 }
 
-async function pushStudyPlan(mode){
-  const plan = getStudyPlanWeek();
-  if(plan.week === 0){
-    alert('复读计划尚未启动（8月20日开始）');
-    return;
-  }
-  
-  let title, body;
-  if(mode === 'tomorrow'){
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    title = '📅 明日任务 · ' + plan.label;
-    body = '明天（' + (tomorrow.getMonth()+1)+'/'+tomorrow.getDate()+'）的任务：\n\n' +
-      plan.tasks.join('\n') + '\n\n' + plan.tip;
-  } else {
-    title = '📨 今日任务 · ' + plan.label;
-    body = '今天的任务：\n\n' +
-      plan.tasks.join('\n') + '\n\n' + plan.tip;
-  }
-  
-  try{
-    const resp = await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
-      method: 'POST',
-      body: body,
-      headers: {
-        'Title': title,
-        'Tags': 'bell',
-        'Priority': 'high',
-        'Content-Type': 'text/plain; charset=utf-8'
-      }
-    });
-    if(resp.ok){
-      alert('✅ 已推送至手机 · ' + title);
-      // 更新所有按钮状态
-      document.querySelectorAll('.fd-push-btn').forEach(b => {
-        const orig = b.textContent;
-        b.textContent = '✓ 已推送';
-        b.style.background = 'var(--ok)';
-        b.style.color = '#fff';
-        b.style.borderColor = 'var(--ok)';
-        setTimeout(() => {
-          b.textContent = orig;
-          b.style.background = '';
-          b.style.color = '';
-          b.style.borderColor = '';
-        }, 2000);
-      });
-    } else {
-      alert('推送失败，请稍后重试');
-    }
-  } catch(e) {
-    alert('网络错误，推送失败');
-  }
-}
-
+async 
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
