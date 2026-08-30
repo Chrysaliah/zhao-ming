@@ -172,6 +172,15 @@
   .cal-wk-s{color:var(--ink);}
   .cal-wk-ok{margin-left:auto;color:var(--ok);font-weight:700;font-size:11px;}
   .cal-wk-no{margin-left:auto;color:var(--silver-deep);font-size:11px;}
+  /* 折叠交互：打卡日历默认折叠，点标题展开/收起 */
+  #calCard .sc-bt{cursor:pointer;user-select:none;justify-content:space-between;}
+  #calCard .sc-bt::after{content:"▾";margin-left:auto;font-size:12px;color:var(--sichen);transition:transform .2s;}
+  #calCard.collapsed .sc-bt::after{content:"▸";}
+  #calCard.collapsed > .cal-head,
+  #calCard.collapsed > .cal-week,
+  #calCard.collapsed > .cal-grid,
+  #calCard.collapsed > .cal-stat-inline,
+  #calCard.collapsed > #calWeekPanel{display:none;}
   .sc-list{display:flex;flex-direction:column;gap:10px;}
   .sc-item{border-left:3px solid var(--sichen-data);background:#faf6ef;border-radius:0 8px 8px 0;padding:9px 11px;}
   .sc-item-t{font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:4px;}
@@ -1061,7 +1070,7 @@
         </div>
       </div>
     </div>
-    <div class="sc-block">
+    <div class="sc-block collapsed" id="calCard">
       <div class="sc-bt">打卡日历</div>
       <div class="cal-head">
         <div class="cal-nav"><button id="calPrev">‹</button></div>
@@ -3124,6 +3133,7 @@ function renderCalendar(){
 }
 document.getElementById("calPrev").onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); };
 document.getElementById("calNext").onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); };
+(function(){ const c=document.getElementById("calCard"); if(c){ c.querySelector(".sc-bt").onclick=()=>c.classList.toggle("collapsed"); } })();
 
 /* ---------- 主页：待办任务（云端 sichen_plans 主 + 本地 yj_todos_v1 兜底） ---------- */
 const TODO_LOCAL_KEY = "yj_todos_v1";
