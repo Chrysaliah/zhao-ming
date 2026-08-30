@@ -608,6 +608,15 @@
   .fr-row{color:#444;}
   .fr-cats{color:#888;font-size:12px;margin:4px 0;}
   .fr-text{margin-top:6px;color:#333;}
+  .fin-report-actions{display:flex;gap:8px;}
+  .fin-report-actions .fin-report-btn{flex:1;}
+  .fin-report-btn.ghost{background:#fff;color:#534AB7;border:1px solid #534AB7;}
+  .fin-history{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+  .fh-title{font-size:12px;color:#888;margin-bottom:2px;}
+  .fh-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid rgba(0,0,0,.08);border-radius:10px;background:#fff;font-size:13px;color:#333;cursor:pointer;font-family:inherit;}
+  .fh-item:active{background:#f3f0fa;}
+  .fh-date{font-size:11px;color:#aaa;}
+  .fh-empty{font-size:12px;color:#999;padding:8px 2px;}
 </style>
 
 <!-- force SW update -->
@@ -857,8 +866,12 @@
       </div>
       <div class="month-sel">查看月份 <select id="monthSel"></select></div>
       <div class="fin-report" id="finReport">
-        <button class="fin-report-btn" id="finReportBtn">📊 生成 AI 月报</button>
+        <div class="fin-report-actions">
+          <button class="fin-report-btn" id="finReportBtn">📊 生成 AI 月报</button>
+          <button class="fin-report-btn ghost" id="finHistoryBtn">📜 历史月报</button>
+        </div>
         <div class="fin-report-body" id="finReportBody" style="display:none;"></div>
+        <div class="fin-history" id="finHistory" style="display:none;"></div>
       </div>
       <div class="fin-list" id="finList"></div>
       <div class="note-tip">性质标注呼应读物：买课/教辅=投资，吃饭=消费，囤货=资产，借贷=负债。月末可看「消费 vs 投资」对比。</div>
@@ -1132,7 +1145,7 @@
   
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async onload="if(window.initSb)window.initSb()"></script>
 <script src="supabase-config.js"></script>
 <script>
 /* ---------- 角色配置 ---------- */
@@ -1296,16 +1309,21 @@ function groupReply(text){
 /* ---------- Supabase 连接 ---------- */
 const SUPABASE_URL="https://osmzjxuxaneqzaqtnkjj.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zbXpqeHV4YW5lcXphcXRua2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE3MzEsImV4cCI6MjEwMjQzNzczMX0.TLZyCQIHjcu0PpTalrpL5glmXvrKfiBob1iEJzY4f_0";
-const sb = (typeof supabase!=="undefined" && typeof SUPABASE_URL!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0)
-  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+let sb = null;
+/* supabase-js 以 async 加载（见第1135行），加载完由 onload / 末尾调用本函数初始化，避免阻塞页面解析导致闪屏卡死 */
+window.initSb = function(){
+  if(typeof supabase!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0){
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    if(typeof setSync==="function") setSync(true);
+  }
+};
 function cloudFinWrite(rec){
   if(!sb) return;
   try{ sb.from('yinliu').insert({uid:'ruzhao',type:rec.type,amount:rec.amount,cat:rec.cat||'其他',nature:rec.nature||'消费',date:rec.date,note:rec.note||'',src:rec.src||'yinliu'}); }catch(e){ console.warn('cloudFinWrite',e); }
 }
 const syncBadge = document.getElementById("syncBadge");
 function setSync(on){ syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
-if(sb) setSync(true);
+window.initSb();
 
 /* ---------- 渲染 ---------- */
 const rosterEl = document.getElementById("roster");
@@ -2634,6 +2652,36 @@ document.getElementById("finReportBtn").onclick=async function(){
     var body=document.getElementById("finReportBody"); body.innerHTML=html; body.style.display="block";
   }catch(e){ alert("生成失败："+e.message); }
   this.disabled=false; this.textContent="📊 生成 AI 月报";
+};
+document.getElementById("finHistoryBtn").onclick=async function(){
+  if(!sb){ alert("未连接云端，无法查看历史月报"); return; }
+  var h=document.getElementById("finHistory");
+  if(h.style.display!=="none"){ h.style.display="none"; h.innerHTML=""; return; }
+  this.disabled=true; this.textContent="加载中…";
+  try{
+    var res=await sb.from("yinliu_reports").select("month,created_at").eq("uid","ruzhao").order("month",{ascending:false});
+    if(res.error) throw res.error;
+    var data=res.data||[];
+    if(!data.length){ h.innerHTML='<div class="fh-empty">还没有历史月报，先生成一份吧</div>'; h.style.display="block"; return; }
+    var html='<div class="fh-title">历史月报（'+data.length+' 份）</div>';
+    data.forEach(function(d){
+      html+='<button class="fh-item" data-month="'+d.month+'">'+d.month+' 月报<span class="fh-date">'+String(d.created_at||"").slice(0,10)+'</span></button>';
+    });
+    h.innerHTML=html; h.style.display="block";
+    Array.prototype.forEach.call(h.querySelectorAll(".fh-item"),function(b){
+      b.onclick=async function(){
+        var m=b.getAttribute("data-month");
+        var r2=await sb.from("yinliu_reports").select("aggregate,report").eq("uid","ruzhao").eq("month",m).single();
+        var rep=r2.data||{}; var agg=rep.aggregate||{};
+        var bh='<div class="fr-month">'+m+' 月报</div>';
+        bh+='<div class="fr-row">收入 ¥'+(agg.income||0)+' · 支出 ¥'+(agg.expense||0)+' · 结余 ¥'+(agg.balance||0)+'</div>';
+        if(agg.byCat) bh+='<div class="fr-cats">'+agg.byCat.map(function(c){return c.cat+' '+c.pct+'%';}).join(' · ')+'</div>';
+        if(rep.report) bh+='<div class="fr-text">'+esc(rep.report)+'</div>';
+        var body=document.getElementById("finReportBody"); body.innerHTML=bh; body.style.display="block";
+      };
+    });
+  }catch(e){ alert("加载失败："+e.message); }
+  this.disabled=false; this.textContent="📜 历史月报";
 };
 document.getElementById("finImportBtn").onclick=function(){document.getElementById("finImportFile").click();};
 document.getElementById("finImportFile").onchange=function(){var f=this.files[0];if(f)finDoImport(f);this.value="";};
