@@ -1373,8 +1373,6 @@ function cloudFinWrite(rec){
   if(!sb) return;
   try{ sb.from('yinliu').insert({uid:'ruzhao',type:rec.type,amount:rec.amount,cat:rec.cat||'其他',nature:rec.nature||'消费',date:rec.date,note:rec.note||'',src:rec.src||'yinliu'}); }catch(e){ console.warn('cloudFinWrite',e); }
 }
-function setSync(on){ syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
-window.initSb();
 
 /* ---------- 渲染 ---------- */
 const rosterEl = document.getElementById("roster");
