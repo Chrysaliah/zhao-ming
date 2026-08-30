@@ -10,6 +10,19 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon-512.png">
+  <script>
+  /* 闪屏早期独立兜底：绝不依赖任何外部库/后续脚本，避免卡屏 */
+  (function(){
+    function hideSplash(){
+      var s=document.getElementById('splashScreen');
+      if(s){ s.classList.add('hide'); setTimeout(function(){ if(s&&s.parentNode)s.remove(); }, 700); }
+    }
+    if(document.readyState!=='loading'){ setTimeout(hideSplash, 800); }
+    else { document.addEventListener('DOMContentLoaded', function(){ setTimeout(hideSplash, 800); }); }
+    /* 终极兜底：与任何网络/外部资源/脚本无关，4s 后强制隐藏 */
+    setTimeout(hideSplash, 4000);
+  })();
+  </script>
   <!-- iOS native launch screens (iOS ignores manifest splash, needs apple-touch-startup-image) -->
   <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1170x2532.png">
   <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1284x2778.png">
@@ -1145,8 +1158,7 @@
   
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async onload="if(window.initSb)window.initSb()"></script>
-<script src="supabase-config.js"></script>
+<!-- supabase-js 外部 CDN 已移除：改为 index.html 内纯 fetch 直连（makeSb），零外部阻塞 -->
 <script>
 /* ---------- 角色配置 ---------- */
 const ROLES = {
@@ -1306,22 +1318,61 @@ function groupReply(text){
   segs.forEach((seg,i)=>seg.classList.toggle("on", i===idx));
 })();
 
-/* ---------- Supabase 连接 ---------- */
+/* ---------- Supabase 连接（纯 fetch 直连，零外部库，避免 CDN 阻塞闪屏）---------- */
 const SUPABASE_URL="https://osmzjxuxaneqzaqtnkjj.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zbXpqeHV4YW5lcXphcXRua2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE3MzEsImV4cCI6MjEwMjQzNzczMX0.TLZyCQIHjcu0PpTalrpL5glmXvrKfiBob1iEJzY4f_0";
-let sb = null;
-/* supabase-js 以 async 加载（见第1135行），加载完由 onload / 末尾调用本函数初始化，避免阻塞页面解析导致闪屏卡死 */
-window.initSb = function(){
-  if(typeof supabase!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0){
-    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    if(typeof setSync==="function") setSync(true);
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi6Im9zbXpqeHV4YW5lcXphcXRua2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE3MzEsImV4cCI6MjEwMjQzNzczMX0.TLZyCQIHjcu0PpTalrpL5glmXvrKfiBob1iEJzY4f_0";
+const syncBadge = document.getElementById("syncBadge");
+
+/* 极简 Supabase REST 封装：保持 sb.from(t).select/insert/upsert/update/delete 签名，零外部依赖 */
+function makeSb(url, key){
+  const REST = url.replace(/\/$/,'') + '/rest/v1/';
+  const baseH = {'apikey':key,'Authorization':'Bearer '+key};
+  function build(table, st){
+    const api = {};
+    let method='SELECT', body=null;
+    function run(){
+      let u = REST + table; if(st.q) u += '?' + st.q;
+      const hd = Object.assign({}, baseH, {'Content-Type':'application/json'});
+      let opts = {method:'GET', headers:hd};
+      if(method==='INSERT'){ opts.method='POST'; opts.body=JSON.stringify(Array.isArray(body)?body:[body]); hd['Prefer']='return=representation'; }
+      else if(method==='UPSERT'){ opts.method='POST'; opts.body=JSON.stringify(Array.isArray(body)?body:[body]); hd['Prefer']='on_conflict='+st.onConflict+',resolution=merge-duplicates'; }
+      else if(method==='UPDATE'){ opts.method='PATCH'; opts.body=JSON.stringify(body); hd['Prefer']='return=representation'; }
+      else if(method==='DELETE'){ opts.method='DELETE'; }
+      return fetch(u, opts).then(function(r){
+        const ct=r.headers.get('content-type')||'';
+        const j = ct.indexOf('json')>=0 ? r.json() : Promise.resolve(null);
+        return j.then(function(b){ return {data:(method==='DELETE')?(b||[]):b, error: r.ok?null:{message:''+r.status,status:r.status}}; });
+      }).catch(function(e){ return {data:null, error:{message:String(e)}}; });
+    }
+    api.then = function(res,rej){ return run().then(res,rej); };
+    api.catch = function(f){ return run().then(null,f); };
+    api.select = function(cols){ st.q=(st.q?st.q+'&':'')+'select='+encodeURIComponent(cols||'*'); return api; };
+    api.eq = function(c,v){ st.q=(st.q?st.q+'&':'')+c+'=eq.'+encodeURIComponent(v); return api; };
+    api.gte = function(c,v){ st.q=(st.q?st.q+'&':'')+c+'=gte.'+encodeURIComponent(v); return api; };
+    api.filter = function(c,op,v){ st.q=(st.q?st.q+'&':'')+c+'='+op+'.'+encodeURIComponent(v); return api; };
+    api.order = function(c,o){ st.q=(st.q?st.q+'&':'')+'order='+c+'.'+(o&&o.ascending?'asc':'desc'); return api; };
+    api.limit = function(n){ st.q=(st.q?st.q+'&':'')+'limit='+n; return api; };
+    api.insert = function(rows){ method='INSERT'; body=rows; return api; };
+    api.upsert = function(rows,opt){ method='UPSERT'; body=rows; st.onConflict=(opt&&opt.onConflict)||'id'; return api; };
+    api.update = function(row){ method='UPDATE'; body=row; return api; };
+    api.delete = function(){ method='DELETE'; return api; };
+    api.single = function(){ return api; };
+    return api;
   }
-};
+  return {
+    from: function(table){ return build(table, {q:'', onConflict:'id'}); },
+    channel: function(){ return { on:function(){ return { subscribe:function(){ return {}; } }; }, subscribe:function(){ return {}; } }; },
+    removeChannel: function(){}
+  };
+}
+let sb = null;
+try { sb = makeSb(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){ sb = null; }
+function setSync(on){ if(!syncBadge) return; syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
+if(sb) setSync(true);
 function cloudFinWrite(rec){
   if(!sb) return;
   try{ sb.from('yinliu').insert({uid:'ruzhao',type:rec.type,amount:rec.amount,cat:rec.cat||'其他',nature:rec.nature||'消费',date:rec.date,note:rec.note||'',src:rec.src||'yinliu'}); }catch(e){ console.warn('cloudFinWrite',e); }
 }
-const syncBadge = document.getElementById("syncBadge");
 function setSync(on){ syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
 window.initSb();
 
