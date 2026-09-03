@@ -1372,7 +1372,24 @@ function makeSb(url, key){
   return {
     from: function(table){ return build(table, {q:'', onConflict:'id'}); },
     channel: function(){ return { on:function(){ return { subscribe:function(){ return {}; } }; }, subscribe:function(){ return {}; } }; },
-    removeChannel: function(){}
+    removeChannel: function(){},
+    functions: {
+      invoke: function(name, opts){
+        const fd = SUPABASE_URL.replace(/\/$/,'') + '/functions/v1/' + name;
+        const payload = (opts && opts.body!=null) ? opts.body : {};
+        const hd = Object.assign({}, baseH, {'Content-Type':'application/json'});
+        return fetch(fd, { method:'POST', headers: hd, body: JSON.stringify(payload==null?{}:payload) })
+          .then(function(r){
+            const ct = r.headers.get('content-type')||'';
+            const j = (ct.indexOf('json')>=0) ? r.json() : r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return t; } });
+            return j.then(function(b){
+              if(!r.ok){ return { data:null, error:{ message:''+r.status, status:r.status, context:b } }; }
+              return { data: b, error: null };
+            });
+          })
+          .catch(function(e){ return { data:null, error:{ message:String(e) } }; });
+      }
+    }
   };
 }
 let sb = null;
