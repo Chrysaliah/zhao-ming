@@ -1662,7 +1662,21 @@ let xgMode = "cat";       // "cat" 分类视图 | "time" 时间视图
 let xgSearch = "";
 let xgEditId = null;      // 正在编辑的碎碎念 id
 let xgReassignId = null;  // 正在改分类的碎碎念 id
-let xgLocal = [];         // 离线兜底
+/* ---- 隙光本机兜底（2026-09-06 隔离加法）：本机持久化镜像 + 未同步条（id 前缀 off_，联网后 renderXg 自动补传） ---- */
+const XG_CACHE_KEY = "yj_xg_notes_v1";
+function xgCacheRead(){ try{ return JSON.parse(localStorage.getItem(XG_CACHE_KEY)||"[]")||[]; }catch(e){ return []; } }
+function xgCacheWrite(arr){ try{ localStorage.setItem(XG_CACHE_KEY, JSON.stringify((arr||[]).slice(-800))); }catch(e){} }
+function xgLocalPending(rec){
+  xgLocal.push(rec); xgCacheWrite(xgLocal);
+  showRdBanner("⚠ 云端暂不可用，已存本机（联网后自动同步）");
+}
+function xgLocalEdit(id, text){
+  const i = xgLocal.findIndex(n=>n.id===id);
+  if(i>=0){ xgLocal[i].content = text; xgCacheWrite(xgLocal); }
+  else { xgLocalPending({id:"off_"+Date.now(), content:text, category:classifyXg(text), ts:Date.now()}); }
+  showRdBanner("⚠ 云端暂不可用，改动已存本机");
+}
+let xgLocal = xgCacheRead(); // 离线兜底（本机持久化，启动即读）
 let xgCache = [];         // 最近一次拉取的数据（切换视图/搜索时复用）
 
 function renderXgFilter(){
@@ -1764,12 +1778,36 @@ function renderXgFrom(notes){
 }
 
 async function renderXg(){
-  if(!sb){ renderXgFrom(xgLocal); return; }
-  const {data,error} = await sb.from(XG_TABLE).select("*").order("ts",{ascending:false});
-  if(error){ console.error(error); xgNotesEl.innerHTML='<div class="empty">隙光加载失败，稍后重试。</div>'; return; }
-  xgLocal = data || [];
+  if(!sb){ renderXgFrom(xgLocal.length ? xgLocal : xgCacheRead()); return; }
+  let data = null, error = null;
+  try{ const r = await sb.from(XG_TABLE).select("*").order("ts",{ascending:false}); data = r.data; error = r.error; }
+  catch(e){ error = e; }
+  if(error){
+    console.error(error);
+    // 云端不可用 → 降级展示本机缓存（不白屏、离线内容仍可见）
+    if(!xgLocal.length) xgLocal = xgCacheRead();
+    if(xgLocal.length){
+      renderXgFrom(xgLocal);
+      xgNotesEl.insertAdjacentHTML("afterbegin",'<div style="color:#b0602a;font-size:12px;line-height:1.5;padding:6px 10px;margin:4px 2px 8px;background:rgba(176,96,42,.08);border-radius:8px">⚠ 云端暂不可用，以下为本机缓存（联网后自动同步）。</div>');
+    } else {
+      xgNotesEl.innerHTML = '<div class="empty">隙光加载失败，且本机暂无缓存，请稍后重试。</div>';
+    }
+    return;
+  }
+  // 云端正常：先把本机暂存的（off_ 前缀）补传上云，避免离线输入丢失
+  const pend = (xgLocal||[]).filter(n => String(n.id||"").indexOf("off_") === 0);
+  const keep = [];
+  for(const n of pend){
+    try{
+      const r = await sb.from(XG_TABLE).insert({id:n.ts, content:n.content, category:n.category, ts:n.ts});
+      if(r && r.error) keep.push(n);
+    }catch(e){ keep.push(n); }
+  }
+  xgLocal = (data||[]).concat(keep);
+  xgCacheWrite(xgLocal);
   renderXgFrom(xgLocal);
 }
+window.addEventListener("online", ()=>{ if(sb){ renderXg(); } });
 
 async function sendXg(){
   const ta = document.getElementById("xgInput");
@@ -1777,8 +1815,13 @@ async function sendXg(){
   if(!text) return;
   if(xgEditId){
     const id = xgEditId;
-    if(sb){ await sb.from(XG_TABLE).update({content:text}).eq("id",id); }
-    else { const i=xgLocal.findIndex(n=>n.id===id); if(i>=0) xgLocal[i].content=text; }
+    if(sb){
+      let failed = false;
+      try{ const r = await sb.from(XG_TABLE).update({content:text}).eq("id",id); if(r && r.error) failed = true; }catch(e){ failed = true; }
+      if(failed){ xgLocalEdit(id, text); }
+    } else {
+      const i = xgLocal.findIndex(n=>n.id===id); if(i>=0){ xgLocal[i].content = text; xgCacheWrite(xgLocal); }
+    }
     cancelEdit();
     renderXg();
     return;
@@ -1787,11 +1830,14 @@ async function sendXg(){
   const cat = classifyXg(text);
   ta.value=""; ta.style.height="auto";
   if(sb){
-    await sb.from(XG_TABLE).insert({content:text, category:cat, ts});
+    let failed = false;
+    try{ const r = await sb.from(XG_TABLE).insert({content:text, category:cat, ts}); if(r && r.error) failed = true; }catch(e){ failed = true; }
+    if(failed){ xgLocalPending({id:"off_"+ts, content:text, category:cat, ts}); }
     renderXg();
   } else {
     const id = "local_"+ts;
     xgLocal.push({id, content:text, category:cat, ts});
+    xgCacheWrite(xgLocal);
     renderXg();
   }
 }
@@ -3527,11 +3573,11 @@ async function xgSmartSend(){
     ta.value="";ta.style.height="auto";delete ta.dataset.img;
     showRdBanner("\u2713 已记账："+parsed.amount+"元");return
   }
-  if(xgEditId){var id=xgEditId;if(sb){await sb.from(XG_TABLE).update({content:text}).eq("id",id)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0)xgLocal[i].content=text}cancelEdit();renderXg();return}
+  if(xgEditId){var id=xgEditId;if(sb){var xgUpFail=false;try{var xgUr=await sb.from(XG_TABLE).update({content:text}).eq("id",id);if(xgUr&&xgUr.error)xgUpFail=true}catch(e){xgUpFail=true}if(xgUpFail)xgLocalEdit(id,text)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0){xgLocal[i].content=text;xgCacheWrite(xgLocal)}}cancelEdit();renderXg();return}
   var ts=Date.now();var cat=classifyXg(cleanText);ta.value="";ta.style.height="auto";delete ta.dataset.img;
   var noteId=sb?ts:"local_"+ts;
-  if(sb){await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts})}
-  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts})}
+  if(sb){var xgInsFail=false;try{var xgIr=await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts});if(xgIr&&xgIr.error)xgInsFail=true}catch(e){xgInsFail=true}if(xgInsFail)xgLocalPending({id:"off_"+ts,content:cleanText,category:cat,ts:ts})}
+  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts});xgCacheWrite(xgLocal)}
   if(imgData)await xgSaveImg(noteId,imgData);
   renderXg()
 }
@@ -3546,8 +3592,9 @@ function yjProgressInit(){
 }
 /* ===== 银简→隙光联动 ===== */
 async function yjSyncToXg(note){
-  if(!sb||!note)return;
-  try{await sb.from(XG_TABLE).insert({content:"#银简 "+note,category:"灵感想法",ts:Date.now()})}catch(e){}
+  if(!note)return;
+  if(!sb){ xgLocalPending({id:"off_"+Date.now(),content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); return; }
+  try{var yjr=await sb.from(XG_TABLE).insert({content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); if(yjr&&yjr.error)throw 0}catch(e){ xgLocalPending({id:"off_"+Date.now(),content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); }
 }
 /* ===== 目标拆解 ===== */
 var GOAL_KEY="yj_goals_v1";
