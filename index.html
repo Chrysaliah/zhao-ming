@@ -1512,13 +1512,34 @@ function pitAdd(role, text, ts){
   const brief=(text||"").replace(/\s+/g," ").trim().slice(0,80);
   const key=(ts||0)+"|"+(text||"").slice(0,60);
   if(arr.some(p=>p.key===key)) return false;
-  arr.push({role, brief, ts:ts||Date.now(), key});
+  const rec={role, brief, ts:ts||Date.now(), key};
+  arr.push(rec);
   pitSave(arr);
+  pitPush(rec);           // 尽力上云；失败留本机，下次 pull 会自动补齐云端已有记录
   return true;
 }
 function pitRecentByRole(role, n){
   const arr=pitRead().filter(p=>p.role===role);
   return arr.slice(-(n||2));
+}
+/* 坑档案云同步（pit 表 · 双源，2026-09-06 加法） */
+const PIT_TABLE="pit";
+async function pitPull(){
+  if(!sb) return;
+  try{
+    const r=await sb.from(PIT_TABLE).select("role,brief,ts,key").order("ts",{ascending:true});
+    const rows=r&&r.data?r.data:null;
+    if(!Array.isArray(rows)||!rows.length) return;
+    const cur=pitRead();
+    const m={}; cur.forEach(p=>{ if(p&&p.key) m[p.key]=p; });
+    let changed=false;
+    rows.forEach(p=>{ if(p&&p.key&&!m[p.key]){ m[p.key]={role:p.role,brief:p.brief,ts:p.ts,key:p.key}; changed=true; } });
+    if(changed){ const merged=Object.values(m).sort((a,b)=>(a.ts||0)-(b.ts||0)); pitSave(merged); }
+  }catch(_){}
+}
+async function pitPush(rec){
+  if(!sb) return;
+  try{ await sb.from(PIT_TABLE).insert({role:rec.role,brief:rec.brief,ts:rec.ts,key:rec.key}); }catch(_){}
 }
 
 async function renderMessages(){
@@ -1534,6 +1555,7 @@ async function renderMessages(){
       chatSave(chatLog);
       setSync(true);
       await flushPending();
+      await pitPull();   // 列宿打开时顺带把云端坑档案合并到本机（v2）
     } else { setSync(false); }
   } else { setSync(false); }
 
@@ -3158,6 +3180,7 @@ async function renderAgent(k){
   // v2：坑档案（TA 给你点过的坑）
   const pl=document.getElementById("pitList");
   if(pl){
+    await pitPull();   // 先并云端再显示，跨设备刚记的坑也能出现
     const pits=pitRead().filter(p=>p.role===k);
     if(!pits.length){
       pl.innerHTML='<div class="pit-empty">TA 还没给你点过坑。<br>在列宿里看到 TA 讲到点子上的话，点消息上的「📌 记坑」——这里会存下来，下次聊 TA 会想起来。</div>';
