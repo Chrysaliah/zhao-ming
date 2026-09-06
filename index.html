@@ -639,6 +639,16 @@
   .fh-item:active{background:#f3f0fa;}
   .fh-date{font-size:11px;color:#aaa;}
   .fh-empty{font-size:12px;color:#999;padding:8px 2px;}
+/* ---- 列宿 v2：时间线/记坑/人设卡（2026-09-06 隔离加法） ---- */
+  .msg-day{text-align:center;color:#a99fb3;font-size:11px;padding:14px 0 4px;letter-spacing:.5px;}
+  .pit-btn{font:inherit;font-size:10px;color:#8a8594;background:none;border:1px dashed #cfc6da;border-radius:6px;padding:1px 7px;margin-top:6px;cursor:pointer;opacity:.8;align-self:flex-start;}
+  .pit-btn.on{color:#b0602a;border-color:#d9b48a;border-style:solid;opacity:1;}
+  .agent-guide{font-size:13px;line-height:1.75;color:#5a5568;background:#faf8fc;border:1px solid #ece8ee;border-radius:12px;padding:10px 13px;white-space:pre-line;}
+  .pit-item{display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid #f2eef5;font-size:12px;line-height:1.6;color:#444;}
+  .pit-item .pit-who{flex:none;color:#b0602a;font-weight:600;margin-top:1px;}
+  .pit-item .pit-t{flex:1;}
+  .pit-item .pit-date{flex:none;color:#aaa;font-size:10px;margin-top:2px;white-space:nowrap;}
+  .pit-empty{font-size:12px;color:#999;padding:8px 2px;line-height:1.7;}
 </style>
 
 <!-- force SW update -->
@@ -951,7 +961,7 @@
     <summary class="sec-title">🧠 DeepSeek 额度</summary>
     <div id="dsBox"><div class="ds-line"><span class="ds-label">查询中…</span></div></div>
     <div class="ds-topup">
-      <div class="ds-note">余额 = DeepSeek 账户里的额度，列宿的 AI 回复会从这里扣。</div>
+      <div class="ds-note" id="dsNote">余额 = DeepSeek 账户里的额度，列宿的 AI 回复会从这里扣。余额偏低时列宿自动转免费伙伴回复（@AI 可强制）。</div>
       <div class="ds-topup-btns">
         <button class="ds-reload" id="dsReload">↻ 刷新</button>
         <a class="ds-topup-btn" href="https://platform.deepseek.com/top_up" target="_blank" rel="noopener">充值 ↗</a>
@@ -1096,6 +1106,14 @@
     <div class="agent-avatar" id="agentAvatar"></div>
   </div>
   <div class="sc-body">
+    <div class="sc-block" id="agentGuideBlock" style="display:none">
+      <div class="sc-bt">他是谁 · 怎么用 TA</div>
+      <div class="agent-guide" id="agentGuide"></div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">给你点过的坑</div>
+      <div class="sc-list" id="pitList"></div>
+    </div>
     <div class="sc-block">
       <div class="sc-bt">他记录了什么</div>
       <div class="sc-list" id="agentLog"></div>
@@ -1171,19 +1189,19 @@
 <script>
 /* ---------- 角色配置 ---------- */
 const ROLES = {
-  zhao:{name:"昭",short:"昭",title:"主持·串场",color:"#1f4e4a"},
-  lv:{name:"律",short:"律",title:"督导",color:"#2f6b64"},
-  xu:{name:"序",short:"序",title:"数学导师",color:"#3a6ea5"},
-  xiang:{name:"象",short:"象",title:"物理导师",color:"#8e5aa6"},
-  bian:{name:"变",short:"变",title:"化学导师",color:"#c2703f"},
-  mai:{name:"脉",short:"脉",title:"生物导师",color:"#3f8a6d"},
-  ci:{name:"辞",short:"辞",title:"英语导师",color:"#b08a2e"},
-  wen:{name:"文",short:"文",title:"语文导师",color:"#9a5b5b"},
-  xin:{name:"心",short:"心",title:"成长教练",color:"#d08a3a"},
-  si:{name:"思",short:"思",title:"思想认知",color:"#5a6b8e"},
-  mian:{name:"眠",short:"眠",title:"作息睡眠",color:"#4a6b8a"},
-  shen:{name:"身",short:"身",title:"体态健康",color:"#6b8a4a"},
-  xing:{name:"星",short:"星",title:"愿景锚",color:"#b89b6e"}
+  zhao:{name:"昭",short:"昭",title:"主持·串场",color:"#1f4e4a",guide:"群里的主持人。不想点名时她帮把话递到对的人嘴边；想总结一段、拉人开会，@昭。"},
+  lv:{name:"律",short:"律",title:"督导",color:"#2f6b64",guide:"盯执行、不哄人。汇报进度、认领计划、怕自己糊弄时找他，他开口就问数字。"},
+  xu:{name:"序",short:"序",title:"数学导师",color:"#3a6ea5",guide:"数学地基修复师。贴题、贴错因，他带你从概念推起。别怕暴露基础差，越具体他越能给。"},
+  xiang:{name:"象",short:"象",title:"物理导师",color:"#8e5aa6",guide:"先画图、再算数。物理题卡住找他，他会先逼你描述清楚「发生了什么」。"},
+  bian:{name:"变",short:"变",title:"化学导师",color:"#c2703f",guide:"你化学有底子，他讲机理不讲死背。价态怎么变、电子怎么转，问他就行。"},
+  mai:{name:"脉",short:"脉",title:"生物导师",color:"#3f8a6d",guide:"机制链：条件→过程→结果。遗传、细胞、易混概念辨析归他。"},
+  ci:{name:"辞",short:"辞",title:"英语导师",color:"#b08a2e",guide:"你卡在词量和长句。单词量、长难句三层拆解（主干→修饰→逻辑）找辞。"},
+  wen:{name:"文",short:"文",title:"语文导师",color:"#9a5b5b",guide:"语文是你的强项，他按你的水平讲不降维。文言、答题角度、作文找他。"},
+  xin:{name:"心",short:"心",title:"成长教练",color:"#d08a3a",guide:"接情绪、不评判。内耗、想太多、孤独、动不起来——先跟他讲，他接住你再说第一步。"},
+  si:{name:"思",short:"思",title:"思想认知",color:"#5a6b8e",guide:"管底层逻辑。读到的书、刷到的观点想沉淀就丢给他，他会逼问：它为什么成立？跟你哪件事相通？"},
+  mian:{name:"眠",short:"眠",title:"作息睡眠",color:"#4a6b8a",guide:"10 小时刚需守护者，到点会顶出来。调作息、定今晚睡觉时间跟他对齐。"},
+  shen:{name:"身",short:"身",title:"体态健康",color:"#6b8a4a",guide:"一小时起身动两分钟。肩颈、驼背、坐姿归他，别等疼了才想起来。"},
+  xing:{name:"星",short:"星",title:"愿景锚",color:"#b89b6e",guide:"负责钉住「你为什么熬」。迷茫、怀疑目标、忘了 550→600 的来路时找他。"}
 };
 const ORDER = ["zhao","lv","xu","xiang","bian","mai","ci","wen","xin","si","mian","shen","xing"];
 
@@ -1193,12 +1211,12 @@ const REPLIES = {
     {k:["资料","下单","到货","书","买"],t:"资料到位是开局第一关。物理跳跳学长、化学超人、生物李林、语文陈Sir都还没到——这几天先把单下了。到了计划才排得进去。"},
     {k:["进度","落后","差距","计划","排"],t:"计划不是按章节平均排，是按你真实缺口排。开干前先摸清每科哪块是零分，再决定先啃哪。前三天只要『动起来+睡够10h』就算赢。"},
     {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/20 第一天计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
-    {k:["default"],t:"执行的事归我。你今天动了没？没动就别想太多，先从一个最小动作开始。"}
+    {k:["default"],t:"执行归我。今天动了没？动了多少、卡在哪——给我数字。没动就先做一个 5 分钟的最小动作，别跟感觉谈条件。"}
   ],
   xu:[
     {k:["数学","函数","集合","不等式","导数","算","题"],t:"数学23分，地基空。别贪多——一天一个15分钟网课+20道同类题，错题写『我哪理解偏了』不是抄题。先问自己卡在概念还是步骤，概念问题我带你从推导讲起。"},
     {k:["错题","不懂","卡"],t:"把卡的那一步单独拎出来：是概念没懂，还是步骤不会？概念我讲为什么成立，步骤我拆成可执行链。别整题重做，专攻那一步。"},
-    {k:["default"],t:"模块A（集合+逻辑+不等式）先起步。你INTJ自己琢磨才有劲，我只在你卡住时点一下。"}
+    {k:["default"],t:"我是干活的：你数学卡在第几步，把那步发我。概念从哪断的，我带你补到哪。"}
   ],
   xiang:[
     {k:["物理","受力","运动","能量","图像","公式"],t:"物理14分，别急着算。先建图像——受力图、运动图、能量图，能画出来再碰公式。跳跳学长网课当主线，倍速反复是你的控制权。"},
@@ -1214,7 +1232,7 @@ const REPLIES = {
   ],
   ci:[
     {k:["英语","长难句","阅读","词汇","单词","语法"],t:"英语54，核心是词不够+长句拆不开。长难句按『主干-修饰-逻辑』三层拆：先拎主谓宾，再看从句和非谓语，最后理逻辑连接。阅读定位靠同义替换，不是逐字翻译。"},
-    {k:["default"],t:"每天背多少词、累计多少，得有可见数。词汇量上去了阅读才不卡。"}
+    {k:["default"],t:"先报数：今天单词背了几个？词汇量没到，技巧都是空转。到了我们再谈拆长句。"}
   ],
   wen:[
     {k:["语文","文言","作文","阅读","答题"],t:"语文93是你最强项，按你的基础讲精准不降维。文言实词靠语境推断+积累；答题要有文本依据、角度闭环，别凭感觉。需要具体题直接贴。"},
@@ -1426,25 +1444,81 @@ function makeMsgEl(m){
   const d=document.createElement("div");
   d.className="msg "+(m.from==="user"?"user":"agent");
   d.dataset.key = (m.ts||0)+"|"+m.text;
+  d.dataset.ts = m.ts||0;
   if(m.from==="user"){
     d.textContent=m.text;
   }else{
     const who=document.createElement("div"); who.className="who";
     const r=ROLES[m.role]||ROLES.zhao;
     who.innerHTML=`<span class="rd" style="background:${r.color}"></span>${r.name}·${r.title}`;
+    who.style.cursor="pointer";
+    who.title="查看 TA 的个人页";
+    who.onclick=()=>{ if(ROLES[m.role]) showAgent(m.role); };
     const p=document.createElement("div"); p.textContent=m.text;
     d.appendChild(who); d.appendChild(p);
+    // 记坑按钮：把 TA 这条讲解存进坑档案（答疑沉淀）
+    if(m.role && m.role!=="zhao" && ROLES[m.role] && String(m.text||"").indexOf("🤔")!==0){
+      const mk=(m.ts||0)+"|"+m.text;
+      const pb=document.createElement("button");
+      pb.type="button";
+      pb.className="pit-btn"+(pitMarked(mk)?" on":"");
+      pb.textContent = pitMarked(mk) ? "✓ 已记坑" : "📌 记坑";
+      pb.onclick=function(){
+        if(pitAdd(m.role, m.text, m.ts)){
+          pb.textContent="✓ 已记坑"; pb.classList.add("on");
+          showRdBanner("已存进「"+ROLES[m.role].name+"」的坑档案，下次聊TA会想起来");
+        }
+      };
+      d.appendChild(pb);
+    }
   }
   return d;
+}
+/* 消息时间线分组：今天/昨天/M月D日 */
+function chatDayLabel(ts){
+  const d=new Date(ts); const now=new Date();
+  const t0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+  const diff=Math.floor((t0 - new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime())/86400000);
+  if(diff===0) return "今天";
+  if(diff===1) return "昨天";
+  return (d.getMonth()+1)+"月"+d.getDate()+"日";
+}
+function lastMsgTs(){
+  const kids=messagesEl.children;
+  for(let i=kids.length-1;i>=0;i--){ if(kids[i].dataset && kids[i].dataset.ts) return +kids[i].dataset.ts; }
+  return null;
 }
 function appendMsg(m, persist=true){
   const key=(m.ts||0)+"|"+m.text;
   if(rendered.has(key)) return;        // 去重（realtime 与本地 insert 可能重复）
   rendered.add(key);
+  const lastTs=lastMsgTs();
+  if(lastTs===null || chatDayLabel(m.ts)!==chatDayLabel(lastTs)){
+    const h=document.createElement("div"); h.className="msg-day"; h.textContent=chatDayLabel(m.ts);
+    messagesEl.appendChild(h);
+  }
   const e=makeMsgEl(m);
   messagesEl.appendChild(e);
   messagesEl.scrollTop = messagesEl.scrollHeight;
   if(persist && !chatLog.some(x=>(x.ts||0)+"|"+x.text===key)){ chatLog.push(m); chatSave(chatLog); }
+}
+/* ---- 列宿 v2：坑档案（答疑沉淀 · 本机 yj_pit_v1，2026-09-06 隔离加法）---- */
+const PIT_KEY="yj_pit_v1";
+function pitRead(){ try{ return JSON.parse(localStorage.getItem(PIT_KEY)||"[]"); }catch(e){ return []; } }
+function pitSave(a){ try{ localStorage.setItem(PIT_KEY, JSON.stringify(a.slice(-400))); }catch(e){} }
+function pitMarked(key){ return pitRead().some(p=>p.key===key); }
+function pitAdd(role, text, ts){
+  const arr=pitRead();
+  const brief=(text||"").replace(/\s+/g," ").trim().slice(0,80);
+  const key=(ts||0)+"|"+(text||"").slice(0,60);
+  if(arr.some(p=>p.key===key)) return false;
+  arr.push({role, brief, ts:ts||Date.now(), key});
+  pitSave(arr);
+  return true;
+}
+function pitRecentByRole(role, n){
+  const arr=pitRead().filter(p=>p.role===role);
+  return arr.slice(-(n||2));
 }
 
 async function renderMessages(){
@@ -1544,11 +1618,37 @@ function renderActionBar(actions, msgTs){
   });
   bar.querySelector("[data-skip]").onclick = ()=>{ bar.remove(); };
 }
+/* 列宿 v2：DeepSeek 余额缓存（renderDs 成功时写入，供省钱分级用） */
+let dsBalanceCache = null;
+let dsSaveHinted = false;
+const SUBJ2ROLE=[["数学","xu"],["函数","xu"],["集合","xu"],["不等式","xu"],["导数","xu"],["数列","xu"],["三角","xu"],["逻辑","xu"],["物理","xiang"],["受力","xiang"],["运动","xiang"],["能量","xiang"],["力学","xiang"],["加速度","xiang"],["化学","bian"],["方程","bian"],["反应","bian"],["价态","bian"],["氧化还原","bian"],["摩尔","bian"],["生物","mai"],["遗传","mai"],["细胞","mai"],["基因","mai"],["英语","ci"],["单词","ci"],["词汇","ci"],["长难句","ci"],["语法","ci"],["听力","ci"],["语文","wen"],["文言","wen"],["作文","wen"],["错题","xu"]];
+function mapSubjRole(t){
+  t=(t||"").toLowerCase();
+  for(const pair of SUBJ2ROLE){ if(t.includes(pair[0])) return pair[1]; }
+  return null;
+}
+/* 判断是否「真学术求助」：只有它才调 DeepSeek（省钱分级）；@AI 前缀强制 */
+function askSignal(text){
+  const m=text.match(/^@AI[\s:：,，]*(.*)$/);
+  if(m) return {forced:true, deep:true, text:m[1]||""};
+  const SUBJ=["数学","函数","集合","不等式","导数","数列","三角","物理","受力","运动","能量","力学","化学","方程","反应","价态","氧化还原","摩尔","生物","遗传","细胞","基因","英语","单词","词汇","长难句","语法","听力","语文","文言","作文","错题","答疑","概念","题"];
+  const ASK=["为什么","怎么","如何","吗","？","?","帮","请教","不懂","卡","错","讲","分析","区别","是不是","对吗","求","解释","没懂","理解不了"];
+  const subj=SUBJ.some(w=>text.includes(w));
+  const ask=ASK.some(w=>text.includes(w));
+  return {forced:false, deep:(subj&&ask)||(text.includes("题")&&text.length>=12), text:text};
+}
 async function aiGroupReply(text){
-  // 先用关键词引擎选出"该谁回"（保持"相关的人接话"逻辑），再让 AI 以这些身份真回
-  const fallback = groupReply(text);
+  const sig=askSignal(text);
+  const fallback=groupReply(sig.text||text);
   if(!sb) return {intent:"chat", replies:fallback, actions:[]};   // 未连云端：纯关键词
   const roles = fallback.map(r=>r.role);
+  // 省钱档：余额低（<¥3）且未强制 → 一律免费关键词回复
+  if(dsBalanceCache!=null && parseFloat(dsBalanceCache)<3 && !sig.forced){
+    if(!dsSaveHinted){ dsSaveHinted=true; showRdBanner("DeepSeek 余额偏低（¥"+dsBalanceCache+"），已自动转免费伙伴回复。充值后或消息以 @AI 开头可强制 AI 作答。"); }
+    return {intent:"chat", replies:fallback, actions:[]};
+  }
+  // 省钱档：非学术求助（闲聊/汇报/寒暄）→ 免费关键词，不烧额度
+  if(!sig.deep){ return {intent:"chat", replies:fallback, actions:[]}; }
   try{
     const context = await collectContext();
     // 取最近 20 条对话历史，让 AI 记得之前聊过什么（不含当前这条）
@@ -1556,8 +1656,17 @@ async function aiGroupReply(text){
       role: m.from==="user" ? "user" : "assistant",
       content: m.text
     }));
+    // 坑档案注入（history 通道已实测 AI 能读到）：TA 记得你之前卡过的点
+    const subjRole = mapSubjRole(sig.text) || (roles.length ? roles[0] : null);
+    if(subjRole && subjRole!=="zhao"){
+      const pits = pitRecentByRole(subjRole, 2);
+      if(pits.length){
+        const nm = (ROLES[subjRole]||{}).name || subjRole;
+        history.unshift({ role:"assistant", content:"（备忘）"+nm+" 之前给若昭点过坑："+pits.map(p=>p.brief).join("；")+"。若这次相关，先点一句 TA 记得，再针对性讲。" });
+      }
+    }
     const {data, error} = await sb.functions.invoke("deepseek-chat", {
-      body:{ roles, userText:text, context, history }
+      body:{ roles, userText:sig.text, context, history }
     });
     if(error || !data || !Array.isArray(data.replies) || data.replies.length===0)
       return {intent:"chat", replies:fallback, actions:[]};
@@ -1958,12 +2067,19 @@ async function renderDs(){
       box.innerHTML='<div class="ds-line"><span class="ds-label">查询失败，点右上「刷新」重试</span></div>';
       return;
     }
+    dsBalanceCache = data.total_balance;
     box.innerHTML =
       '<div class="ds-line"><span class="ds-bal">¥ '+(data.total_balance||"0")+'</span><span class="ds-label">DeepSeek 可用余额'+(data.is_available===false?' · 不可用':'')+'</span></div>'+
       '<div class="ds-cols">'+
         '<div>充值<b>¥ '+(data.topped_up_balance||"0")+'</b></div>'+
         '<div>赠送<b>¥ '+(data.granted_balance||"0")+'</b></div>'+
       '</div>';
+    const dn=document.getElementById("dsNote");
+    if(dn){
+      dn.textContent = parseFloat(dsBalanceCache||0)<3
+        ? "余额偏低：列宿已自动转免费伙伴回复（消息以 @AI 开头仍可强制 AI 作答）。"
+        : "余额 = DeepSeek 账户额度，列宿的 AI 回复从这里扣。余额偏低时列宿自动转免费伙伴回复（@AI 可强制）。";
+    }
   }catch(e){
     box.innerHTML='<div class="ds-line"><span class="ds-label">查询失败，点右上「刷新」重试</span></div>';
   }
@@ -3035,6 +3151,23 @@ async function renderAgent(k){
   curAgent = k;
   const r = ROLES[k];
   const logEl = document.getElementById("agentLog");
+  // v2：人设卡（怎么用 TA）
+  const gb=document.getElementById("agentGuideBlock");
+  const gg=document.getElementById("agentGuide");
+  if(gb && gg){ gb.style.display = r.guide ? "block" : "none"; gg.textContent = r.guide || ""; }
+  // v2：坑档案（TA 给你点过的坑）
+  const pl=document.getElementById("pitList");
+  if(pl){
+    const pits=pitRead().filter(p=>p.role===k);
+    if(!pits.length){
+      pl.innerHTML='<div class="pit-empty">TA 还没给你点过坑。<br>在列宿里看到 TA 讲到点子上的话，点消息上的「📌 记坑」——这里会存下来，下次聊 TA 会想起来。</div>';
+    } else {
+      pl.innerHTML = pits.slice().reverse().map(p=>{
+        const dt=p.ts?new Date(p.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+        return '<div class="pit-item"><span class="pit-who">坑</span><span class="pit-t">'+esc(p.brief)+'</span><span class="pit-date">'+dt+'</span></div>';
+      }).join("");
+    }
+  }
   const cacheKey = "yj_agent_log_v1_"+k;
   const renderRows=(data)=>{
     if(!data||data.length===0){ logEl.innerHTML='<div class="empty">'+esc(r.name)+' 还没有在群里发过言。</div>'; return; }
