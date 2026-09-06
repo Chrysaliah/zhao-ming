@@ -649,6 +649,8 @@
   .pit-item .pit-t{flex:1;}
   .pit-item .pit-date{flex:none;color:#aaa;font-size:10px;margin-top:2px;white-space:nowrap;}
   .pit-empty{font-size:12px;color:#999;padding:8px 2px;line-height:1.7;}
+  .pit-del{flex:none;border:none;background:none;color:#c0b8ca;font-size:13px;cursor:pointer;padding:0 2px;line-height:1;}
+  .pit-del:hover{color:#a32d2d;}
 </style>
 
 <!-- force SW update -->
@@ -1286,11 +1288,10 @@ function groupReply(text){
     }
   }
   if(hits.length===0){
-    const others = ORDER.filter(k=>k!=="zhao");
-    const rnd = others[Math.floor(Math.random()*others.length)];
-    return [{role:"zhao",text:"大家在，你说吧——想聊哪块，我帮你点人。"},{role:rnd,text:pickReply(rnd,text)}];
+    // 闲聊/泛谈：只由主持人昭轻接，不再随机硬拉一个伙伴（避免答非所问的刷屏）
+    return [{role:"zhao",text:"在呢。想聊学习、心情还是今天的事？说具体点，或直接提科目/关键词，对口的伙伴会出来接你。"}];
   }
-  const top = hits.slice(0,3);
+  const top = hits.slice(0,2);   // 克制：最多 2 位相关伙伴接，不搞全员抢答
   return top.map(k=>({role:k,text:pickReply(k,text)}));
 }
 
@@ -1541,6 +1542,13 @@ async function pitPush(rec){
   if(!sb) return;
   try{ await sb.from(PIT_TABLE).insert({role:rec.role,brief:rec.brief,ts:rec.ts,key:rec.key}); }catch(_){}
 }
+async function pitDel(key){
+  // 本地删
+  const arr=pitRead().filter(p=>p.key!==key);
+  pitSave(arr);
+  // 云端删
+  if(sb){ try{ await sb.from(PIT_TABLE).delete().eq("key",key); }catch(_){} }
+}
 
 async function renderMessages(){
   messagesEl.innerHTML="";
@@ -1695,7 +1703,8 @@ async function aiGroupReply(text){
     return {
       intent: data.intent || "chat",
       replies: data.replies,
-      actions: Array.isArray(data.actions) ? data.actions : []
+      actions: Array.isArray(data.actions) ? data.actions : [],
+      pits: Array.isArray(data.pits) ? data.pits : []
     };
   }catch(_){ return {intent:"chat", replies:fallback, actions:[]}; }
 }
@@ -1728,6 +1737,20 @@ async function send(){
   // —— 求助型：出按钮（采纳/记录/继续讨论），其余类型只回话 ——
   if(res.intent==="advice" && res.actions && res.actions.length){
     renderActionBar(res.actions, Date.now());
+  }
+  // —— AI 自动沉淀坑档案（v3：模型在 replies 之外输出 pits，免手动）——
+  if(res.pits && res.pits.length){
+    let autoN=0;
+    res.pits.slice(0,3).forEach(p=>{
+      const brief=(p&&p.brief?String(p.brief):"").trim();
+      if(!brief) return;
+      const rk=(p.role && ROLES[p.role]) ? p.role : (res.replies[0] && ROLES[res.replies[0].role] ? res.replies[0].role : null);
+      if(!rk) return;
+      if(pitAdd(rk, brief, Date.now()+ (autoN*7))) autoN++;
+    });
+    if(autoN){
+      showRdBanner("已自动记住 "+(res.pits.length>1?res.pits.length+" 条":"1 条")+"坑，可到伙伴页「给你点过的坑」查看/删除");
+    }
   }
 }
 async function flushPending(){
@@ -3187,8 +3210,17 @@ async function renderAgent(k){
     } else {
       pl.innerHTML = pits.slice().reverse().map(p=>{
         const dt=p.ts?new Date(p.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
-        return '<div class="pit-item"><span class="pit-who">坑</span><span class="pit-t">'+esc(p.brief)+'</span><span class="pit-date">'+dt+'</span></div>';
+        return '<div class="pit-item"><span class="pit-who">坑</span><span class="pit-t">'+esc(p.brief)+'</span><span class="pit-date">'+dt+'</span><button class="pit-del" data-key="'+esc(p.key)+'" title="删除这条坑">✕</button></div>';
       }).join("");
+      pl.querySelectorAll(".pit-del").forEach(btn=>{
+        btn.onclick=async ()=>{
+          const k=btn.getAttribute("data-key");
+          if(!k) return;
+          pitDel(k);
+          const item=btn.closest(".pit-item"); if(item) item.remove();
+          if(!pitRead().some(p=>p.role===curAgent)) renderAgent(curAgent);
+        };
+      });
     }
   }
   const cacheKey = "yj_agent_log_v1_"+k;
