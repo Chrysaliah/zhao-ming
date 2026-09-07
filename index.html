@@ -2848,6 +2848,10 @@ document.getElementById("todoList").addEventListener("click", e=>{
   if(item){
     const id = item.dataset.id;
     const on = item.querySelector(".plan-check").classList.contains("on");
+    if(!on){
+      const txt = item.querySelector(".plan-txt").textContent;
+      if(txt.startsWith('[计划]')){ delTodo(id); return; }
+    }
     toggleTodo(id, on);
   }
 });
