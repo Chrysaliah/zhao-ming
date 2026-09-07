@@ -10,24 +10,6 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon-512.png">
-  <script>
-  /* 闪屏早期独立兜底：绝不依赖任何外部库/后续脚本，避免卡屏 */
-  (function(){
-    function hideSplash(){
-      var s=document.getElementById('splashScreen');
-      if(s){ s.classList.add('hide'); setTimeout(function(){ if(s&&s.parentNode)s.remove(); }, 700); }
-    }
-    if(document.readyState!=='loading'){ setTimeout(hideSplash, 800); }
-    else { document.addEventListener('DOMContentLoaded', function(){ setTimeout(hideSplash, 800); }); }
-    /* 终极兜底：与任何网络/外部资源/脚本无关，4s 后强制隐藏 */
-    setTimeout(hideSplash, 4000);
-  })();
-  </script>
-  <!-- iOS native launch screens (iOS ignores manifest splash, needs apple-touch-startup-image) -->
-  <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1170x2532.png">
-  <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1284x2778.png">
-  <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1290x2796.png">
-  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="apple-launch-1125x2436.png">
 <style>
 @font-face{font-family:'Noto Serif SC';font-style:normal;font-weight:500;font-display:block;src:url('shiguang-serif.ttf') format('truetype');}
 
@@ -128,7 +110,7 @@
   .sc-back:active{transform:scale(.92);}
   .sc-title{font-size:18px;font-weight:800;color:var(--teal);letter-spacing:1px;}
   .sc-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-  .sc-body{padding:14px 14px calc(76px + env(safe-area-inset-bottom));background:#f3f4f6;display:flex;flex-direction:column;gap:16px;}
+  .sc-body{padding:14px 14px calc(20px + env(safe-area-inset-bottom));background:#f3f4f6;display:flex;flex-direction:column;gap:16px;}
   .sc-block{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;}
   .sc-bt{font-size:13px;font-weight:700;color:var(--sichen);margin-bottom:11px;display:flex;align-items:center;gap:6px;}
   .sc-bt::before{content:"";width:4px;height:13px;background:var(--sichen);border-radius:2px;}
@@ -172,15 +154,6 @@
   .cal-wk-s{color:var(--ink);}
   .cal-wk-ok{margin-left:auto;color:var(--ok);font-weight:700;font-size:11px;}
   .cal-wk-no{margin-left:auto;color:var(--silver-deep);font-size:11px;}
-  /* 折叠交互：打卡日历默认折叠，点标题展开/收起 */
-  #calCard .sc-bt{cursor:pointer;user-select:none;justify-content:space-between;}
-  #calCard .sc-bt::after{content:"▾";margin-left:auto;font-size:12px;color:var(--sichen);transition:transform .2s;}
-  #calCard.collapsed .sc-bt::after{content:"▸";}
-  #calCard.collapsed > .cal-head,
-  #calCard.collapsed > .cal-week,
-  #calCard.collapsed > .cal-grid,
-  #calCard.collapsed > .cal-stat-inline,
-  #calCard.collapsed > #calWeekPanel{display:none;}
   .sc-list{display:flex;flex-direction:column;gap:10px;}
   .sc-item{border-left:3px solid var(--sichen-data);background:#faf6ef;border-radius:0 8px 8px 0;padding:9px 11px;}
   .sc-item-t{font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:4px;}
@@ -212,16 +185,6 @@
   .countdown-card .cd-date{font-size:11px;opacity:.7;}
   .countdown-card .cd-num{font-size:40px;font-weight:800;line-height:1;letter-spacing:1px;}
   .countdown-card .cd-unit{font-size:12px;opacity:.85;margin-left:4px;font-weight:600;}
-  .stage-card{padding:12px 14px;}
-  .stage-line{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;}
-  .stage-name{font-size:15px;font-weight:800;color:var(--teal);}
-  .stage-sub{font-size:11px;color:var(--muted);flex:1;}
-  .stage-left{font-size:12px;font-weight:700;color:var(--teal);}
-  .stage-track{position:relative;display:flex;gap:4px;}
-  .stage-seg{flex:1;text-align:center;font-size:10px;color:var(--muted);line-height:1.4;padding:6px 2px;border-radius:8px;background:#f3f1f8;}
-  .stage-seg em{display:block;font-style:normal;font-size:9px;opacity:.7;}
-  .stage-seg.on{background:var(--teal);color:#fff;font-weight:700;}
-  .stage-seg.on em{opacity:.85;}
   .roster{display:flex;flex-wrap:wrap;gap:8px;}
   .role-chip{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:6px 11px;background:#fff;font-size:12px;}
   .role-chip .dot{width:10px;height:10px;border-radius:50%;}
@@ -507,12 +470,9 @@
 .fc-stats b{color:var(--sichen);font-size:15px;}
 /* ===== 情绪追踪 ===== */
 .mood-block{margin-top:12px;}
-.mood-row{display:flex;gap:8px;justify-content:center;margin:10px 0;}
-.mood-btn{flex:1;border:none;background:transparent;border-radius:14px;padding:8px 2px;cursor:pointer;transition:.15s;text-align:center;color:#bcb6c8;line-height:0;}
-.mood-btn svg{display:block;margin:0 auto;transition:transform .15s;}
-.mood-btn:hover{background:#f6f4f9;}
-.mood-btn.active{background:#f3eef7;}
-.mood-btn.active svg{transform:scale(1.12);}
+.mood-row{display:flex;gap:6px;justify-content:center;margin:10px 0;}
+.mood-btn .mood-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.15s;text-align:center;}
+.mood-btn.active{border-width:2px;}
 .mood-btn:active{transform:scale(.92);}
 .mood-note{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;resize:vertical;min-height:40px;background:#fff;margin-top:8px;}
 .mood-save{margin-top:8px;border:none;background:var(--sichen);color:#fff;border-radius:9px;padding:8px 16px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;}
@@ -603,60 +563,12 @@
 .fold-card .fold-body>div:last-child{margin-bottom:0;}
 .fold-sub-card{border:none!important;padding:0!important;}
 .fold-sub-card .sec-title{font-size:12px;color:var(--muted);margin-bottom:6px;}
-  .fin-import{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding:10px 12px;background:var(--bg-2,#faf8fc);border-radius:12px;border:1px solid var(--border,#ece8ee);}
-  .fin-import-btn{font:inherit;font-size:13px;padding:9px 14px;border:none;border-radius:10px;background:#534AB7;color:#fff;cursor:pointer;font-weight:500;align-self:flex-start;}
-  .fin-import-btn:active{transform:scale(.98);}
-  .fin-import-tip{font-size:11px;color:var(--muted,#8a8594);line-height:1.5;}
-  .fin-import-preview{margin-top:10px;border:1px solid var(--border,#ece8ee);border-radius:12px;overflow:hidden;}
-  .fin-imp-loading,.fin-imp-empty,.fin-imp-err{padding:16px;font-size:13px;color:var(--muted,#8a8594);text-align:center;}
-  .fin-imp-err{color:#a32d2d;}
-  .fin-imp-hd{padding:10px 12px;background:var(--bg-2,#faf8fc);font-size:12px;color:var(--muted,#8a8594);border-bottom:1px solid var(--border,#ece8ee);}
-  .fin-imp-list{max-height:280px;overflow:auto;}
-  .fin-imp-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border,#f2eef5);font-size:12px;}
-  .fi-date{color:var(--muted,#8a8594);width:84px;flex:none;}
-  .fi-amt{width:80px;flex:none;font-weight:500;}
-  .fi-amt.pos{color:#3f8a6d;}
-  .fi-amt.neg{color:#b5524e;}
-  .fi-mer{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink,#2c2c2a);}
-  .fi-cat{flex:none;font:inherit;font-size:12px;padding:3px 4px;border:1px solid var(--border,#ece8ee);border-radius:7px;background:#fff;}
-  .fin-imp-acts{display:flex;gap:8px;padding:10px 12px;}
-  .fin-imp-ok{font:inherit;font-size:13px;padding:8px 16px;border:none;border-radius:9px;background:#3f8a6d;color:#fff;cursor:pointer;font-weight:500;}
-  .fin-imp-cancel{font:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--border,#ece8ee);border-radius:9px;background:#fff;color:var(--muted,#8a8594);cursor:pointer;}
-  .fin-report{margin:10px 0 4px;}
-  .fin-report-btn{width:100%;padding:10px;border:0;border-radius:10px;background:#534AB7;color:#fff;font-size:13px;cursor:pointer;}
-  .fin-report-btn:disabled{opacity:.6;}
-  .fin-report-body{margin-top:10px;padding:12px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;line-height:1.7;font-size:13px;}
-  .fr-month{font-weight:600;color:#26215C;margin-bottom:6px;}
-  .fr-row{color:#444;}
-  .fr-cats{color:#888;font-size:12px;margin:4px 0;}
-  .fr-text{margin-top:6px;color:#333;}
-  .fin-report-actions{display:flex;gap:8px;}
-  .fin-report-actions .fin-report-btn{flex:1;}
-  .fin-report-btn.ghost{background:#fff;color:#534AB7;border:1px solid #534AB7;}
-  .fin-history{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
-  .fh-title{font-size:12px;color:#888;margin-bottom:2px;}
-  .fh-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid rgba(0,0,0,.08);border-radius:10px;background:#fff;font-size:13px;color:#333;cursor:pointer;font-family:inherit;}
-  .fh-item:active{background:#f3f0fa;}
-  .fh-date{font-size:11px;color:#aaa;}
-  .fh-empty{font-size:12px;color:#999;padding:8px 2px;}
-/* ---- 列宿 v2：时间线/记坑/人设卡（2026-09-06 隔离加法） ---- */
-  .msg-day{text-align:center;color:#a99fb3;font-size:11px;padding:14px 0 4px;letter-spacing:.5px;}
-  .pit-btn{font:inherit;font-size:10px;color:#8a8594;background:none;border:1px dashed #cfc6da;border-radius:6px;padding:1px 7px;margin-top:6px;cursor:pointer;opacity:.8;align-self:flex-start;}
-  .pit-btn.on{color:#b0602a;border-color:#d9b48a;border-style:solid;opacity:1;}
-  .agent-guide{font-size:13px;line-height:1.75;color:#5a5568;background:#faf8fc;border:1px solid #ece8ee;border-radius:12px;padding:10px 13px;white-space:pre-line;}
-  .pit-item{display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid #f2eef5;font-size:12px;line-height:1.6;color:#444;}
-  .pit-item .pit-who{flex:none;color:#b0602a;font-weight:600;margin-top:1px;}
-  .pit-item .pit-t{flex:1;}
-  .pit-item .pit-date{flex:none;color:#aaa;font-size:10px;margin-top:2px;white-space:nowrap;}
-  .pit-empty{font-size:12px;color:#999;padding:8px 2px;line-height:1.7;}
-  .pit-del{flex:none;border:none;background:none;color:#c0b8ca;font-size:13px;cursor:pointer;padding:0 2px;line-height:1;}
-  .pit-del:hover{color:#a32d2d;}
 </style>
 
 <!-- force SW update -->
 <script>
 (function(){
-  var EXPECTED="longming-v96";
+  var EXPECTED="longming-v97";
   if("serviceWorker" in navigator){
     navigator.serviceWorker.getRegistration().then(function(reg){
       if(!reg)return;
@@ -701,7 +613,7 @@
       <span class="goal-arrow">→</span>
       <span class="goal-target">600</span>
     </div>
-    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 9/5 正式开干</div>
+    <div class="goal-note" id="goalNote">2026 高考复读目标 · 江浙沪 211/985 · 8/25 正式开干</div>
   </div>
 
   <div class="countdown-card">
@@ -710,21 +622,6 @@
       <span class="cd-date" id="cdDate">2027 年 6 月 7 日</span>
     </div>
     <div><span class="cd-num" id="cdNum">—</span><span class="cd-unit">天</span></div>
-  </div>
-
-  <div class="card stage-card">
-    <div class="stage-line">
-      <span class="stage-name" id="stageName">启动期</span>
-      <span class="stage-sub" id="stageSub">第 1 周 · 每日 2h · 起床 11:00</span>
-      <span class="stage-left" id="stageLeft">—</span>
-    </div>
-    <div class="stage-track">
-      <div class="stage-seg" data-s="0">启动<br><em>9/5-9/26</em></div>
-      <div class="stage-seg" data-s="1">地基<br><em>9/11-12/31</em></div>
-      <div class="stage-seg" data-s="2">加速<br><em>1/1-3/31</em></div>
-      <div class="stage-seg" data-s="3">冲刺<br><em>4/1-6/6</em></div>
-      <div class="stage-bar" id="stageBar"></div>
-    </div>
   </div>
 
   <div class="card mod-checkin">
@@ -756,58 +653,15 @@
     <div class="goal-note" style="margin-top:6px">287 → 550 → 600 · 拆到每天可执行</div>
   </details>
 
-  <!-- ===== 启动计划 · 前2周 ===== -->
+  <!-- ===== 启动计划 · 每日任务 ===== -->
   <details class="card fold-card" style="margin-top:12px;">
-    <summary class="sec-title">启动计划 · 前2周 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">9/5 → 9/18</span></summary>
+    <summary class="sec-title">启动计划 · 每日任务 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">9/8 → 9/21</span></summary>
     <div class="fold-body" style="padding:0 14px 14px;">
-      <!-- 第1周 -->
-      <div style="padding:14px 0 10px;border-bottom:1px solid #f0f0f0;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <div style="width:8px;height:8px;border-radius:50%;background:#d4ad5e;flex-shrink:0;"></div>
-          <span style="font-size:14px;font-weight:600;color:#2c3e4e;">第1周 · 开步</span>
-          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">9/5 周六 — 9/11 周五</span>
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">2h</strong>/天</span>
-          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">📖 <strong style="color:#6a7a8a;">数学 + 英语</strong></span>
-          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">🌅 目标起床 <strong style="color:#6a7a8a;">→11:00</strong></span>
-        </div>
-        <ul style="list-style:none;padding:0;margin:0 0 8px;">
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 数学 · 逆向法：找初二函数代表题，试5min→答案找缺口→补教材概念</li>
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 数学 · 函数断口修补：变量关系→函数定义→图像理解</li>
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 英语 · 词汇：词根词缀法，每天20词，3次默写过关</li>
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 英语 · 听力：听→读→做题，每天15min</li>
-        </ul>
-        <div style="padding:8px 12px;background:#faf6ef;border-radius:8px;font-size:12px;color:#6a7a8a;line-height:1.6;">
-          <strong style="color:#c4a265;">数学动作：</strong>代表题→试5min→答案找缺口→教材补概念→回来解→双练巩固
-        </div>
+      <div id="inlineDailyPlan" style="padding:10px 0 0;">
+        <div class="ins-loading" style="color:var(--muted);font-size:12.5px;padding:14px 2px;">加载今日计划…</div>
       </div>
-      <!-- 第2周 -->
-      <div style="padding:14px 0 10px;border-bottom:1px solid #f0f0f0;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <div style="width:8px;height:8px;border-radius:50%;background:#6a8a6a;flex-shrink:0;"></div>
-          <span style="font-size:14px;font-weight:600;color:#2c3e4e;">第2周 · 加码</span>
-          <span style="font-size:11px;color:#8a9baa;margin-left:auto;">8/27 周四 — 9/2 周三</span>
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">⏱ <strong style="color:#6a7a8a;">3h</strong>/天</span>
-          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">📖 <strong style="color:#6a7a8a;">+ 物理</strong></span>
-          <span style="background:#f8f9fa;padding:4px 10px;border-radius:6px;font-size:12px;color:#4a5a6a;">🌅 目标起床 <strong style="color:#6a7a8a;">10:30</strong></span>
-        </div>
-        <ul style="list-style:none;padding:0;margin:0 0 8px;">
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 数学 · 继续函数修补 + 选择填空专项训练</li>
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 英语 · 词汇积累继续 + 阅读/写作隔天轮换</li>
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 物理 · 力学基础：黄夫人视频对应章节，画画面（什么动/什么推/方向）</li>
-          <li style="font-size:13px;color:#4a5a6a;padding:3px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;">&bull; 物理 · 公式是画面的数学翻译，先理解再记公式</li>
-        </ul>
-        <div style="padding:8px 12px;background:#faf6ef;border-radius:8px;font-size:12px;color:#6a7a8a;line-height:1.6;">
-          <strong style="color:#c4a265;">物理动作：</strong>代表题→画画面→卡→黄夫人对应讲→回来画→解
-        </div>
-      </div>
-      <!-- 小贴士 -->
-      <div style="padding:10px 12px 0;font-size:12px;color:#8a9baa;line-height:1.5;display:flex;align-items:flex-start;gap:6px;">
-        <span>💡</span>
-        <span>5分钟启动：不想学只承诺"看5分钟" · 完成&gt;完美 · 出门走走让DMN后台处理</span>
+      <div style="padding:8px 12px;background:#faf6ef;border-radius:8px;font-size:12px;color:#6a7a8a;line-height:1.6;margin-top:10px;">
+        <strong style="color:#c4a265;">打工日原则：</strong>只保数学（1h）+ 英语词汇，约1-1.5h · 非打工日：数学+英语+理综一科+语文轮换，约3-4h
       </div>
     </div>
     <div style="padding:8px 14px 14px;display:flex;gap:8px;flex-wrap:wrap;">
@@ -868,12 +722,6 @@
     <div class="sheet-panel">
       <div class="sheet-hd">银流<span class="sheet-close" data-close="yinliuSheet">✕</span></div>
       <div class="fin-sub">收入/支出 · 分类 + 资产·负债标注</div>
-      <div class="fin-import">
-        <button class="fin-import-btn" id="finImportBtn">📥 导入微信账单</button>
-        <span class="fin-import-tip">微信→我→服务→钱包→账单→导出 Excel，下载后这里一键导入</span>
-        <input type="file" id="finImportFile" accept=".xlsx,.xls,.csv" style="display:none">
-      </div>
-      <div class="fin-import-preview" id="finImportPreview" style="display:none;"></div>
       <div class="fin-balance" id="finBalance"></div>
       <div class="fin-add">
         <select id="finType">
@@ -899,14 +747,6 @@
         <div class="legend" id="legend"></div>
       </div>
       <div class="month-sel">查看月份 <select id="monthSel"></select></div>
-      <div class="fin-report" id="finReport">
-        <div class="fin-report-actions">
-          <button class="fin-report-btn" id="finReportBtn">📊 生成 AI 月报</button>
-          <button class="fin-report-btn ghost" id="finHistoryBtn">📜 历史月报</button>
-        </div>
-        <div class="fin-report-body" id="finReportBody" style="display:none;"></div>
-        <div class="fin-history" id="finHistory" style="display:none;"></div>
-      </div>
       <div class="fin-list" id="finList"></div>
       <div class="note-tip">性质标注呼应读物：买课/教辅=投资，吃饭=消费，囤货=资产，借贷=负债。月末可看「消费 vs 投资」对比。</div>
     </div>
@@ -963,7 +803,7 @@
     <summary class="sec-title">🧠 DeepSeek 额度</summary>
     <div id="dsBox"><div class="ds-line"><span class="ds-label">查询中…</span></div></div>
     <div class="ds-topup">
-      <div class="ds-note" id="dsNote">余额 = DeepSeek 账户里的额度，列宿的 AI 回复会从这里扣。余额偏低时列宿自动转免费伙伴回复（@AI 可强制）。</div>
+      <div class="ds-note">余额 = DeepSeek 账户里的额度，列宿的 AI 回复会从这里扣。</div>
       <div class="ds-topup-btns">
         <button class="ds-reload" id="dsReload">↻ 刷新</button>
         <a class="ds-topup-btn" href="https://platform.deepseek.com/top_up" target="_blank" rel="noopener">充值 ↗</a>
@@ -1045,21 +885,11 @@
       <div class="sc-bt">情绪追踪</div>
       <div class="mood-block">
         <div class="mood-row" id="moodRow">
-          <button class="mood-btn" data-mood="1" aria-label="低落">
-            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 39 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-          </button>
-          <button class="mood-btn" data-mood="2" aria-label="偏低">
-            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 34 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-          </button>
-          <button class="mood-btn" data-mood="3" aria-label="平静">
-            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 L33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-          </button>
-          <button class="mood-btn" data-mood="4" aria-label="不错">
-            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 26 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-          </button>
-          <button class="mood-btn" data-mood="5" aria-label="很好">
-            <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="19" r="2.3" fill="currentColor"/><circle cx="30" cy="19" r="2.3" fill="currentColor"/><path d="M15 30 Q24 21 33 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-          </button>
+          <button class="mood-btn" data-mood="1">😞</button>
+          <button class="mood-btn" data-mood="2">😕</button>
+          <button class="mood-btn" data-mood="3">😐</button>
+          <button class="mood-btn" data-mood="4">🙂</button>
+          <button class="mood-btn" data-mood="5">😄</button>
         </div>
         <input class="mood-note" id="moodNote" placeholder="今天的心情（可选）…" maxlength="80">
         <button class="mood-save" id="moodSave">记录今日心情</button>
@@ -1082,7 +912,7 @@
         </div>
       </div>
     </div>
-    <div class="sc-block collapsed" id="calCard">
+    <div class="sc-block">
       <div class="sc-bt">打卡日历</div>
       <div class="cal-head">
         <div class="cal-nav"><button id="calPrev">‹</button></div>
@@ -1108,14 +938,6 @@
     <div class="agent-avatar" id="agentAvatar"></div>
   </div>
   <div class="sc-body">
-    <div class="sc-block" id="agentGuideBlock" style="display:none">
-      <div class="sc-bt">他是谁 · 怎么用 TA</div>
-      <div class="agent-guide" id="agentGuide"></div>
-    </div>
-    <div class="sc-block">
-      <div class="sc-bt">给你点过的坑</div>
-      <div class="sc-list" id="pitList"></div>
-    </div>
     <div class="sc-block">
       <div class="sc-bt">他记录了什么</div>
       <div class="sc-list" id="agentLog"></div>
@@ -1187,23 +1009,24 @@
   
 </div>
 
-<!-- supabase-js 外部 CDN 已移除：改为 index.html 内纯 fetch 直连（makeSb），零外部阻塞 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
 /* ---------- 角色配置 ---------- */
 const ROLES = {
-  zhao:{name:"昭",short:"昭",title:"主持·串场",color:"#1f4e4a",guide:"群里的主持人。不想点名时她帮把话递到对的人嘴边；想总结一段、拉人开会，@昭。"},
-  lv:{name:"律",short:"律",title:"督导",color:"#2f6b64",guide:"盯执行、不哄人。汇报进度、认领计划、怕自己糊弄时找他，他开口就问数字。"},
-  xu:{name:"序",short:"序",title:"数学导师",color:"#3a6ea5",guide:"数学地基修复师。贴题、贴错因，他带你从概念推起。别怕暴露基础差，越具体他越能给。"},
-  xiang:{name:"象",short:"象",title:"物理导师",color:"#8e5aa6",guide:"先画图、再算数。物理题卡住找他，他会先逼你描述清楚「发生了什么」。"},
-  bian:{name:"变",short:"变",title:"化学导师",color:"#c2703f",guide:"你化学有底子，他讲机理不讲死背。价态怎么变、电子怎么转，问他就行。"},
-  mai:{name:"脉",short:"脉",title:"生物导师",color:"#3f8a6d",guide:"机制链：条件→过程→结果。遗传、细胞、易混概念辨析归他。"},
-  ci:{name:"辞",short:"辞",title:"英语导师",color:"#b08a2e",guide:"你卡在词量和长句。单词量、长难句三层拆解（主干→修饰→逻辑）找辞。"},
-  wen:{name:"文",short:"文",title:"语文导师",color:"#9a5b5b",guide:"语文是你的强项，他按你的水平讲不降维。文言、答题角度、作文找他。"},
-  xin:{name:"心",short:"心",title:"成长教练",color:"#d08a3a",guide:"接情绪、不评判。内耗、想太多、孤独、动不起来——先跟他讲，他接住你再说第一步。"},
-  si:{name:"思",short:"思",title:"思想认知",color:"#5a6b8e",guide:"管底层逻辑。读到的书、刷到的观点想沉淀就丢给他，他会逼问：它为什么成立？跟你哪件事相通？"},
-  mian:{name:"眠",short:"眠",title:"作息睡眠",color:"#4a6b8a",guide:"10 小时刚需守护者，到点会顶出来。调作息、定今晚睡觉时间跟他对齐。"},
-  shen:{name:"身",short:"身",title:"体态健康",color:"#6b8a4a",guide:"一小时起身动两分钟。肩颈、驼背、坐姿归他，别等疼了才想起来。"},
-  xing:{name:"星",short:"星",title:"愿景锚",color:"#b89b6e",guide:"负责钉住「你为什么熬」。迷茫、怀疑目标、忘了 550→600 的来路时找他。"}
+  zhao:{name:"昭",short:"昭",title:"主持·串场",color:"#1f4e4a"},
+  lv:{name:"律",short:"律",title:"督导",color:"#2f6b64"},
+  xu:{name:"序",short:"序",title:"数学导师",color:"#3a6ea5"},
+  xiang:{name:"象",short:"象",title:"物理导师",color:"#8e5aa6"},
+  bian:{name:"变",short:"变",title:"化学导师",color:"#c2703f"},
+  mai:{name:"脉",short:"脉",title:"生物导师",color:"#3f8a6d"},
+  ci:{name:"辞",short:"辞",title:"英语导师",color:"#b08a2e"},
+  wen:{name:"文",short:"文",title:"语文导师",color:"#9a5b5b"},
+  xin:{name:"心",short:"心",title:"成长教练",color:"#d08a3a"},
+  si:{name:"思",short:"思",title:"思想认知",color:"#5a6b8e"},
+  mian:{name:"眠",short:"眠",title:"作息睡眠",color:"#4a6b8a"},
+  shen:{name:"身",short:"身",title:"体态健康",color:"#6b8a4a"},
+  xing:{name:"星",short:"星",title:"愿景锚",color:"#b89b6e"}
 };
 const ORDER = ["zhao","lv","xu","xiang","bian","mai","ci","wen","xin","si","mian","shen","xing"];
 
@@ -1212,13 +1035,13 @@ const REPLIES = {
   lv:[
     {k:["资料","下单","到货","书","买"],t:"资料到位是开局第一关。物理跳跳学长、化学超人、生物李林、语文陈Sir都还没到——这几天先把单下了。到了计划才排得进去。"},
     {k:["进度","落后","差距","计划","排"],t:"计划不是按章节平均排，是按你真实缺口排。开干前先摸清每科哪块是零分，再决定先啃哪。前三天只要『动起来+睡够10h』就算赢。"},
-    {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/20 第一天计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
-    {k:["default"],t:"执行归我。今天动了没？动了多少、卡在哪——给我数字。没动就先做一个 5 分钟的最小动作，别跟感觉谈条件。"}
+    {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/25 第一条计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
+    {k:["default"],t:"执行的事归我。你今天动了没？没动就别想太多，先从一个最小动作开始。"}
   ],
   xu:[
     {k:["数学","函数","集合","不等式","导数","算","题"],t:"数学23分，地基空。别贪多——一天一个15分钟网课+20道同类题，错题写『我哪理解偏了』不是抄题。先问自己卡在概念还是步骤，概念问题我带你从推导讲起。"},
     {k:["错题","不懂","卡"],t:"把卡的那一步单独拎出来：是概念没懂，还是步骤不会？概念我讲为什么成立，步骤我拆成可执行链。别整题重做，专攻那一步。"},
-    {k:["default"],t:"我是干活的：你数学卡在第几步，把那步发我。概念从哪断的，我带你补到哪。"}
+    {k:["default"],t:"模块A（集合+逻辑+不等式）先起步。你INTJ自己琢磨才有劲，我只在你卡住时点一下。"}
   ],
   xiang:[
     {k:["物理","受力","运动","能量","图像","公式"],t:"物理14分，别急着算。先建图像——受力图、运动图、能量图，能画出来再碰公式。跳跳学长网课当主线，倍速反复是你的控制权。"},
@@ -1234,7 +1057,7 @@ const REPLIES = {
   ],
   ci:[
     {k:["英语","长难句","阅读","词汇","单词","语法"],t:"英语54，核心是词不够+长句拆不开。长难句按『主干-修饰-逻辑』三层拆：先拎主谓宾，再看从句和非谓语，最后理逻辑连接。阅读定位靠同义替换，不是逐字翻译。"},
-    {k:["default"],t:"先报数：今天单词背了几个？词汇量没到，技巧都是空转。到了我们再谈拆长句。"}
+    {k:["default"],t:"每天背多少词、累计多少，得有可见数。词汇量上去了阅读才不卡。"}
   ],
   wen:[
     {k:["语文","文言","作文","阅读","答题"],t:"语文93是你最强项，按你的基础讲精准不降维。文言实词靠语境推断+积累；答题要有文本依据、角度闭环，别凭感觉。需要具体题直接贴。"},
@@ -1288,10 +1111,11 @@ function groupReply(text){
     }
   }
   if(hits.length===0){
-    // 闲聊/泛谈：只由主持人昭轻接，不再随机硬拉一个伙伴（避免答非所问的刷屏）
-    return [{role:"zhao",text:"在呢。想聊学习、心情还是今天的事？说具体点，或直接提科目/关键词，对口的伙伴会出来接你。"}];
+    const others = ORDER.filter(k=>k!=="zhao");
+    const rnd = others[Math.floor(Math.random()*others.length)];
+    return [{role:"zhao",text:"大家在，你说吧——想聊哪块，我帮你点人。"},{role:rnd,text:pickReply(rnd,text)}];
   }
-  const top = hits.slice(0,2);   // 克制：最多 2 位相关伙伴接，不搞全员抢答
+  const top = hits.slice(0,3);
   return top.map(k=>({role:k,text:pickReply(k,text)}));
 }
 
@@ -1299,126 +1123,26 @@ function groupReply(text){
 (function setGoalNote(){
   const el = document.getElementById("goalNote");
   if(!el) return;
-  const start = new Date("2026-09-05T00:00:00");
+  const start = new Date("2026-08-25T00:00:00");
   const now   = new Date();
   const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const diffDays = Math.floor((today-start)/86400000);
   if(diffDays < 0){
     const left = -diffDays;
-    el.textContent = `距 9/5 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
+    el.textContent = `距 8/25 开干还有 ${left} 天 · 2026 高考复读目标 · 江浙沪 211/985`;
   } else if(diffDays === 0){
-    el.textContent = "今天 9/5 · 复读第一天 · 启动";
+    el.textContent = "今天 8/25 · 复读第一天 · 启动";
   } else {
     el.textContent = `复读第 ${diffDays} 天 · 江浙沪 211/985 · 目标 287 → 600`;
   }
 })();
 
-/* ---------- 主页：复读阶段进度（四段节奏） ---------- */
-(function renderStage(){
-  const nameEl = document.getElementById("stageName");
-  const subEl  = document.getElementById("stageSub");
-  const leftEl = document.getElementById("stageLeft");
-  if(!nameEl) return;
-  const STAGES = [
-    {name:"启动期", from:"2026-09-05", to:"2026-09-26", plan:"第1周2h→第3周4h"},
-    {name:"地基期", from:"2026-09-27", to:"2026-12-31", plan:"5h/天 · 六科铺开"},
-    {name:"加速期", from:"2027-01-01", to:"2027-03-31", plan:"真题套卷 · 错题系统化"},
-    {name:"冲刺期", from:"2027-04-01", to:"2027-06-06", plan:"全真模拟 · 错题总复习"}
-  ];
-  const today = new Date();
-  let idx = -1;
-  for(let i=0;i<STAGES.length;i++){
-    if(today >= new Date(STAGES[i].from) && today <= new Date(STAGES[i].to)){ idx = i; break; }
-  }
-  const planStart = new Date("2026-09-05");
-  if(idx < 0) idx = today < planStart ? 0 : STAGES.length-1;
-  const s = STAGES[idx];
-  nameEl.textContent = s.name;
-  subEl.textContent = s.plan;
-  if(today < planStart){
-    const toStart = Math.ceil((planStart - today)/86400000);
-    leftEl.textContent = `距开干 ${toStart} 天`;
-  } else {
-    const leftDays = Math.max(0, Math.ceil((new Date(s.to) - today)/86400000));
-    leftEl.textContent = `剩 ${leftDays} 天`;
-  }
-  const segs = document.querySelectorAll(".stage-seg");
-  segs.forEach((seg,i)=>seg.classList.toggle("on", i===idx));
-})();
-
-/* ---------- Supabase 连接（纯 fetch 直连，零外部库，避免 CDN 阻塞闪屏）---------- */
-const SUPABASE_URL="https://osmzjxuxaneqzaqtnkjj.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zbXpqeHV4YW5lcXphcXRua2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE3MzEsImV4cCI6MjEwMjQzNzczMX0.TLZyCQIHjcu0PpTalrpL5glmXvrKfiBob1iEJzY4f_0";
-const SUPABASE_TABLE="longming_messages";
+/* ---------- Supabase 连接 ---------- */
+const sb = (typeof supabase!=="undefined" && typeof SUPABASE_URL!=="undefined" && SUPABASE_URL.indexOf("YOUR")<0)
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 const syncBadge = document.getElementById("syncBadge");
-
-/* 极简 Supabase REST 封装：保持 sb.from(t).select/insert/upsert/update/delete 签名，零外部依赖 */
-function makeSb(url, key){
-  const REST = url.replace(/\/$/,'') + '/rest/v1/';
-  const baseH = {'apikey':key,'Authorization':'Bearer '+key};
-  function build(table, st){
-    const api = {};
-    let method='SELECT', body=null;
-    function run(){
-      let u = REST + table; if(st.q) u += '?' + st.q;
-      const hd = Object.assign({}, baseH, {'Content-Type':'application/json'});
-      let opts = {method:'GET', headers:hd};
-      if(method==='INSERT'){ opts.method='POST'; opts.body=JSON.stringify(Array.isArray(body)?body:[body]); hd['Prefer']='return=representation'; }
-      else if(method==='UPSERT'){ opts.method='POST'; opts.body=JSON.stringify(Array.isArray(body)?body:[body]); hd['Prefer']='on_conflict='+st.onConflict+',resolution=merge-duplicates'; }
-      else if(method==='UPDATE'){ opts.method='PATCH'; opts.body=JSON.stringify(body); hd['Prefer']='return=representation'; }
-      else if(method==='DELETE'){ opts.method='DELETE'; }
-      return fetch(u, opts).then(function(r){
-        const ct=r.headers.get('content-type')||'';
-        const j = ct.indexOf('json')>=0 ? r.json() : Promise.resolve(null);
-        return j.then(function(b){ return {data:(method==='DELETE')?(b||[]):b, error: r.ok?null:{message:''+r.status,status:r.status}}; });
-      }).catch(function(e){ return {data:null, error:{message:String(e)}}; });
-    }
-    api.then = function(res,rej){ return run().then(res,rej); };
-    api.catch = function(f){ return run().then(null,f); };
-    api.select = function(cols){ st.q=(st.q?st.q+'&':'')+'select='+encodeURIComponent(cols||'*'); return api; };
-    api.eq = function(c,v){ st.q=(st.q?st.q+'&':'')+c+'=eq.'+encodeURIComponent(v); return api; };
-    api.gte = function(c,v){ st.q=(st.q?st.q+'&':'')+c+'=gte.'+encodeURIComponent(v); return api; };
-    api.filter = function(c,op,v){ st.q=(st.q?st.q+'&':'')+c+'='+op+'.'+encodeURIComponent(v); return api; };
-    api.order = function(c,o){ st.q=(st.q?st.q+'&':'')+'order='+c+'.'+(o&&o.ascending?'asc':'desc'); return api; };
-    api.limit = function(n){ st.q=(st.q?st.q+'&':'')+'limit='+n; return api; };
-    api.insert = function(rows){ method='INSERT'; body=rows; return api; };
-    api.upsert = function(rows,opt){ method='UPSERT'; body=rows; st.onConflict=(opt&&opt.onConflict)||'id'; return api; };
-    api.update = function(row){ method='UPDATE'; body=row; return api; };
-    api.delete = function(){ method='DELETE'; return api; };
-    api.single = function(){ return api; };
-    return api;
-  }
-  return {
-    from: function(table){ return build(table, {q:'', onConflict:'id'}); },
-    channel: function(){ return { on:function(){ return { subscribe:function(){ return {}; } }; }, subscribe:function(){ return {}; } }; },
-    removeChannel: function(){},
-    functions: {
-      invoke: function(name, opts){
-        const fd = SUPABASE_URL.replace(/\/$/,'') + '/functions/v1/' + name;
-        const payload = (opts && opts.body!=null) ? opts.body : {};
-        const hd = Object.assign({}, baseH, {'Content-Type':'application/json'});
-        return fetch(fd, { method:'POST', headers: hd, body: JSON.stringify(payload==null?{}:payload) })
-          .then(function(r){
-            const ct = r.headers.get('content-type')||'';
-            const j = (ct.indexOf('json')>=0) ? r.json() : r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return t; } });
-            return j.then(function(b){
-              if(!r.ok){ return { data:null, error:{ message:''+r.status, status:r.status, context:b } }; }
-              return { data: b, error: null };
-            });
-          })
-          .catch(function(e){ return { data:null, error:{ message:String(e) } }; });
-      }
-    }
-  };
-}
-let sb = null;
-try { sb = makeSb(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){ sb = null; }
-function setSync(on){ if(!syncBadge) return; syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
-if(sb) setSync(true);
-function cloudFinWrite(rec){
-  if(!sb) return;
-  try{ sb.from('yinliu').insert({uid:'ruzhao',type:rec.type,amount:rec.amount,cat:rec.cat||'其他',nature:rec.nature||'消费',date:rec.date,note:rec.note||'',src:rec.src||'yinliu'}); }catch(e){ console.warn('cloudFinWrite',e); }
-}
+function setSync(on){ syncBadge.textContent = on?"已同步云端":"未连接·本地"; syncBadge.classList.toggle("off",!on); }
 
 /* ---------- 渲染 ---------- */
 const rosterEl = document.getElementById("roster");
@@ -1445,109 +1169,25 @@ function makeMsgEl(m){
   const d=document.createElement("div");
   d.className="msg "+(m.from==="user"?"user":"agent");
   d.dataset.key = (m.ts||0)+"|"+m.text;
-  d.dataset.ts = m.ts||0;
   if(m.from==="user"){
     d.textContent=m.text;
   }else{
     const who=document.createElement("div"); who.className="who";
     const r=ROLES[m.role]||ROLES.zhao;
     who.innerHTML=`<span class="rd" style="background:${r.color}"></span>${r.name}·${r.title}`;
-    who.style.cursor="pointer";
-    who.title="查看 TA 的个人页";
-    who.onclick=()=>{ if(ROLES[m.role]) showAgent(m.role); };
     const p=document.createElement("div"); p.textContent=m.text;
     d.appendChild(who); d.appendChild(p);
-    // 记坑按钮：把 TA 这条讲解存进坑档案（答疑沉淀）
-    if(m.role && m.role!=="zhao" && ROLES[m.role] && String(m.text||"").indexOf("🤔")!==0){
-      const mk=(m.ts||0)+"|"+m.text;
-      const pb=document.createElement("button");
-      pb.type="button";
-      pb.className="pit-btn"+(pitMarked(mk)?" on":"");
-      pb.textContent = pitMarked(mk) ? "✓ 已记坑" : "📌 记坑";
-      pb.onclick=function(){
-        if(pitAdd(m.role, m.text, m.ts)){
-          pb.textContent="✓ 已记坑"; pb.classList.add("on");
-          showRdBanner("已存进「"+ROLES[m.role].name+"」的坑档案，下次聊TA会想起来");
-        }
-      };
-      d.appendChild(pb);
-    }
   }
   return d;
-}
-/* 消息时间线分组：今天/昨天/M月D日 */
-function chatDayLabel(ts){
-  const d=new Date(ts); const now=new Date();
-  const t0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
-  const diff=Math.floor((t0 - new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime())/86400000);
-  if(diff===0) return "今天";
-  if(diff===1) return "昨天";
-  return (d.getMonth()+1)+"月"+d.getDate()+"日";
-}
-function lastMsgTs(){
-  const kids=messagesEl.children;
-  for(let i=kids.length-1;i>=0;i--){ if(kids[i].dataset && kids[i].dataset.ts) return +kids[i].dataset.ts; }
-  return null;
 }
 function appendMsg(m, persist=true){
   const key=(m.ts||0)+"|"+m.text;
   if(rendered.has(key)) return;        // 去重（realtime 与本地 insert 可能重复）
   rendered.add(key);
-  const lastTs=lastMsgTs();
-  if(lastTs===null || chatDayLabel(m.ts)!==chatDayLabel(lastTs)){
-    const h=document.createElement("div"); h.className="msg-day"; h.textContent=chatDayLabel(m.ts);
-    messagesEl.appendChild(h);
-  }
   const e=makeMsgEl(m);
   messagesEl.appendChild(e);
   messagesEl.scrollTop = messagesEl.scrollHeight;
   if(persist && !chatLog.some(x=>(x.ts||0)+"|"+x.text===key)){ chatLog.push(m); chatSave(chatLog); }
-}
-/* ---- 列宿 v2：坑档案（答疑沉淀 · 本机 yj_pit_v1，2026-09-06 隔离加法）---- */
-const PIT_KEY="yj_pit_v1";
-function pitRead(){ try{ return JSON.parse(localStorage.getItem(PIT_KEY)||"[]"); }catch(e){ return []; } }
-function pitSave(a){ try{ localStorage.setItem(PIT_KEY, JSON.stringify(a.slice(-400))); }catch(e){} }
-function pitMarked(key){ return pitRead().some(p=>p.key===key); }
-function pitAdd(role, text, ts){
-  const arr=pitRead();
-  const brief=(text||"").replace(/\s+/g," ").trim().slice(0,80);
-  const key=(ts||0)+"|"+(text||"").slice(0,60);
-  if(arr.some(p=>p.key===key)) return false;
-  const rec={role, brief, ts:ts||Date.now(), key};
-  arr.push(rec);
-  pitSave(arr);
-  pitPush(rec);           // 尽力上云；失败留本机，下次 pull 会自动补齐云端已有记录
-  return true;
-}
-function pitRecentByRole(role, n){
-  const arr=pitRead().filter(p=>p.role===role);
-  return arr.slice(-(n||2));
-}
-/* 坑档案云同步（pit 表 · 双源，2026-09-06 加法） */
-const PIT_TABLE="pit";
-async function pitPull(){
-  if(!sb) return;
-  try{
-    const r=await sb.from(PIT_TABLE).select("role,brief,ts,key").order("ts",{ascending:true});
-    const rows=r&&r.data?r.data:null;
-    if(!Array.isArray(rows)||!rows.length) return;
-    const cur=pitRead();
-    const m={}; cur.forEach(p=>{ if(p&&p.key) m[p.key]=p; });
-    let changed=false;
-    rows.forEach(p=>{ if(p&&p.key&&!m[p.key]){ m[p.key]={role:p.role,brief:p.brief,ts:p.ts,key:p.key}; changed=true; } });
-    if(changed){ const merged=Object.values(m).sort((a,b)=>(a.ts||0)-(b.ts||0)); pitSave(merged); }
-  }catch(_){}
-}
-async function pitPush(rec){
-  if(!sb) return;
-  try{ await sb.from(PIT_TABLE).insert({role:rec.role,brief:rec.brief,ts:rec.ts,key:rec.key}); }catch(_){}
-}
-async function pitDel(key){
-  // 本地删
-  const arr=pitRead().filter(p=>p.key!==key);
-  pitSave(arr);
-  // 云端删
-  if(sb){ try{ await sb.from(PIT_TABLE).delete().eq("key",key); }catch(_){} }
 }
 
 async function renderMessages(){
@@ -1563,7 +1203,6 @@ async function renderMessages(){
       chatSave(chatLog);
       setSync(true);
       await flushPending();
-      await pitPull();   // 列宿打开时顺带把云端坑档案合并到本机（v2）
     } else { setSync(false); }
   } else { setSync(false); }
 
@@ -1648,63 +1287,22 @@ function renderActionBar(actions, msgTs){
   });
   bar.querySelector("[data-skip]").onclick = ()=>{ bar.remove(); };
 }
-/* 列宿 v2：DeepSeek 余额缓存（renderDs 成功时写入，供省钱分级用） */
-let dsBalanceCache = null;
-let dsSaveHinted = false;
-const SUBJ2ROLE=[["数学","xu"],["函数","xu"],["集合","xu"],["不等式","xu"],["导数","xu"],["数列","xu"],["三角","xu"],["逻辑","xu"],["物理","xiang"],["受力","xiang"],["运动","xiang"],["能量","xiang"],["力学","xiang"],["加速度","xiang"],["化学","bian"],["方程","bian"],["反应","bian"],["价态","bian"],["氧化还原","bian"],["摩尔","bian"],["生物","mai"],["遗传","mai"],["细胞","mai"],["基因","mai"],["英语","ci"],["单词","ci"],["词汇","ci"],["长难句","ci"],["语法","ci"],["听力","ci"],["语文","wen"],["文言","wen"],["作文","wen"],["错题","xu"]];
-function mapSubjRole(t){
-  t=(t||"").toLowerCase();
-  for(const pair of SUBJ2ROLE){ if(t.includes(pair[0])) return pair[1]; }
-  return null;
-}
-/* 判断是否「真学术求助」：只有它才调 DeepSeek（省钱分级）；@AI 前缀强制 */
-function askSignal(text){
-  const m=text.match(/^@AI[\s:：,，]*(.*)$/);
-  if(m) return {forced:true, deep:true, text:m[1]||""};
-  const SUBJ=["数学","函数","集合","不等式","导数","数列","三角","物理","受力","运动","能量","力学","化学","方程","反应","价态","氧化还原","摩尔","生物","遗传","细胞","基因","英语","单词","词汇","长难句","语法","听力","语文","文言","作文","错题","答疑","概念","题"];
-  const ASK=["为什么","怎么","如何","吗","？","?","帮","请教","不懂","卡","错","讲","分析","区别","是不是","对吗","求","解释","没懂","理解不了"];
-  const subj=SUBJ.some(w=>text.includes(w));
-  const ask=ASK.some(w=>text.includes(w));
-  return {forced:false, deep:(subj&&ask)||(text.includes("题")&&text.length>=12), text:text};
-}
 async function aiGroupReply(text){
-  const sig=askSignal(text);
-  const fallback=groupReply(sig.text||text);
+  // 先用关键词引擎选出"该谁回"（保持"相关的人接话"逻辑），再让 AI 以这些身份真回
+  const fallback = groupReply(text);
   if(!sb) return {intent:"chat", replies:fallback, actions:[]};   // 未连云端：纯关键词
   const roles = fallback.map(r=>r.role);
-  // 省钱档：余额低（<¥3）且未强制 → 一律免费关键词回复
-  if(dsBalanceCache!=null && parseFloat(dsBalanceCache)<3 && !sig.forced){
-    if(!dsSaveHinted){ dsSaveHinted=true; showRdBanner("DeepSeek 余额偏低（¥"+dsBalanceCache+"），已自动转免费伙伴回复。充值后或消息以 @AI 开头可强制 AI 作答。"); }
-    return {intent:"chat", replies:fallback, actions:[]};
-  }
-  // 省钱档：非学术求助（闲聊/汇报/寒暄）→ 免费关键词，不烧额度
-  if(!sig.deep){ return {intent:"chat", replies:fallback, actions:[]}; }
   try{
     const context = await collectContext();
-    // 取最近 20 条对话历史，让 AI 记得之前聊过什么（不含当前这条）
-    const history = chatLog.slice(-20).filter(m=>m.ts && m.ts!==Date.now()).map(m=>({
-      role: m.from==="user" ? "user" : "assistant",
-      content: m.text
-    }));
-    // 坑档案注入（history 通道已实测 AI 能读到）：TA 记得你之前卡过的点
-    const subjRole = mapSubjRole(sig.text) || (roles.length ? roles[0] : null);
-    if(subjRole && subjRole!=="zhao"){
-      const pits = pitRecentByRole(subjRole, 2);
-      if(pits.length){
-        const nm = (ROLES[subjRole]||{}).name || subjRole;
-        history.unshift({ role:"assistant", content:"（备忘）"+nm+" 之前给若昭点过坑："+pits.map(p=>p.brief).join("；")+"。若这次相关，先点一句 TA 记得，再针对性讲。" });
-      }
-    }
     const {data, error} = await sb.functions.invoke("deepseek-chat", {
-      body:{ roles, userText:sig.text, context, history }
+      body:{ roles, userText:text, context }
     });
     if(error || !data || !Array.isArray(data.replies) || data.replies.length===0)
       return {intent:"chat", replies:fallback, actions:[]};
     return {
       intent: data.intent || "chat",
       replies: data.replies,
-      actions: Array.isArray(data.actions) ? data.actions : [],
-      pits: Array.isArray(data.pits) ? data.pits : []
+      actions: Array.isArray(data.actions) ? data.actions : []
     };
   }catch(_){ return {intent:"chat", replies:fallback, actions:[]}; }
 }
@@ -1737,20 +1335,6 @@ async function send(){
   // —— 求助型：出按钮（采纳/记录/继续讨论），其余类型只回话 ——
   if(res.intent==="advice" && res.actions && res.actions.length){
     renderActionBar(res.actions, Date.now());
-  }
-  // —— AI 自动沉淀坑档案（v3：模型在 replies 之外输出 pits，免手动）——
-  if(res.pits && res.pits.length){
-    let autoN=0;
-    res.pits.slice(0,3).forEach(p=>{
-      const brief=(p&&p.brief?String(p.brief):"").trim();
-      if(!brief) return;
-      const rk=(p.role && ROLES[p.role]) ? p.role : (res.replies[0] && ROLES[res.replies[0].role] ? res.replies[0].role : null);
-      if(!rk) return;
-      if(pitAdd(rk, brief, Date.now()+ (autoN*7))) autoN++;
-    });
-    if(autoN){
-      showRdBanner("已自动记住 "+(res.pits.length>1?res.pits.length+" 条":"1 条")+"坑，可到伙伴页「给你点过的坑」查看/删除");
-    }
   }
 }
 async function flushPending(){
@@ -1816,21 +1400,7 @@ let xgMode = "cat";       // "cat" 分类视图 | "time" 时间视图
 let xgSearch = "";
 let xgEditId = null;      // 正在编辑的碎碎念 id
 let xgReassignId = null;  // 正在改分类的碎碎念 id
-/* ---- 隙光本机兜底（2026-09-06 隔离加法）：本机持久化镜像 + 未同步条（id 前缀 off_，联网后 renderXg 自动补传） ---- */
-const XG_CACHE_KEY = "yj_xg_notes_v1";
-function xgCacheRead(){ try{ return JSON.parse(localStorage.getItem(XG_CACHE_KEY)||"[]")||[]; }catch(e){ return []; } }
-function xgCacheWrite(arr){ try{ localStorage.setItem(XG_CACHE_KEY, JSON.stringify((arr||[]).slice(-800))); }catch(e){} }
-function xgLocalPending(rec){
-  xgLocal.push(rec); xgCacheWrite(xgLocal);
-  showRdBanner("⚠ 云端暂不可用，已存本机（联网后自动同步）");
-}
-function xgLocalEdit(id, text){
-  const i = xgLocal.findIndex(n=>n.id===id);
-  if(i>=0){ xgLocal[i].content = text; xgCacheWrite(xgLocal); }
-  else { xgLocalPending({id:"off_"+Date.now(), content:text, category:classifyXg(text), ts:Date.now()}); }
-  showRdBanner("⚠ 云端暂不可用，改动已存本机");
-}
-let xgLocal = xgCacheRead(); // 离线兜底（本机持久化，启动即读）
+let xgLocal = [];         // 离线兜底
 let xgCache = [];         // 最近一次拉取的数据（切换视图/搜索时复用）
 
 function renderXgFilter(){
@@ -1932,36 +1502,12 @@ function renderXgFrom(notes){
 }
 
 async function renderXg(){
-  if(!sb){ renderXgFrom(xgLocal.length ? xgLocal : xgCacheRead()); return; }
-  let data = null, error = null;
-  try{ const r = await sb.from(XG_TABLE).select("*").order("ts",{ascending:false}); data = r.data; error = r.error; }
-  catch(e){ error = e; }
-  if(error){
-    console.error(error);
-    // 云端不可用 → 降级展示本机缓存（不白屏、离线内容仍可见）
-    if(!xgLocal.length) xgLocal = xgCacheRead();
-    if(xgLocal.length){
-      renderXgFrom(xgLocal);
-      xgNotesEl.insertAdjacentHTML("afterbegin",'<div style="color:#b0602a;font-size:12px;line-height:1.5;padding:6px 10px;margin:4px 2px 8px;background:rgba(176,96,42,.08);border-radius:8px">⚠ 云端暂不可用，以下为本机缓存（联网后自动同步）。</div>');
-    } else {
-      xgNotesEl.innerHTML = '<div class="empty">隙光加载失败，且本机暂无缓存，请稍后重试。</div>';
-    }
-    return;
-  }
-  // 云端正常：先把本机暂存的（off_ 前缀）补传上云，避免离线输入丢失
-  const pend = (xgLocal||[]).filter(n => String(n.id||"").indexOf("off_") === 0);
-  const keep = [];
-  for(const n of pend){
-    try{
-      const r = await sb.from(XG_TABLE).insert({id:n.ts, content:n.content, category:n.category, ts:n.ts});
-      if(r && r.error) keep.push(n);
-    }catch(e){ keep.push(n); }
-  }
-  xgLocal = (data||[]).concat(keep);
-  xgCacheWrite(xgLocal);
+  if(!sb){ renderXgFrom(xgLocal); return; }
+  const {data,error} = await sb.from(XG_TABLE).select("*").order("ts",{ascending:false});
+  if(error){ console.error(error); xgNotesEl.innerHTML='<div class="empty">隙光加载失败，稍后重试。</div>'; return; }
+  xgLocal = data || [];
   renderXgFrom(xgLocal);
 }
-window.addEventListener("online", ()=>{ if(sb){ renderXg(); } });
 
 async function sendXg(){
   const ta = document.getElementById("xgInput");
@@ -1969,13 +1515,8 @@ async function sendXg(){
   if(!text) return;
   if(xgEditId){
     const id = xgEditId;
-    if(sb){
-      let failed = false;
-      try{ const r = await sb.from(XG_TABLE).update({content:text}).eq("id",id); if(r && r.error) failed = true; }catch(e){ failed = true; }
-      if(failed){ xgLocalEdit(id, text); }
-    } else {
-      const i = xgLocal.findIndex(n=>n.id===id); if(i>=0){ xgLocal[i].content = text; xgCacheWrite(xgLocal); }
-    }
+    if(sb){ await sb.from(XG_TABLE).update({content:text}).eq("id",id); }
+    else { const i=xgLocal.findIndex(n=>n.id===id); if(i>=0) xgLocal[i].content=text; }
     cancelEdit();
     renderXg();
     return;
@@ -1984,14 +1525,11 @@ async function sendXg(){
   const cat = classifyXg(text);
   ta.value=""; ta.style.height="auto";
   if(sb){
-    let failed = false;
-    try{ const r = await sb.from(XG_TABLE).insert({content:text, category:cat, ts}); if(r && r.error) failed = true; }catch(e){ failed = true; }
-    if(failed){ xgLocalPending({id:"off_"+ts, content:text, category:cat, ts}); }
+    await sb.from(XG_TABLE).insert({content:text, category:cat, ts});
     renderXg();
   } else {
     const id = "local_"+ts;
     xgLocal.push({id, content:text, category:cat, ts});
-    xgCacheWrite(xgLocal);
     renderXg();
   }
 }
@@ -2112,19 +1650,12 @@ async function renderDs(){
       box.innerHTML='<div class="ds-line"><span class="ds-label">查询失败，点右上「刷新」重试</span></div>';
       return;
     }
-    dsBalanceCache = data.total_balance;
     box.innerHTML =
       '<div class="ds-line"><span class="ds-bal">¥ '+(data.total_balance||"0")+'</span><span class="ds-label">DeepSeek 可用余额'+(data.is_available===false?' · 不可用':'')+'</span></div>'+
       '<div class="ds-cols">'+
         '<div>充值<b>¥ '+(data.topped_up_balance||"0")+'</b></div>'+
         '<div>赠送<b>¥ '+(data.granted_balance||"0")+'</b></div>'+
       '</div>';
-    const dn=document.getElementById("dsNote");
-    if(dn){
-      dn.textContent = parseFloat(dsBalanceCache||0)<3
-        ? "余额偏低：列宿已自动转免费伙伴回复（消息以 @AI 开头仍可强制 AI 作答）。"
-        : "余额 = DeepSeek 账户额度，列宿的 AI 回复从这里扣。余额偏低时列宿自动转免费伙伴回复（@AI 可强制）。";
-    }
   }catch(e){
     box.innerHTML='<div class="ds-line"><span class="ds-label">查询失败，点右上「刷新」重试</span></div>';
   }
@@ -2135,8 +1666,6 @@ renderDs();
 /* ---------- 打卡 streak（云端 + 本机兜底） ---------- */
 const CHECKIN_TABLE = "checkin";
 const FIN_TABLE = "finance_log";
-const SICHEN_TABLE = "sichen_reports";
-const PLANS_TABLE = "sichen_plans";
 const CHECK_FIELDS = ["study","sleep","exercise","read"];
 const todayStr=()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
 let checkinCache = {};
@@ -2284,7 +1813,7 @@ document.getElementById("btnExercise").onclick=()=>toggleCheckin("exercise");
 document.getElementById("btnRead").onclick=()=>toggleCheckin("read");
 
 /* ---------- 银简数据层：12 本 × 章节 × 239 段循环读物（本机存储） ---------- */
-const PLAN_START = "2026-09-05";  // 与复读计划启动对齐
+const PLAN_START = "2026-08-25";  // 与学习正式开干对齐
 const READING_BOOKS = [
   {title:"《小狗钱钱》", paras:[
     {ch:"第一章 确立目标与自信", text:"成功日记：每天睡前写下自己当天做到的 5 件事。坚持记录会让你慢慢相信「我能行」，自信是赚钱的第一块地基。"},
@@ -2755,113 +2284,6 @@ const FIN_KEY="yj_fin_v1";
 const CATCOL={"餐饮":"#e8a87c","交通":"#8ab0d8","学习资料":"#d4ad5e","购物":"#c29aa6","娱乐":"#9a8fb0","其他":"#b6b2bd"};
 function getFin(){try{return JSON.parse(localStorage.getItem(FIN_KEY)||"[]");}catch(e){return[];}}
 function setFin(a){localStorage.setItem(FIN_KEY,JSON.stringify(a));}
-function smartFinCat(text){
-  var t=(text||"").toLowerCase();
-  var cat="其他";
-  if(/(饭|餐|吃|外卖|食堂|奶茶|咖啡|星巴克|瑞幸|肯德基|麦当劳|必胜客|小吃|烧烤|火锅|面|粥|早饭|午饭|晚饭|夜宵|面包|蛋糕|甜品|餐厅)/.test(t)) cat="餐饮";
-  else if(/(地铁|公交|打车|滴滴|出租|高铁|火车|飞机|机票|加油|停车|过路|骑行|单车|uber|的士|网约车|车票|的票)/.test(t)) cat="交通";
-  else if(/(书|课|教材|教辅|网课|资料|课本|试卷|课程|考研|单词|笔记|文具|打印|知乎|得到|微信读书|kindle)/.test(t)) cat="学习资料";
-  else if(/(买|购|淘宝|京东|拼多多|天猫|衣服|鞋|包|护肤|化妆|数码|手机|电脑|家电|日用|百货|口罩|快递|唯品|超市|便利店|商城)/.test(t)) cat="购物";
-  else if(/(电影|游戏|演唱会|会员|视频|音乐|综艺|展览|门票|ktv|密室|桌游|动漫|b站|网易云|steam|爱奇艺|优酷)/.test(t)) cat="娱乐";
-  var nature="消费";
-  if(/(基金|股票|理财|黄金|证券|定投|etf|债|投资|投保)/.test(t)) nature="投资";
-  else if(/(房租|收租|房贷|车贷|存款|房产|车位|置业|还债|借款|借贷|还款|月供)/.test(t)) nature="资产";
-  return {cat:cat, nature:nature};
-}
-let _xlsxLoading=null;
-function loadXLSX(){
-  if(window.XLSX) return Promise.resolve(window.XLSX);
-  if(_xlsxLoading) return _xlsxLoading;
-  _xlsxLoading=new Promise(function(res,rej){
-    var s=document.createElement("script");
-    s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
-    s.onload=function(){res(window.XLSX);};
-    s.onerror=function(){rej(new Error("解析库加载失败，请检查网络"));};
-    document.head.appendChild(s);
-  });
-  return _xlsxLoading;
-}
-function _billCol(rows,names){
-  if(!rows||!rows.length) return null;
-  var keys=Object.keys(rows[0]);
-  for(var i=0;i<names.length;i++){
-    var k=keys.find(function(k){return k.indexOf(names[i])>=0;});
-    if(k) return k;
-  }
-  return null;
-}
-async function parseBillFile(file){
-  var XLSX=await loadXLSX();
-  var buf=await file.arrayBuffer();
-  var wb=XLSX.read(buf,{type:"array"});
-  var ws=wb.Sheets[wb.SheetNames[0]];
-  var rows=XLSX.utils.sheet_to_json(ws,{defval:""});
-  if(!rows.length) return [];
-  var amtKey=_billCol(rows,["金额"]);
-  var typeKey=_billCol(rows,["收/支","收支","类型"]);
-  var timeKey=_billCol(rows,["交易时间","时间","日期"]);
-  var merKey=_billCol(rows,["交易对方","商品","商户","对方","备注"]);
-  if(!amtKey) throw new Error("没找到金额列，请确认导出的是微信账单");
-  var out=[];
-  rows.forEach(function(r){
-    var amt=parseFloat(String(r[amtKey]||"").replace(/[^\d.\-]/g,""));
-    if(!amt) return;
-    var tstr=String(r[typeKey]||"");
-    var type=tstr.indexOf("收入")>=0?"income":"expense";
-    var timeStr=String(r[timeKey]||"");
-    var date=timeStr.slice(0,10);
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) date=todayStr();
-    var mer=String(r[merKey]||"").trim();
-    if(!mer) mer=(type==="income"?"微信收款":"微信支付");
-    var c=smartFinCat(mer);
-    out.push({date:date,type:type,amount:amt,note:mer,cat:c.cat,nature:type==="income"?"资产":c.nature});
-  });
-  return out;
-}
-let _importDraft=null;
-async function finDoImport(file){
-  var prev=document.getElementById("finImportPreview");
-  prev.style.display="block";
-  prev.innerHTML='<div class="fin-imp-loading">解析中…</div>';
-  try{
-    var data=await parseBillFile(file);
-    if(!data.length){ prev.innerHTML='<div class="fin-imp-empty">没解析出任何交易，确认文件是微信导出的账单？</div>'; return; }
-    _importDraft=data;
-    finRenderImportPreview(data);
-  }catch(e){
-    prev.innerHTML='<div class="fin-imp-err">'+esc(e.message||"解析失败")+'</div>';
-  }
-}
-function finRenderImportPreview(data){
-  var prev=document.getElementById("finImportPreview");
-  var cats=["餐饮","交通","学习资料","购物","娱乐","其他"];
-  var html='<div class="fin-imp-hd">识别到 '+data.length+' 笔，确认分类后导入（分类可改）</div><div class="fin-imp-list">';
-  data.forEach(function(d,i){
-    html+='<div class="fin-imp-row">'+
-      '<span class="fi-date">'+d.date+'</span>'+
-      '<span class="fi-amt '+(d.type==="income"?"pos":"neg")+'">'+(d.type==="income"?"+":"-")+'¥'+d.amount.toFixed(2)+'</span>'+
-      '<span class="fi-mer" title="'+esc(d.note)+'">'+esc(d.note)+'</span>'+
-      '<select class="fi-cat" data-i="'+i+'">'+cats.map(function(c){return '<option value="'+c+'"'+(c===d.cat?' selected':'')+'>'+c+'</option>';}).join("")+'</select>'+
-    '</div>';
-  });
-  html+='</div><div class="fin-imp-acts"><button class="fin-imp-ok" id="finImpOk">确认导入 '+data.length+' 笔</button><button class="fin-imp-cancel" id="finImpCancel">取消</button></div>';
-  prev.innerHTML=html;
-  prev.querySelectorAll(".fi-cat").forEach(function(s){s.onchange=function(){var i=+s.dataset.i;_importDraft[i].cat=s.value;};});
-  document.getElementById("finImpOk").onclick=function(){
-    var items=getFin();
-    _importDraft.forEach(function(d){
-      items.push({id:Date.now()+Math.floor(Math.random()*1000),type:d.type,amount:d.amount,note:d.note,cat:d.cat,nature:d.type==="income"?"资产":d.nature,date:d.date,ts:Date.now(),src:"import"});
-    });
-    var n=_importDraft.length;
-    setFin(items);
-    _importDraft.forEach(function(d){ cloudFinWrite({type:d.type,amount:d.amount,note:d.note,cat:d.cat,nature:d.type==="income"?"资产":d.nature,date:d.date,src:"import"}); });
-    _importDraft=null;
-    prev.style.display="none";prev.innerHTML="";
-    buildMonthSel();loadFin();
-    showRdBanner("✓ 已导入 "+n+" 笔账单");
-  };
-  document.getElementById("finImpCancel").onclick=function(){_importDraft=null;prev.style.display="none";prev.innerHTML="";};
-}
 function ymOf(r){return r.slice(0,7);}
 function loadFin(){
   const items=getFin();
@@ -2917,59 +2339,11 @@ function addFin(){
   const id=Date.now();
   items.push({id,type,amount:amt,note,cat,nature:type==="income"?"资产":nat,date:todayStr(),ts:id});
   setFin(items);
-  cloudFinWrite({type,amount:amt,note,cat,nature:type==="income"?"资产":nat,date:todayStr(),src:"yinliu"});
   document.getElementById("finAmt").value="";document.getElementById("finNote").value="";
   buildMonthSel();loadFin();
 }
 function loadReading(){ renderReading(); }
 document.getElementById("finAddBtn").onclick=addFin;
-document.getElementById("finReportBtn").onclick=async function(){
-  if(!sb){ alert("未连接云端，无法生成月报"); return; }
-  this.disabled=true; this.textContent="生成中…";
-  try{
-    var r=await sb.functions.invoke('yinliu-analysis',{body:{uid:'ruzhao',month:todayStr().slice(0,7)}});
-    var data=r.data||{};
-    var agg=data.aggregate||{};
-    var html='<div class="fr-month">'+(agg.month||"")+' 月报</div>';
-    html+='<div class="fr-row">收入 ¥'+(agg.income||0)+' · 支出 ¥'+(agg.expense||0)+' · 结余 ¥'+(agg.balance||0)+'</div>';
-    if(agg.byCat) html+='<div class="fr-cats">'+agg.byCat.map(function(c){return c.cat+' '+c.pct+'%';}).join(' · ')+'</div>';
-    if(data.report) html+='<div class="fr-text">'+esc(data.report)+'</div>';
-    var body=document.getElementById("finReportBody"); body.innerHTML=html; body.style.display="block";
-  }catch(e){ alert("生成失败："+e.message); }
-  this.disabled=false; this.textContent="📊 生成 AI 月报";
-};
-document.getElementById("finHistoryBtn").onclick=async function(){
-  if(!sb){ alert("未连接云端，无法查看历史月报"); return; }
-  var h=document.getElementById("finHistory");
-  if(h.style.display!=="none"){ h.style.display="none"; h.innerHTML=""; return; }
-  this.disabled=true; this.textContent="加载中…";
-  try{
-    var res=await sb.from("yinliu_reports").select("month,created_at").eq("uid","ruzhao").order("month",{ascending:false});
-    if(res.error) throw res.error;
-    var data=res.data||[];
-    if(!data.length){ h.innerHTML='<div class="fh-empty">还没有历史月报，先生成一份吧</div>'; h.style.display="block"; return; }
-    var html='<div class="fh-title">历史月报（'+data.length+' 份）</div>';
-    data.forEach(function(d){
-      html+='<button class="fh-item" data-month="'+d.month+'">'+d.month+' 月报<span class="fh-date">'+String(d.created_at||"").slice(0,10)+'</span></button>';
-    });
-    h.innerHTML=html; h.style.display="block";
-    Array.prototype.forEach.call(h.querySelectorAll(".fh-item"),function(b){
-      b.onclick=async function(){
-        var m=b.getAttribute("data-month");
-        var r2=await sb.from("yinliu_reports").select("aggregate,report").eq("uid","ruzhao").eq("month",m).single();
-        var rep=r2.data||{}; var agg=rep.aggregate||{};
-        var bh='<div class="fr-month">'+m+' 月报</div>';
-        bh+='<div class="fr-row">收入 ¥'+(agg.income||0)+' · 支出 ¥'+(agg.expense||0)+' · 结余 ¥'+(agg.balance||0)+'</div>';
-        if(agg.byCat) bh+='<div class="fr-cats">'+agg.byCat.map(function(c){return c.cat+' '+c.pct+'%';}).join(' · ')+'</div>';
-        if(rep.report) bh+='<div class="fr-text">'+esc(rep.report)+'</div>';
-        var body=document.getElementById("finReportBody"); body.innerHTML=bh; body.style.display="block";
-      };
-    });
-  }catch(e){ alert("加载失败："+e.message); }
-  this.disabled=false; this.textContent="📜 历史月报";
-};
-document.getElementById("finImportBtn").onclick=function(){document.getElementById("finImportFile").click();};
-document.getElementById("finImportFile").onchange=function(){var f=this.files[0];if(f)finDoImport(f);this.value="";};
 document.getElementById("monthSel").onchange=loadFin;
 document.getElementById("finList").addEventListener("click",e=>{
   const del=e.target.closest(".plan-del");if(!del)return;
@@ -3105,9 +2479,7 @@ document.getElementById("backupFile").onchange=e=>{ if(e.target.files[0]) import
 /* ---------- init ---------- */
 document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 renderCheckin();
-loadCheckin().then(renderCheckin);   // 本机优先：无论云端是否可达，先读本机打卡缓存
-loadTodos();                          // loadTodos 内部已处理无 sb 走本地
-if(sb){ loadFin(); loadReading(); updateSichenStatus(); }
+if(sb){ loadTodos(); loadCheckin().then(renderCheckin); loadFin(); loadReading(); updateSichenStatus(); }
 
 /* ---------- 高考倒计时 ---------- */
 (function(){
@@ -3160,6 +2532,8 @@ async function updateSichenStatus(){
 }
 
 /* ---------- 司辰页：复读节奏（进度 / 复盘 / 自动化动态） ---------- */
+const SICHEN_TABLE = "sichen_reports";
+const PLANS_TABLE = "sichen_plans";
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 function goSichen(){
@@ -3196,33 +2570,6 @@ async function renderAgent(k){
   curAgent = k;
   const r = ROLES[k];
   const logEl = document.getElementById("agentLog");
-  // v2：人设卡（怎么用 TA）
-  const gb=document.getElementById("agentGuideBlock");
-  const gg=document.getElementById("agentGuide");
-  if(gb && gg){ gb.style.display = r.guide ? "block" : "none"; gg.textContent = r.guide || ""; }
-  // v2：坑档案（TA 给你点过的坑）
-  const pl=document.getElementById("pitList");
-  if(pl){
-    await pitPull();   // 先并云端再显示，跨设备刚记的坑也能出现
-    const pits=pitRead().filter(p=>p.role===k);
-    if(!pits.length){
-      pl.innerHTML='<div class="pit-empty">TA 还没给你点过坑。<br>在列宿里看到 TA 讲到点子上的话，点消息上的「📌 记坑」——这里会存下来，下次聊 TA 会想起来。</div>';
-    } else {
-      pl.innerHTML = pits.slice().reverse().map(p=>{
-        const dt=p.ts?new Date(p.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
-        return '<div class="pit-item"><span class="pit-who">坑</span><span class="pit-t">'+esc(p.brief)+'</span><span class="pit-date">'+dt+'</span><button class="pit-del" data-key="'+esc(p.key)+'" title="删除这条坑">✕</button></div>';
-      }).join("");
-      pl.querySelectorAll(".pit-del").forEach(btn=>{
-        btn.onclick=async ()=>{
-          const k=btn.getAttribute("data-key");
-          if(!k) return;
-          pitDel(k);
-          const item=btn.closest(".pit-item"); if(item) item.remove();
-          if(!pitRead().some(p=>p.role===curAgent)) renderAgent(curAgent);
-        };
-      });
-    }
-  }
   const cacheKey = "yj_agent_log_v1_"+k;
   const renderRows=(data)=>{
     if(!data||data.length===0){ logEl.innerHTML='<div class="empty">'+esc(r.name)+' 还没有在群里发过言。</div>'; return; }
@@ -3257,46 +2604,46 @@ async function renderSichen(){
   const prog=document.getElementById("scProg");
   const rev=document.getElementById("scReview");
   const note=document.getElementById("scProgNote");
-  // 区块A/B：复盘记录依赖云端；云端不可用 / 查询失败时降级展示，但绝不拖垮本机概览
   if(!sb){
     prog.innerHTML='<div class="empty">云端未连接，进度与动态暂不可用（仅本机）。</div>';
     rev.innerHTML=''; note.textContent='';
-  } else {
-    const {data,error}=await sb.from(SICHEN_TABLE).select("*").order("ts",{ascending:false});
-    if(error){
-      prog.innerHTML='<div class="empty">云端复盘数据暂不可用，已显示本机打卡概览。</div>';
-      rev.innerHTML=''; note.textContent='';
-    } else {
-      const rows = data || [];
-      const daySet=new Set();
-      rows.filter(r=>r.type==="复盘").forEach(r=>{
-        const d=new Date(r.ts); daySet.add(d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate());
-      });
-      let bars="";
-      for(let i=6;i>=0;i--){
-        const dt=new Date(); dt.setDate(dt.getDate()-i);
-        const key=dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate();
-        const on=daySet.has(key);
-        const label=(dt.getMonth()+1)+"/"+dt.getDate();
-        bars+=`<div class="sc-bar"><div class="sc-bar-fill ${on?"on":""}"></div><div class="sc-bar-l">${label}</div></div>`;
-      }
-      prog.innerHTML=bars;
-      const total=rows.filter(r=>r.type==="复盘").length;
-      note.textContent = total>0 ? `累计复盘 ${total} 次 · 近 7 天 ${daySet.size} 天有复盘` : "还没有复盘记录，每天 22:30 复盘后这里会亮起来";
-      const reviews=rows.filter(r=>r.type==="复盘").slice(0,12);
-      if(reviews.length===0){ rev.innerHTML='<div class="empty">还没有复盘记录。</div>'; }
-      else{
-        rev.innerHTML=reviews.map(r=>{
-          const t=new Date(r.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
-          return `<div class="sc-item"><div class="sc-item-t">${t} · ${esc(r.agent||"复盘")}</div><div class="sc-item-c">${esc(r.content||"")}</div></div>`;
-        }).join("");
-      }
-    }
+    renderCalendar();
+    renderWeeklySummary();
+    return;
   }
-  // 本机打卡概览始终渲染（日历 / 本周总览 / 趋势），不被云端结果拖垮
+  const {data,error}=await sb.from(SICHEN_TABLE).select("*").order("ts",{ascending:false});
+  if(error){ prog.innerHTML='<div class="empty">加载失败，稍后重试。</div>'; return; }
+  const rows = data || [];
+
+  /* 区块A：近 7 天复盘节奏（几何柱） */
+  const daySet=new Set();
+  rows.filter(r=>r.type==="复盘").forEach(r=>{
+    const d=new Date(r.ts); daySet.add(d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate());
+  });
+  let bars="";
+  for(let i=6;i>=0;i--){
+    const dt=new Date(); dt.setDate(dt.getDate()-i);
+    const key=dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate();
+    const on=daySet.has(key);
+    const label=(dt.getMonth()+1)+"/"+dt.getDate();
+    bars+=`<div class="sc-bar"><div class="sc-bar-fill ${on?"on":""}"></div><div class="sc-bar-l">${label}</div></div>`;
+  }
+  prog.innerHTML=bars;
+  const total=rows.filter(r=>r.type==="复盘").length;
+  note.textContent = total>0 ? `累计复盘 ${total} 次 · 近 7 天 ${daySet.size} 天有复盘` : "还没有复盘记录，每天 22:30 复盘后这里会亮起来";
+
+  /* 区块B：近期复盘 */
+  const reviews=rows.filter(r=>r.type==="复盘").slice(0,12);
+  if(reviews.length===0){ rev.innerHTML='<div class="empty">还没有复盘记录。</div>'; }
+  else{
+    rev.innerHTML=reviews.map(r=>{
+      const t=new Date(r.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+      return `<div class="sc-item"><div class="sc-item-t">${t} · ${esc(r.agent||"复盘")}</div><div class="sc-item-c">${esc(r.content||"")}</div></div>`;
+    }).join("");
+  }
+
   renderCalendar();
   renderWeeklySummary();
-  if(typeof trendRender==="function") trendRender();
 }
 
 /* ---------- 司辰页：本周数据总览 ---------- */
@@ -3317,13 +2664,13 @@ function renderWeeklySummary(){
   }
   const streak=getStreakCount();
   // Countdown
-  const planStart=new Date("2026-09-05T00:00:00");
+  const planStart=new Date("2026-08-25T00:00:00");
   const gaokao=new Date("2027-06-07T00:00:00");
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const dPlan=Math.ceil((planStart-today)/86400000);
   const dGk=Math.ceil((gaokao-today)/86400000);
   let cdText;
-  if(dPlan>0){ cdText=`距 9/5 开干 <b>${dPlan}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
+  if(dPlan>0){ cdText=`距 8/25 开干 <b>${dPlan}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
   else if(dPlan===0){ cdText=`今天开干 · 距高考 <b>${dGk}</b> 天`; }
   else { cdText=`复读第 <b>${-dPlan+1}</b> 天 · 距高考 <b>${dGk}</b> 天`; }
   const stDone=stDays>=5;
@@ -3384,36 +2731,8 @@ function renderCalendar(){
 }
 document.getElementById("calPrev").onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); };
 document.getElementById("calNext").onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); };
-(function(){ const c=document.getElementById("calCard"); if(c){ c.querySelector(".sc-bt").onclick=()=>c.classList.toggle("collapsed"); } })();
 
 /* ---------- 主页：待办任务（云端 sichen_plans 主 + 本地 yj_todos_v1 兜底） ---------- */
-/* ---------- 高考报名固定提醒项（纯渲染，不可交互，2026-10-14 开始 / 10-30 截止） ---------- */
-function gkBaomingRemind(){
-  var start = new Date(2026,9,14);            // 10月14日 00:00
-  var end   = new Date(2026,9,30);            // 10月30日 00:00（当天含）
-  var now = new Date(); now.setHours(0,0,0,0);
-  if(now > end) return "";                     // 报名结束后不再显示
-  var inWindow = now >= start && now <= end;   // 报名进行中 → 置顶高亮
-  var daysLeft = Math.ceil((start - now)/ (24*3600*1000));
-  var wrapStyle = inWindow
-    ? 'background:#fff3e6;border:1px solid #e0913c;border-radius:8px;padding:9px 10px;'
-    : 'background:#faf6ef;border-radius:8px;padding:9px 10px;';
-  var sub = inWindow
-    ? '<div style="font-size:11px;color:#b06210;margin-top:4px;">◀ 报名正在进行（10/14–10/30）· 如未办理请尽快</div>'
-    : (daysLeft > 0
-       ? '<div style="font-size:11px;color:#8a6a2a;margin-top:4px;">⏳ 距 10/14 报名开始还有 '+daysLeft+' 天</div>'
-       : '<div style="font-size:11px;color:#b06210;margin-top:4px;">▶ 今天（10/14）高考报名开始</div>');
-  return '<div class="gk-bm" style="'+wrapStyle+'">'
-    + '<div style="flex:1;">'
-    + '<div style="font-size:13px;font-weight:600;color:#7a5230;">📝 高考报名 · 2027</div>'
-    + '<div style="font-size:12px;color:#4a5a6a;margin-top:3px;line-height:1.55;">'
-    + '窗口期 10/14–10/30（不含双休日）· 祁东县教育局二楼考试中心<br>'
-    + '带：毕业证 / 户口本 / 身份证（原件+复印件）· 咨询 0734-6259825<br>'
-    + '<em style="color:#8a6a2a;">逾期不再受理、不安排补报名</em>'
-    + '</div>'
-    + sub
-    + '</div></div>';
-}
 const TODO_LOCAL_KEY = "yj_todos_v1";
 function todoLocalRead(){
   try{ return JSON.parse(localStorage.getItem(TODO_LOCAL_KEY)||"[]")||[]; }catch(_){ return []; }
@@ -3435,9 +2754,8 @@ async function loadTodos(){
   if(!sb){
     // 云端未连 → 走本地
     const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
-    const gkHtml = gkBaomingRemind();
-    if(local.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'); return; }
-    listEl.innerHTML = gkHtml + local.map(p=>`
+    if(local.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'; return; }
+    listEl.innerHTML = local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3449,9 +2767,8 @@ async function loadTodos(){
   if(error){
     // 云端失败 → 落本地兜底
     const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
-    const gkHtml = gkBaomingRemind();
-    if(local.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'); return; }
-    listEl.innerHTML = gkHtml + local.map(p=>`
+    if(local.length===0){ listEl.innerHTML='<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'; return; }
+    listEl.innerHTML = local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3469,10 +2786,9 @@ async function loadTodos(){
   });
   // 同步一份到本地作为缓存
   todoLocalWrite(items.map(p=>({id:p.id,content:p.content,done:p.done,ts:p.ts})));
-  const gkHtml = gkBaomingRemind();
-  if(items.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'); }
+  if(items.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'; }
   else{
-    listEl.innerHTML = gkHtml + items.map(p=>`
+    listEl.innerHTML = items.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3584,24 +2900,8 @@ if(sb){
 }
 
 
-/* ---------- 闪屏隐藏（等加载完成 + 最短停留 + 6s 安全网，避免卡屏）---------- */
-(function(){
-  var s=document.getElementById("splashScreen");
-  if(!s)return;
-  var MIN=700, SAFETY=6000, t0=Date.now();
-  function hide(){
-    var wait=Math.max(0, MIN-(Date.now()-t0));
-    setTimeout(function(){
-      if(!s||!s.parentNode)return;
-      s.classList.add("hide");
-      setTimeout(function(){ if(s&&s.parentNode)s.remove(); }, 700);
-    }, wait);
-  }
-  if(document.readyState==="complete") hide();
-  else window.addEventListener("load", hide);
-  // 兜底：无论发生什么，6 秒后强制隐藏
-  setTimeout(hide, SAFETY);
-})();
+/* ---------- 闪屏隐藏 ---------- */
+setTimeout(function(){ var s=document.getElementById("splashScreen"); if(s){ s.classList.add("hide"); setTimeout(function(){ s.remove(); }, 700); } }, 600);
 
 /* ===== 专注计时器 ===== */
 const FOCUS_KEY="yj_focus_v1";
@@ -3656,11 +2956,11 @@ function moodInit(){
   var selMood=data?data.mood:0;
   row.querySelectorAll(".mood-btn").forEach(function(b){
     var m=parseInt(b.dataset.mood);
+    if(m===selMood)b.classList.add("active");
     var colors=["#c2703f","#cf9a4e","#8a9a98","#6f9079","#3f8a6d"];
-    if(m===selMood){b.classList.add("active");b.style.color=colors[m-1];}
     b.onclick=function(){
-      selMood=m;row.querySelectorAll(".mood-btn").forEach(function(x){x.classList.remove("active");x.style.color=""});
-      b.classList.add("active");b.style.color=colors[m-1]
+      selMood=m;row.querySelectorAll(".mood-btn").forEach(function(x){x.classList.remove("active");x.style.borderColor=""});
+      b.classList.add("active");b.style.borderColor=colors[m-1]
     }
   });
   if(data&&data.note)document.getElementById("moodNote").value=data.note;
@@ -3784,18 +3084,15 @@ async function xgSmartSend(){
     showRdBanner("\u2713 已加入待办："+parsed.text);return
   }
   if(parsed.type==="fin"){
-    var c=smartFinCat(parsed.text);
-    var t=/收入|赚|收到|工资|收款|退款|卖出|回款|奖金|分红|进账/.test(parsed.text)?"income":"expense";
-    var a=getFin();a.push({id:Date.now(),type:t,amount:parsed.amount,note:parsed.text,cat:c.cat,nature:t==="income"?"资产":c.nature,date:todayStr(),ts:Date.now()});setFin(a);
-    cloudFinWrite({type:t,amount:parsed.amount,note:parsed.text,cat:c.cat,nature:t==="income"?"资产":c.nature,date:todayStr(),src:"xiguang"});
+    var a=getFin();a.push({id:Date.now(),type:"expense",amount:parsed.amount,note:parsed.text,cat:"其他",nature:"消费",date:todayStr(),ts:Date.now()});setFin(a);
     ta.value="";ta.style.height="auto";delete ta.dataset.img;
     showRdBanner("\u2713 已记账："+parsed.amount+"元");return
   }
-  if(xgEditId){var id=xgEditId;if(sb){var xgUpFail=false;try{var xgUr=await sb.from(XG_TABLE).update({content:text}).eq("id",id);if(xgUr&&xgUr.error)xgUpFail=true}catch(e){xgUpFail=true}if(xgUpFail)xgLocalEdit(id,text)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0){xgLocal[i].content=text;xgCacheWrite(xgLocal)}}cancelEdit();renderXg();return}
+  if(xgEditId){var id=xgEditId;if(sb){await sb.from(XG_TABLE).update({content:text}).eq("id",id)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0)xgLocal[i].content=text}cancelEdit();renderXg();return}
   var ts=Date.now();var cat=classifyXg(cleanText);ta.value="";ta.style.height="auto";delete ta.dataset.img;
   var noteId=sb?ts:"local_"+ts;
-  if(sb){var xgInsFail=false;try{var xgIr=await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts});if(xgIr&&xgIr.error)xgInsFail=true}catch(e){xgInsFail=true}if(xgInsFail)xgLocalPending({id:"off_"+ts,content:cleanText,category:cat,ts:ts})}
-  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts});xgCacheWrite(xgLocal)}
+  if(sb){await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts})}
+  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts})}
   if(imgData)await xgSaveImg(noteId,imgData);
   renderXg()
 }
@@ -3810,9 +3107,8 @@ function yjProgressInit(){
 }
 /* ===== 银简→隙光联动 ===== */
 async function yjSyncToXg(note){
-  if(!note)return;
-  if(!sb){ xgLocalPending({id:"off_"+Date.now(),content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); return; }
-  try{var yjr=await sb.from(XG_TABLE).insert({content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); if(yjr&&yjr.error)throw 0}catch(e){ xgLocalPending({id:"off_"+Date.now(),content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); }
+  if(!sb||!note)return;
+  try{await sb.from(XG_TABLE).insert({content:"#银简 "+note,category:"灵感想法",ts:Date.now()})}catch(e){}
 }
 /* ===== 目标拆解 ===== */
 var GOAL_KEY="yj_goals_v1";
@@ -3892,7 +3188,7 @@ async function autoSnapshot(){
 /* ===== 初始化 ===== */
 function initAllNewFeatures(){
   fcInit();moodInit();trendInit();xgSearchInit();xgImgInit();xgTmplInit();
-  yjProgressInit();goalInit();bodyInit();
+  yjProgressInit();goalInit();bodyInit();renderInlineDailyPlan();
   var xgBtn=document.getElementById("xgSendBtn");
   if(xgBtn) xgBtn.onclick=xgSmartSend;
   setInterval(autoSnapshot,300000)
@@ -3901,83 +3197,208 @@ function initAllNewFeatures(){
 /* ---------- 启动计划推送（ntfy） ---------- */
 const NTFY_TOPIC = 'ruozhao-reminders-2026';
 
-function getStudyPlanWeek(){
-  const now = new Date();
-  const start = new Date('2026-09-05T00:00:00');
-  const diff = Math.floor((now - start) / 86400000);
-  if(diff < 0) return {week:0, label:'未启动', tasks:['复读计划尚未开始，9月5日启动']};
-  if(diff < 7) return {
-    week:1,
-    label:'第1周 · 开步',
-    tasks:[
-      '📐 数学 · 逆向法：找初二函数代表题，试5min→答案找缺口→补教材概念',
-      '📐 数学 · 函数断口修补：变量关系→函数定义→图像理解',
-      '📖 英语 · 词汇：词根词缀法，每天20词，3次默写过关',
-      '📖 英语 · 听力：听→读→做题，每天15min'
+const DAILY_PLAN = {
+  '2026-09-08': {
+    date: '9/8 周一',
+    isWorkDay: false,
+    tasks: [
+      '📐 数学 · 函数：找1-2道初二函数代表题，逆向法练手感 → 试5min→找缺口→补教材概念→回来解',
+      '📖 英语 · 词汇：词根词缀法，20个单词，3次默写全对算过',
+      '📖 英语 · 听力：15分钟纯听练习',
+      '🧬 生物 · 课本通读第一章，先建整体框架'
     ],
-    tip:'每日2h（数学+英语）· 起床目标11:00 · 数学动作：代表题→试5min→答案找缺口→教材补概念→回来解→双练巩固'
-  };
-  if(diff < 14) return {
-    week:2,
-    label:'第2周 · 加码',
-    tasks:[
-      '📐 数学 · 继续函数修补 + 选择填空专项训练',
-      '📖 英语 · 词汇积累继续 + 阅读/写作隔天轮换',
-      '⚡ 物理 · 力学基础：黄夫人视频对应章节，画画面（什么动/什么推/方向）',
-      '⚡ 物理 · 公式是画面的数学翻译，先理解再记公式'
+    tip: '非打工日：约3-4小时 · 目标：建立习惯，完成比完美重要'
+  },
+  '2026-09-09': {
+    date: '9/9 周二',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 函数：1-2道函数题，逆向法流程走一遍 → 保持手感完成',
+      '📖 英语 · 词汇：10个单词（减半），根据精力决定是否做听力'
     ],
-    tip:'每日3h（数学+英语+物理）· 起床目标10:30 · 物理动作：代表题→画画面→卡→黄夫人对应讲→回来画→解'
-  };
-  if(diff < 21) return {
-    week:3,
-    label:'第3周 · 六科全开',
-    tasks:[
-      '📐 数学 · 逆向法走通：代表题→双练巩固，选择填空优先',
-      '📖 英语 · 词汇+听力+阅读/写作轮换，语法当字典查',
-      '⚡ 物理 · 力学图像化：画画面→解，公式是画面的数学翻译',
-      '🧪 化学 · 先建词汇：元素符号→化合价→化学式→方程式配平',
-      '🧬 生物 · 正向读课本：概念接到自然经验上，30天速记',
-      '📝 语文 · 阅读看骨架，写作从提纲入手'
+    tip: '打工日：只保底 → 约1小时 · 保住数学就够了'
+  },
+  '2026-09-10': {
+    date: '9/10 周三',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 函数：1-2道题，继续变量关系→函数定义→图像理解练习',
+      '📖 英语 · 词汇：20个单词，听力不做（精力留给第二天）'
     ],
-    tip:'每日4h · 六科全开 · 起床目标10:00 · 5分钟启动 / 只盯本周 / 完成>完美'
-  };
-  return {week:4, label:'启动期结束', tasks:['启动期已过，查看拾光司辰页面的完整计划'], tip:''};
+    tip: '打工日：只保底 → 约1小时'
+  },
+  '2026-09-11': {
+    date: '9/11 周四',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 函数：1道题深度拆解，把每一步缺口找清楚',
+      '📖 英语 · 词汇：10个单词 + 复习前3天背过的单词'
+    ],
+    tip: '打工日：只保底 → 约1小时'
+  },
+  '2026-09-12': {
+    date: '9/12 周五',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 函数：函数概念巩固，1-2道选择填空',
+      '📖 英语 · 词汇：20个单词 + 检查复习默写'
+    ],
+    tip: '打工日：只保底 → 约1小时'
+  },
+  '2026-09-13': {
+    date: '9/13 周六',
+    isWorkDay: false,
+    tasks: [
+      '📐 数学 · 函数：2-3道题，本周错题重刷',
+      '📖 英语 · 词汇：本周单词复习一遍 → 错的重默',
+      '📖 英语 · 阅读：1篇高考阅读精度训练',
+      '⚡ 物理 · 力学基础：第一章节，黄夫人对应视频 → 每一个公式先画画面（什么动/什么推）再记公式'
+    ],
+    tip: '非打工日：约3-4小时 · 资料已到位，直接开干'
+  },
+  '2026-09-14': {
+    date: '9/14 周日',
+    isWorkDay: false,
+    tasks: [
+      '📐 数学 · 函数：选择填空专项训练 → 5道题',
+      '📖 英语 · FREE阅读：第一篇，按方法训练',
+      '📖 英语 · 词汇：20个新词',
+      '⚛️ 化学 · 化学超人：第一章节概念讲解，分清楚概念型/记忆型内容',
+      '📝 语文 · 古诗文1篇，场景记忆法'
+    ],
+    tip: '非打工日：约3-4小时 · 三科都覆盖'
+  },
+  '2026-09-15': {
+    date: '9/15 周一',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 函数+导数：1-2道大题，逆向法完整流程',
+      '📖 英语 · 词汇：20个 + 15分钟听力'
+    ],
+    tip: '打工日：只保底 → 约1.5小时'
+  },
+  '2026-09-16': {
+    date: '9/16 周二',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 导数入门：1道题，概念理解 → 导数是什么、切线斜率',
+      '📖 英语 · 词汇：20个 + FREE阅读1篇'
+    ],
+    tip: '打工日：只保底 → 约1.5小时'
+  },
+  '2026-09-17': {
+    date: '9/17 周三',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 导数：切线方程题目1-2道，图像理解导数意义',
+      '📖 英语 · 词汇：20个 + 听力15分钟',
+      '⚡ 物理 · 力学：弹力章节，黄夫人对应视频 → 画受力分析图'
+    ],
+    tip: '打工日：约2小时 · 加物理轻量任务'
+  },
+  '2026-09-18': {
+    date: '9/18 周四',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 导数：单调性概念理解，1-2道题',
+      '📖 英语 · 词汇：20个 + FREE阅读1篇'
+    ],
+    tip: '打工日：只保底 → 约1.5小时'
+  },
+  '2026-09-19': {
+    date: '9/19 周五',
+    isWorkDay: true,
+    tasks: [
+      '📐 数学 · 导数：极值最值，1-2道题',
+      '📖 英语 · 词汇：20个 + 听力15分钟',
+      '⚛️ 化学 · 物质分类：概念理解，区分概念/记忆'
+    ],
+    tip: '打工日：约2小时 · 加化学轻量任务'
+  },
+  '2026-09-20': {
+    date: '9/20 周六',
+    isWorkDay: false,
+    tasks: [
+      '📐 数学 · 函数+导数：本周错题重刷，概念巩固',
+      '📖 英语 · 词汇：本周复习一遍，错词重默',
+      '📖 英语 · 写作：读一篇范文，分析结构',
+      '⚡ 物理 · 力学：重力摩擦力 → 黄夫人视频，画受力图练习',
+      '🧬 生物 · 课本第二章通读，框架整理'
+    ],
+    tip: '非打工日：约4小时 · 全科复习+新内容'
+  },
+  '2026-09-21': {
+    date: '9/21 周日',
+    isWorkDay: false,
+    tasks: [
+      '📐 数学 · 函数导数：综合练习3-4题',
+      '📖 英语 · FREE阅读：1篇精度训练',
+      '📖 英语 · 词汇：本周总结 + 20新词',
+      '⚛️ 化学 · 离子反应：概念拆解，反应过程理解',
+      '📝 语文 · 古诗文+现代文阅读各一篇，结构分析'
+    ],
+    tip: '非打工日：约4小时 · 第二周收尾'
+  }
+};
+
+function getTodaysPlan(targetDateStr){
+  return DAILY_PLAN[targetDateStr] || null;
+}
+
+function renderInlineDailyPlan(){
+  const container = document.getElementById("inlineDailyPlan");
+  if(!container) return;
+  const ts = todayStr();
+  const plan = getTodaysPlan(ts);
+  if(!plan){
+    container.innerHTML = '<div class="empty" style="color:var(--muted);font-size:12px;padding:10px;">今日无预设计划（启动期9/8-9/21已过），进入常规节奏</div>';
+    return;
+  }
+  const statusLabel = plan.isWorkDay ? '🍑 打工日 · 保底' : '完整日';
+  container.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
+    '<span style="font-size:14px;font-weight:700;color:var(--sichen);">📅 ' + plan.date + '</span>' +
+    '<span style="font-size:11px;background:' + (plan.isWorkDay ? '#fce4ec;color:#c62828' : '#e8f5e9;color:#388e3c') + ';border-radius:8px;padding:2px 8px;font-weight:600;">' + statusLabel + '</span>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">' +
+    plan.tasks.map(t => '<div style="font-size:12.5px;color:#4a5a6a;line-height:1.5;padding:3px 0;">' + t + '</div>').join('') +
+    '</div>' +
+    '<div style="padding:6px 10px;background:#faf6ef;border-radius:8px;font-size:11.5px;color:#6a7a8a;line-height:1.5;">' + plan.tip + '</div>';
 }
 
 async function pushStudyPlan(mode){
-  const plan = getStudyPlanWeek();
-  if(plan.week === 0){
-    alert('复读计划尚未启动（8月20日开始）');
+  let targetDateStr = todayStr();
+  if(mode === 'tomorrow'){
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    targetDateStr = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  
+  const plan = getTodaysPlan(targetDateStr);
+  if(!plan){
+    alert('今日没有预设计划，启动期（9/8-9/21）已过，进入常规节奏');
     return;
   }
   
-  let title, body;
-  if(mode === 'tomorrow'){
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    title = '📅 明日任务 · ' + plan.label;
-    body = '明天（' + (tomorrow.getMonth()+1)+'/'+tomorrow.getDate()+'）的任务：\n\n' +
-      plan.tasks.join('\n') + '\n\n' + plan.tip;
-  } else {
-    title = '📨 今日任务 · ' + plan.label;
-    body = '今天的任务：\n\n' +
-      plan.tasks.join('\n') + '\n\n' + plan.tip;
-  }
+  let title = (mode === 'tomorrow' ? '📅 明日' : '📨 今日') + '任务 · ' + plan.date;
+  if(plan.isWorkDay) title += ' · 🍑 打工日';
+  else title += ' · 完整日';
+  
+  let body = title + '\n\n' + plan.tasks.map((t,i)=> (i+1) + '. ' + t).join('\n') + '\n\n' + plan.tip;
   
   try{
     const resp = await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
       method: 'POST',
       body: body,
       headers: {
-        'Title': title,
-        'Tags': 'bell',
-        'Priority': 'high',
+        'Title': title.split('·')[0],
+        'Tags': 'bell,calendar',
+        'Priority': plan.isWorkDay ? 'default' : 'high',
         'Content-Type': 'text/plain; charset=utf-8'
       }
     });
     if(resp.ok){
       alert('✅ 已推送至手机 · ' + title);
-      // 更新所有按钮状态
       document.querySelectorAll('.fd-push-btn').forEach(b => {
         const orig = b.textContent;
         b.textContent = '✓ 已推送';
@@ -4004,34 +3425,8 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW 注册失败:", e));
   });
-}
-
-/* ---------- 打卡断签提醒（21:30 后当天未打卡则通知） ---------- */
-(function setupMissCheckinAlert(){
-  const KEY = "yj_miss_alert_" + todayStr();
-  if(localStorage.getItem(KEY)) return;   // 今天已提醒过
-  function check(){
-    try{
-      const now = new Date();
-      const hh = now.getHours() + now.getMinutes()/60;
-      if(hh < 21.5) return;                // 21:30 前不打扰
-      const ck = checkinCache[todayStr()];
-      if(ck && (ck.study || ck.read || ck.exercise)) return;   // 已打卡
-      if("Notification" in window && Notification.permission === "granted"){
-        new Notification("⏰ 今天还没打卡", {
-          body: "学习/运动/阅读都还没记录。不用完美，勾一项就算数。",
-          icon: "icon-192.png",
-          tag: "miss-checkin"
-        });
-      }
-      localStorage.setItem(KEY, "1");
-    }catch(e){}
-  }
-  setInterval(check, 600000);   // 每 10 分钟查一次
-  setTimeout(check, 5000);      // 进页面 5 秒后先查一次
-})();
-
   initAllNewFeatures();
+}
 </script>
 <div class="rd-banner" id="rdBanner"></div>
 
