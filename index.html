@@ -3366,60 +3366,6 @@ function renderInlineDailyPlan(){
     '<div style="padding:6px 10px;background:#faf6ef;border-radius:8px;font-size:11.5px;color:#6a7a8a;line-height:1.5;">' + plan.tip + '</div>';
 }
 
-async function pushStudyPlan(mode){
-  let targetDateStr = todayStr();
-  if(mode === 'tomorrow'){
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    targetDateStr = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-  }
-  
-  const plan = getTodaysPlan(targetDateStr);
-  if(!plan){
-    alert('今日没有预设计划，启动期（9/8-9/21）已过，进入常规节奏');
-    return;
-  }
-  
-  let title = (mode === 'tomorrow' ? '📅 明日' : '📨 今日') + '任务 · ' + plan.date;
-  if(plan.isWorkDay) title += ' · 🍑 打工日';
-  else title += ' · 完整日';
-  
-  let body = title + '\n\n' + plan.tasks.map((t,i)=> (i+1) + '. ' + t).join('\n') + '\n\n' + plan.tip;
-  
-  try{
-    const resp = await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
-      method: 'POST',
-      body: body,
-      headers: {
-        'Title': title.split('·')[0],
-        'Tags': 'bell,calendar',
-        'Priority': plan.isWorkDay ? 'default' : 'high',
-        'Content-Type': 'text/plain; charset=utf-8'
-      }
-    });
-    if(resp.ok){
-      alert('✅ 已推送至手机 · ' + title);
-      document.querySelectorAll('.fd-push-btn').forEach(b => {
-        const orig = b.textContent;
-        b.textContent = '✓ 已推送';
-        b.style.background = 'var(--ok)';
-        b.style.color = '#fff';
-        b.style.borderColor = 'var(--ok)';
-        setTimeout(() => {
-          b.textContent = orig;
-          b.style.background = '';
-          b.style.color = '';
-          b.style.borderColor = '';
-        }, 2000);
-      });
-    } else {
-      alert('推送失败，请稍后重试');
-    }
-  } catch(e) {
-    alert('网络错误，推送失败');
-  }
-}
-
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
