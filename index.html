@@ -653,22 +653,7 @@
     <div class="goal-note" style="margin-top:6px">287 → 550 → 600 · 拆到每天可执行</div>
   </details>
 
-  <!-- ===== 启动计划 · 每日任务 ===== -->
-  <details class="card fold-card" style="margin-top:12px;">
-    <summary class="sec-title">启动计划 · 每日任务 <span class="badge" style="margin-left:auto;color:#8a9baa;background:#f3f4f6;font-size:10px;padding:2px 8px;border-radius:8px;">9/8 → 9/21</span></summary>
-    <div class="fold-body" style="padding:0 14px 14px;">
-      <div id="inlineDailyPlan" style="padding:10px 0 0;">
-        <div class="ins-loading" style="color:var(--muted);font-size:12.5px;padding:14px 2px;">加载今日计划…</div>
-      </div>
-      <div style="padding:8px 12px;background:#faf6ef;border-radius:8px;font-size:12px;color:#6a7a8a;line-height:1.6;margin-top:10px;">
-        <strong style="color:#c4a265;">打工日原则：</strong>只保数学（1h）+ 英语词汇，约1-1.5h · 非打工日：数学+英语+理综一科+语文轮换，约3-4h
-      </div>
-    </div>
-    <div style="padding:8px 14px 14px;display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="fd-push-btn" onclick="pushStudyPlan()" style="flex:1;border:1px solid var(--sichen);background:#fff;color:var(--sichen);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📨 推送今日任务</button>
-      <button class="fd-push-btn" onclick="pushStudyPlan('tomorrow')" style="flex:1;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📅 推送明日任务</button>
-    </div>
-  </details>
+  <!-- ===== 启动计划自动填充至待办（已隐藏显示，逻辑保留） ===== -->
 
   <div class="card">
     <div class="sec-title">待办任务</div>
@@ -3188,7 +3173,7 @@ async function autoSnapshot(){
 /* ===== 初始化 ===== */
 function initAllNewFeatures(){
   fcInit();moodInit();trendInit();xgSearchInit();xgImgInit();xgTmplInit();
-  yjProgressInit();goalInit();bodyInit();renderInlineDailyPlan();
+  yjProgressInit();goalInit();bodyInit();
   var xgBtn=document.getElementById("xgSendBtn");
   if(xgBtn) xgBtn.onclick=xgSmartSend;
   setInterval(autoSnapshot,300000)
@@ -3345,38 +3330,6 @@ function getTodaysPlan(targetDateStr){
   return DAILY_PLAN[targetDateStr] || null;
 }
 
-function renderInlineDailyPlan(){
-  const container = document.getElementById("inlineDailyPlan");
-  if(!container) return;
-  const ts = todayStr();
-  const plan = getTodaysPlan(ts);
-  if(!plan){
-    container.innerHTML = '<div class="empty" style="color:var(--muted);font-size:12px;padding:10px;">今日无预设计划（启动期9/8-9/21已过），进入常规节奏</div>';
-    return;
-  }
-  const filled = localStorage.getItem('plan_filled_' + ts);
-  if(filled){
-    container.innerHTML =
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
-      '<span style="font-size:14px;font-weight:700;color:var(--sichen);">📅 ' + plan.date + '</span>' +
-      '<span style="font-size:11px;background:#e8f5e9;color:#388e3c;border-radius:8px;padding:2px 8px;font-weight:600;">✓ 已加入待办</span>' +
-      '<span style="font-size:11px;background:' + (plan.isWorkDay ? '#fce4ec;color:#c62828' : '#e8f5e9;color:#388e3c') + ';border-radius:8px;padding:2px 8px;font-weight:600;">' + (plan.isWorkDay ? '🍑 打工日 · 保底' : '完整日') + '</span>' +
-      '</div>' +
-      '<div style="font-size:12px;color:var(--muted);line-height:1.5;padding:6px 0;">' + plan.tasks.length + ' 项任务 · 在下方「待办任务」中勾选完成</div>';
-    return;
-  }
-  const statusLabel = plan.isWorkDay ? '🍑 打工日 · 保底' : '完整日';
-  container.innerHTML =
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
-    '<span style="font-size:14px;font-weight:700;color:var(--sichen);">📅 ' + plan.date + '</span>' +
-    '<span style="font-size:11px;background:' + (plan.isWorkDay ? '#fce4ec;color:#c62828' : '#e8f5e9;color:#388e3c') + ';border-radius:8px;padding:2px 8px;font-weight:600;">' + statusLabel + '</span>' +
-    '</div>' +
-    '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">' +
-    plan.tasks.map(t => '<div style="font-size:12.5px;color:#4a5a6a;line-height:1.5;padding:3px 0;">' + t + '</div>').join('') +
-    '</div>' +
-    '<div style="padding:6px 10px;background:#faf6ef;border-radius:8px;font-size:11.5px;color:#6a7a8a;line-height:1.5;">' + plan.tip + '</div>';
-}
-
 async function fillDailyPlan(){
   if(!sb) return;
   const today = todayStr();
@@ -3409,7 +3362,6 @@ async function fillDailyPlan(){
     todoLocalWrite(newLocal);
     localStorage.setItem(filledKey, '1');
     await loadTodos();
-    renderInlineDailyPlan();
   } catch(e){
     console.error('填充每日计划失败:', e);
   }
