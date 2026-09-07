@@ -3376,8 +3376,8 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW 注册失败:", e));
   });
-  initAllNewFeatures();
 }
+initAllNewFeatures();
 </script>
 <div class="rd-banner" id="rdBanner"></div>
 
