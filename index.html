@@ -3387,6 +3387,33 @@ document.getElementById("calNext").onclick=()=>{ calM++; if(calM>11){calM=0;calY
 (function(){ const c=document.getElementById("calCard"); if(c){ c.querySelector(".sc-bt").onclick=()=>c.classList.toggle("collapsed"); } })();
 
 /* ---------- 主页：待办任务（云端 sichen_plans 主 + 本地 yj_todos_v1 兜底） ---------- */
+/* ---------- 高考报名固定提醒项（纯渲染，不可交互，2026-10-14 开始 / 10-30 截止） ---------- */
+function gkBaomingRemind(){
+  var start = new Date(2026,9,14);            // 10月14日 00:00
+  var end   = new Date(2026,9,30);            // 10月30日 00:00（当天含）
+  var now = new Date(); now.setHours(0,0,0,0);
+  if(now > end) return "";                     // 报名结束后不再显示
+  var inWindow = now >= start && now <= end;   // 报名进行中 → 置顶高亮
+  var daysLeft = Math.ceil((start - now)/ (24*3600*1000));
+  var wrapStyle = inWindow
+    ? 'background:#fff3e6;border:1px solid #e0913c;border-radius:8px;padding:9px 10px;'
+    : 'background:#faf6ef;border-radius:8px;padding:9px 10px;';
+  var sub = inWindow
+    ? '<div style="font-size:11px;color:#b06210;margin-top:4px;">◀ 报名正在进行（10/14–10/30）· 如未办理请尽快</div>'
+    : (daysLeft > 0
+       ? '<div style="font-size:11px;color:#8a6a2a;margin-top:4px;">⏳ 距 10/14 报名开始还有 '+daysLeft+' 天</div>'
+       : '<div style="font-size:11px;color:#b06210;margin-top:4px;">▶ 今天（10/14）高考报名开始</div>');
+  return '<div class="gk-bm" style="'+wrapStyle+'">'
+    + '<div style="flex:1;">'
+    + '<div style="font-size:13px;font-weight:600;color:#7a5230;">📝 高考报名 · 2027</div>'
+    + '<div style="font-size:12px;color:#4a5a6a;margin-top:3px;line-height:1.55;">'
+    + '窗口期 10/14–10/30（不含双休日）· 祁东县教育局二楼考试中心<br>'
+    + '带：毕业证 / 户口本 / 身份证（原件+复印件）· 咨询 0734-6259825<br>'
+    + '<em style="color:#8a6a2a;">逾期不再受理、不安排补报名</em>'
+    + '</div>'
+    + sub
+    + '</div></div>';
+}
 const TODO_LOCAL_KEY = "yj_todos_v1";
 function todoLocalRead(){
   try{ return JSON.parse(localStorage.getItem(TODO_LOCAL_KEY)||"[]")||[]; }catch(_){ return []; }
@@ -3408,8 +3435,9 @@ async function loadTodos(){
   if(!sb){
     // 云端未连 → 走本地
     const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
-    if(local.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'; return; }
-    listEl.innerHTML = local.map(p=>`
+    const gkHtml = gkBaomingRemind();
+    if(local.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'); return; }
+    listEl.innerHTML = gkHtml + local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3421,8 +3449,9 @@ async function loadTodos(){
   if(error){
     // 云端失败 → 落本地兜底
     const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
-    if(local.length===0){ listEl.innerHTML='<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'; return; }
-    listEl.innerHTML = local.map(p=>`
+    const gkHtml = gkBaomingRemind();
+    if(local.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'); return; }
+    listEl.innerHTML = gkHtml + local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3440,9 +3469,10 @@ async function loadTodos(){
   });
   // 同步一份到本地作为缓存
   todoLocalWrite(items.map(p=>({id:p.id,content:p.content,done:p.done,ts:p.ts})));
-  if(items.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'; }
+  const gkHtml = gkBaomingRemind();
+  if(items.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'); }
   else{
-    listEl.innerHTML = items.map(p=>`
+    listEl.innerHTML = gkHtml + items.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
