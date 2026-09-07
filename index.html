@@ -2479,7 +2479,7 @@ document.getElementById("backupFile").onchange=e=>{ if(e.target.files[0]) import
 /* ---------- init ---------- */
 document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 renderCheckin();
-if(sb){ loadTodos(); loadCheckin().then(renderCheckin); loadFin(); loadReading(); updateSichenStatus(); }
+if(sb){ loadTodos(); fillDailyPlan(); loadCheckin().then(renderCheckin); loadFin(); loadReading(); updateSichenStatus(); }
 
 /* ---------- 高考倒计时 ---------- */
 (function(){
@@ -3354,6 +3354,17 @@ function renderInlineDailyPlan(){
     container.innerHTML = '<div class="empty" style="color:var(--muted);font-size:12px;padding:10px;">今日无预设计划（启动期9/8-9/21已过），进入常规节奏</div>';
     return;
   }
+  const filled = localStorage.getItem('plan_filled_' + ts);
+  if(filled){
+    container.innerHTML =
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
+      '<span style="font-size:14px;font-weight:700;color:var(--sichen);">📅 ' + plan.date + '</span>' +
+      '<span style="font-size:11px;background:#e8f5e9;color:#388e3c;border-radius:8px;padding:2px 8px;font-weight:600;">✓ 已加入待办</span>' +
+      '<span style="font-size:11px;background:' + (plan.isWorkDay ? '#fce4ec;color:#c62828' : '#e8f5e9;color:#388e3c') + ';border-radius:8px;padding:2px 8px;font-weight:600;">' + (plan.isWorkDay ? '🍑 打工日 · 保底' : '完整日') + '</span>' +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--muted);line-height:1.5;padding:6px 0;">' + plan.tasks.length + ' 项任务 · 在下方「待办任务」中勾选完成</div>';
+    return;
+  }
   const statusLabel = plan.isWorkDay ? '🍑 打工日 · 保底' : '完整日';
   container.innerHTML =
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
@@ -3364,6 +3375,44 @@ function renderInlineDailyPlan(){
     plan.tasks.map(t => '<div style="font-size:12.5px;color:#4a5a6a;line-height:1.5;padding:3px 0;">' + t + '</div>').join('') +
     '</div>' +
     '<div style="padding:6px 10px;background:#faf6ef;border-radius:8px;font-size:11.5px;color:#6a7a8a;line-height:1.5;">' + plan.tip + '</div>';
+}
+
+async function fillDailyPlan(){
+  if(!sb) return;
+  const today = todayStr();
+  const filledKey = 'plan_filled_' + today;
+  if(localStorage.getItem(filledKey)) return;
+  const plan = getTodaysPlan(today);
+  if(!plan) return;
+  try{
+    const {data: allTasks} = await sb.from(PLANS_TABLE).select('*');
+    const planTasks = (allTasks||[]).filter(p => p.content && p.content.startsWith('[计划]'));
+    const carriedOver = planTasks.filter(p => !p.done);
+    for(const p of planTasks){
+      await sb.from(PLANS_TABLE).delete().eq('id', p.id);
+    }
+    const now = Date.now();
+    let ts = now + planTasks.length + 100;
+    const toInsert = [];
+    for(const task of carriedOver){
+      toInsert.push({ content: task.content, done: false, ts: ts++ });
+    }
+    for(const task of plan.tasks){
+      toInsert.push({ content: '[计划] ' + task, done: false, ts: ts++ });
+    }
+    for(const item of toInsert){
+      await sb.from(PLANS_TABLE).insert(item);
+    }
+    const localItems = todoLocalRead();
+    const filteredLocal = localItems.filter(p => !p.content.startsWith('[计划]'));
+    const newLocal = toInsert.map((item,i) => ({...item, id: now + i})).concat(filteredLocal);
+    todoLocalWrite(newLocal);
+    localStorage.setItem(filledKey, '1');
+    await loadTodos();
+    renderInlineDailyPlan();
+  } catch(e){
+    console.error('填充每日计划失败:', e);
+  }
 }
 
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
