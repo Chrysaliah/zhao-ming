@@ -1,5 +1,5 @@
 /* 拾光 Service Worker —— network-first，导航请求永远走网络，杜绝旧 HTML 缓存导致闪屏卡死 */
-const CACHE = 'zhao-ming-v2';
+const CACHE = 'zhao-ming-v3';
 self.addEventListener('install', function(){ self.skipWaiting(); });
 self.addEventListener('activate', function(e){
   e.waitUntil(
