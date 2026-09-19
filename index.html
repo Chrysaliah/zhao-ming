@@ -629,40 +629,6 @@
   .fh-item:active{background:#f3f0fa;}
   .fh-date{font-size:11px;color:#aaa;}
   .fh-empty{font-size:12px;color:#999;padding:8px 2px;}
-
-/* ---------- 隙光 v98：记录/浏览双视图 ---------- */
-.xg-page { display:flex; flex-direction:column; height:100vh; }
-.xg-head { padding:16px 14px 10px; }
-.xg-wrap { flex:1; overflow-y:auto; padding:0 14px 90px; }
-.xg-view { display:none; }
-.xg-view.active { display:block; }
-.xg-record-box { background:#fff; border-radius:14px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
-.xg-input-main { width:100%; border:none; resize:none; font-size:15px; line-height:1.6; color:#3d3d3d; outline:none; background:transparent; padding:0; min-height:80px; }
-.xg-input-main::placeholder { color:#aaa; }
-.xg-record-meta { margin-top:12px; padding-top:12px; border-top:1px solid #f0f0f0; }
-.xg-mood-select { display:flex; gap:8px; margin-bottom:10px; }
-.xg-mood-select button { width:34px; height:34px; border-radius:50%; border:1px solid #e8e8e8; background:#fafafa; font-size:18px; display:flex; align-items:center; justify-content:center; transition:all .15s; padding:0; }
-.xg-mood-select button.active { background:#eef0f2; border-color:var(--sichen,#6a7a8a); transform:scale(1.05); }
-.xg-quick-tags { display:flex; gap:8px; flex-wrap:wrap; }
-.xg-quick-tags button { padding:5px 12px; border-radius:16px; border:1px solid #e8e8e8; background:#fff; color:#666; font-size:12px; transition:all .15s; }
-.xg-quick-tags button.active { background:var(--sichen,#6a7a8a); color:#fff; border-color:var(--sichen,#6a7a8a); }
-.xg-record-actions { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
-.xg-img-btn { display:flex; align-items:center; gap:4px; padding:8px 14px; border-radius:10px; border:1px solid #e8e8e8; background:#fff; color:#666; font-size:13px; }
-.xg-img-btn svg { width:18px; height:18px; }
-.xg-send-btn { padding:8px 22px; border-radius:10px; border:none; background:var(--sichen,#6a7a8a); color:#fff; font-size:14px; font-weight:500; }
-.xg-record-hint { text-align:center; font-size:12px; color:#aaa; margin-top:14px; }
-.xg-toolbar { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-.xg-search { flex:1; padding:8px 12px; border-radius:10px; border:1px solid #e8e8e8; font-size:13px; background:#fff; }
-.xg-view-tabs { position:fixed; bottom:58px; left:0; right:0; display:flex; justify-content:center; padding:8px 0; background:linear-gradient(to top, rgba(243,244,246,0.95), rgba(243,244,246,0)); z-index:10; }
-.xg-view-tabs button { display:flex; align-items:center; gap:4px; padding:8px 20px; border:none; background:#fff; color:#888; font-size:13px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
-.xg-view-tabs button:first-child { border-radius:20px 0 0 20px; }
-.xg-view-tabs button:last-child { border-radius:0 20px 20px 0; }
-.xg-view-tabs button.active { color:var(--sichen,#6a7a8a); font-weight:600; }
-.xg-view-tabs svg { width:16px; height:16px; }
-.xg-note { position:relative; overflow:hidden; border-radius:12px; margin-bottom:10px; }
-.xg-note-inner { position:relative; z-index:1; background:#fff; padding:12px 14px; border-radius:12px; transition:transform .2s; }
-.xg-note.delete-open .xg-note-inner { transform:translateX(-70px); }
-.xg-note-delete { position:absolute; right:0; top:0; bottom:0; width:70px; background:#e74c3c; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; border-radius:0 12px 12px 0; cursor:pointer; }
 </style>
 
 <!-- force SW update -->
@@ -1126,69 +1092,38 @@
 </div>
 
 <!-- ============ 隙光（碎碎念 · 自动分类整理 · 无 AI） ============ -->
-<div class="page xg-page" id="page-xiguang">
+<div class="page" id="page-xiguang">
   <div class="xg-head">
     <div class="xgicon">✦</div>
     <div>
       <div class="xgname">隙光</div>
-      <div class="xgmeta">碎片记录 · 自动分类</div>
+      <div class="xgmeta">碎碎念 · 自动分类 · 可搜索 / 改 / 删</div>
     </div>
   </div>
-
   <div class="xg-wrap">
-    <div class="xg-view xg-view-record active" id="xgViewRecord">
-      <div class="xg-record-box">
-        <textarea id="xgInput" class="xg-input-main" rows="4" placeholder="这一刻的想法…" autocomplete="off"></textarea>
-        <div class="xg-record-meta">
-          <div class="xg-mood-select" id="xgMoodSelect">
-            <button data-mood="1" title="低落">😞</button>
-            <button data-mood="2" title="一般">😕</button>
-            <button data-mood="3" title="平静" class="active">😐</button>
-            <button data-mood="4" title="不错">🙂</button>
-            <button data-mood="5" title="很好">😄</button>
-          </div>
-          <div class="xg-quick-tags" id="xgQuickTags">
-            <button data-tag="思考">思考</button>
-            <button data-tag="灵感">灵感</button>
-            <button data-tag="待办">待办</button>
-            <button data-tag="记账">记账</button>
-          </div>
-        </div>
-        <div class="xg-record-actions">
-          <button class="xg-img-btn" id="xgImgBtn">
-            <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/></svg>
-            <span>图片</span>
-          </button>
-          <button class="xg-send-btn" id="xgSendBtn">发布</button>
-        </div>
-      </div>
-      <div class="xg-record-hint">记录会自动按内容分类，可在浏览视图查看全部</div>
-    </div>
-
-    <div class="xg-view xg-view-browse" id="xgViewBrowse">
-      <div class="xg-toolbar">
+    <div class="xg-toolbar">
+      <div class="xg-filter" id="xgFilter"></div>
+      <div class="xg-bar">
         <div class="xg-toggle" id="xgToggle">
           <button data-mode="cat" class="active">分类</button>
           <button data-mode="time">时间</button>
         </div>
         <input id="xgSearch" class="xg-search" type="text" placeholder="搜索…" autocomplete="off">
       </div>
-      <div class="xg-filter" id="xgFilter"></div>
-      <div class="xg-notes" id="xgNotes"></div>
+    </div>
+    <div class="xg-notes" id="xgNotes"></div>
+    <div class="xg-tmpl-row" id="xgTmplRow">
+          <button class="xg-tmpl" data-tmpl="今日思考：">思考</button>
+          <button class="xg-tmpl" data-tmpl="灵感：">灵感</button>
+          <button class="xg-tmpl" data-tmpl="待办：">待办</button>
+          <button class="xg-tmpl" data-tmpl="记账：">记账</button>
+        </div>
+      <div class="xg-input">
+      <textarea id="xgInput" rows="1" placeholder="记一笔…" autocomplete="off"></textarea>
+      <button class="xg-img-btn" id="xgImgBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+      <button class="send" id="xgSendBtn">↑</button>
     </div>
   </div>
-
-  <div class="xg-view-tabs">
-    <button class="active" data-view="record">
-      <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 19l7-7 3 3-7 7-3-3z'/><path d='M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/><path d='M2 2l7.586 7.586'/><circle cx='11' cy='11' r='2'/></svg>
-      <span>记录</span>
-    </button>
-    <button data-view="browse">
-      <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='8' y1='6' x2='21' y2='6'/><line x1='8' y1='12' x2='21' y2='12'/><line x1='8' y1='18' x2='21' y2='18'/><line x1='3' y1='6' x2='3.01' y2='6'/><line x1='3' y1='12' x2='3.01' y2='12'/><line x1='3' y1='18' x2='3.01' y2='18'/></svg>
-      <span>浏览</span>
-    </button>
-  </div>
-
   <div class="xg-mask" id="xgReassignMask" style="display:none" onclick="closeReassign()"></div>
   <div class="xg-reassign" id="xgReassign" hidden></div>
 </div>
@@ -1716,11 +1651,9 @@ function renderXgFilter(){
 }
 
 function makeXgCard(n){
-  const wrap = document.createElement("div");
-  wrap.className = "xg-note" + (xgPinRead().includes(n.id) ? " pinned" : "");
-  wrap.dataset.id = n.id;
-  const inner = document.createElement("div"); inner.className="xg-note-inner";
-  const d = document.createElement("div"); d.className="xg-card";
+  const d = document.createElement("div");
+  d.className = "xg-card" + (xgPinRead().includes(n.id) ? " pinned" : "");
+  d.dataset.id = n.id;
   const you = document.createElement("div"); you.className="you"; you.textContent = n.content || "";
   d.appendChild(you);
   const meta = document.createElement("div"); meta.className="meta";
@@ -1740,13 +1673,7 @@ function makeXgCard(n){
   tm.textContent = n.ts ? new Date(n.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "";
   meta.appendChild(tag); meta.appendChild(tm); meta.appendChild(acts);
   d.appendChild(meta);
-  inner.appendChild(d);
-  wrap.appendChild(inner);
-  const delLayer = document.createElement("div"); delLayer.className="xg-note-delete"; delLayer.textContent="删除";
-  delLayer.onclick = ()=>{ if(confirm("删除这条碎碎念？")) delNote(n.id); };
-  wrap.appendChild(delLayer);
-  setTimeout(function(){ xgBindSwipe(wrap); }, 0);
-  return wrap;
+  return d;
 }
 
 function dayLabel(ts){
@@ -3486,7 +3413,8 @@ function xgPinWrite(a){try{localStorage.setItem(XG_PIN_KEY,JSON.stringify(a))}ca
 function xgTogglePin(id){var a=xgPinRead();var i=a.indexOf(id);if(i>=0)a.splice(i,1);else a.push(id);xgPinWrite(a);renderXgFrom(xgCache)}
 /* ===== 隙光快速模板 ===== */
 function xgTmplInit(){
-  /* v98: templates moved to quick tags, kept for compatibility */
+  var row=document.getElementById("xgTmplRow");if(!row)return;
+  row.querySelectorAll(".xg-tmpl").forEach(function(b){b.onclick=function(){var ta=document.getElementById("xgInput");ta.value=b.dataset.tmpl;ta.focus()}})
 }
 /* ===== 隙光智能解析 ===== */
 function xgParse(text){
@@ -3515,14 +3443,12 @@ async function xgSmartSend(){
     ta.value="";ta.style.height="auto";delete ta.dataset.img;
     showRdBanner("\u2713 已记账："+parsed.amount+"元");return
   }
-  if(xgEditId){var id=xgEditId;if(sb){var xgUpFail=false;try{var xgUr=await sb.from(XG_TABLE).update({content:text}).eq("id",id);if(xgUr&&xgUr.error)xgUpFail=true}catch(e){xgUpFail=true}if(xgUpFail)xgLocalEdit(id,text)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0){xgLocal[i].content=text;xgCacheWrite(xgLocal)}}cancelEdit();renderXg();return}
+  if(xgEditId){var id=xgEditId;if(sb){await sb.from(XG_TABLE).update({content:text}).eq("id",id)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0)xgLocal[i].content=text}cancelEdit();renderXg();return}
   var ts=Date.now();var cat=classifyXg(cleanText);ta.value="";ta.style.height="auto";delete ta.dataset.img;
   var noteId=sb?ts:"local_"+ts;
-  var noteData={id:noteId,content:cleanText,category:cat,ts:ts,mood:xgGetMood(),tags:xgGetTags()};
-  if(sb){var xgInsFail=false;try{var xgIr=await sb.from(XG_TABLE).insert(noteData);if(xgIr&&xgIr.error)xgInsFail=true}catch(e){xgInsFail=true}if(xgInsFail)xgLocalPending({id:"off_"+ts,content:cleanText,category:cat,ts:ts,mood:noteData.mood,tags:noteData.tags})}
-  else{xgLocal.push(noteData);xgCacheWrite(xgLocal)}
+  if(sb){await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts})}
+  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts})}
   if(imgData)await xgSaveImg(noteId,imgData);
-  document.querySelectorAll("#xgQuickTags button").forEach(function(b){b.classList.remove("active");});
   renderXg()
 }
 /* ===== 银简进度可视化 ===== */
@@ -3615,66 +3541,8 @@ async function autoSnapshot(){
   }catch(e){}
 }
 /* ===== 初始化 ===== */
-
-/* ---------- 隙光 v98 视图与交互 ---------- */
-function xgViewInit(){
-  var tabs=document.querySelectorAll('.xg-view-tabs button');
-  tabs.forEach(function(b){
-    b.onclick=function(e){
-      e.preventDefault();
-      var view=b.dataset.view;
-      document.querySelectorAll('.xg-view').forEach(function(v){v.classList.remove('active');});
-      document.querySelector('.xg-view-'+view).classList.add('active');
-      tabs.forEach(function(x){x.classList.toggle('active',x===b);});
-      if(view==='browse') renderXg();
-    };
-  });
-}
-function xgMetaInit(){
-  var moodWrap=document.getElementById('xgMoodSelect');
-  if(moodWrap){
-    moodWrap.querySelectorAll('button').forEach(function(b){
-      b.onclick=function(){
-        moodWrap.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});
-        b.classList.add('active');
-      };
-    });
-  }
-  var tagWrap=document.getElementById('xgQuickTags');
-  if(tagWrap){
-    tagWrap.querySelectorAll('button').forEach(function(b){
-      b.onclick=function(){ b.classList.toggle('active'); };
-    });
-  }
-}
-function xgGetMood(){
-  var active=document.querySelector('#xgMoodSelect button.active');
-  return active ? parseInt(active.dataset.mood) : 3;
-}
-function xgGetTags(){
-  return Array.from(document.querySelectorAll('#xgQuickTags button.active')).map(function(b){return b.dataset.tag;});
-}
-function xgBindSwipe(noteEl){
-  var inner=noteEl.querySelector('.xg-note-inner');
-  if(!inner || noteEl.dataset.swipeBound) return;
-  noteEl.dataset.swipeBound='1';
-  var startX=0, currentX=0, dragging=false;
-  inner.addEventListener('touchstart',function(e){ startX=e.touches[0].clientX; dragging=true; },{passive:true});
-  inner.addEventListener('touchmove',function(e){
-    if(!dragging) return;
-    currentX=e.touches[0].clientX;
-    var diff=currentX-startX;
-    if(diff<0 && diff>-80) inner.style.transform='translateX('+diff+'px)';
-  },{passive:true});
-  inner.addEventListener('touchend',function(){
-    dragging=false;
-    var diff=currentX-startX;
-    if(diff<-35){ noteEl.classList.add('delete-open'); inner.style.transform=''; }
-    else { noteEl.classList.remove('delete-open'); inner.style.transform=''; }
-  });
-}
 function initAllNewFeatures(){
-  fcInit();moodInit();trendInit();xgViewInit();xgMetaInit();xgSearchInit();xgImgInit();
+  fcInit();moodInit();trendInit();xgSearchInit();xgImgInit();xgTmplInit();
   yjProgressInit();goalInit();bodyInit();
   var xgBtn=document.getElementById("xgSendBtn");
   if(xgBtn) xgBtn.onclick=xgSmartSend;
