@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- fresh:2026-09-19-redeploy -->
+<!-- fresh:2026-09-19-golden-restore -->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -52,7 +52,8 @@
     box-shadow:0 2px 10px rgba(0,0,0,.12);
     display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
   }
-    .nt-btn:active{transform:scale(.92);}
+  .nt-btn{background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .nt-btn:active{transform:scale(.92);}
   .nt-btn.on{background:rgba(255,255,255,.25);}
   .topbar h1{margin:0;font-size:17px;font-weight:600;letter-spacing:.5px;}
   .topbar .sub{font-size:11px;color:var(--silver);margin-top:2px;}
@@ -128,7 +129,7 @@
   .sc-back:active{transform:scale(.92);}
   .sc-title{font-size:18px;font-weight:800;color:var(--teal);letter-spacing:1px;}
   .sc-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-  .sc-body{padding:14px 14px calc(20px + env(safe-area-inset-bottom));background:#f3f4f6;display:flex;flex-direction:column;gap:16px;}
+  .sc-body{padding:14px 14px calc(76px + env(safe-area-inset-bottom));background:#f3f4f6;display:flex;flex-direction:column;gap:16px;}
   .sc-block{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;}
   .sc-bt{font-size:13px;font-weight:700;color:var(--sichen);margin-bottom:11px;display:flex;align-items:center;gap:6px;}
   .sc-bt::before{content:"";width:4px;height:13px;background:var(--sichen);border-radius:2px;}
@@ -172,6 +173,15 @@
   .cal-wk-s{color:var(--ink);}
   .cal-wk-ok{margin-left:auto;color:var(--ok);font-weight:700;font-size:11px;}
   .cal-wk-no{margin-left:auto;color:var(--silver-deep);font-size:11px;}
+  /* 折叠交互：打卡日历默认折叠，点标题展开/收起 */
+  #calCard .sc-bt{cursor:pointer;user-select:none;justify-content:space-between;}
+  #calCard .sc-bt::after{content:"▾";margin-left:auto;font-size:12px;color:var(--sichen);transition:transform .2s;}
+  #calCard.collapsed .sc-bt::after{content:"▸";}
+  #calCard.collapsed > .cal-head,
+  #calCard.collapsed > .cal-week,
+  #calCard.collapsed > .cal-grid,
+  #calCard.collapsed > .cal-stat-inline,
+  #calCard.collapsed > #calWeekPanel{display:none;}
   .sc-list{display:flex;flex-direction:column;gap:10px;}
   .sc-item{border-left:3px solid var(--sichen-data);background:#faf6ef;border-radius:0 8px 8px 0;padding:9px 11px;}
   .sc-item-t{font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:4px;}
@@ -630,6 +640,18 @@
   .fh-item:active{background:#f3f0fa;}
   .fh-date{font-size:11px;color:#aaa;}
   .fh-empty{font-size:12px;color:#999;padding:8px 2px;}
+/* ---- 列宿 v2：时间线/记坑/人设卡（2026-09-06 隔离加法） ---- */
+  .msg-day{text-align:center;color:#a99fb3;font-size:11px;padding:14px 0 4px;letter-spacing:.5px;}
+  .pit-btn{font:inherit;font-size:10px;color:#8a8594;background:none;border:1px dashed #cfc6da;border-radius:6px;padding:1px 7px;margin-top:6px;cursor:pointer;opacity:.8;align-self:flex-start;}
+  .pit-btn.on{color:#b0602a;border-color:#d9b48a;border-style:solid;opacity:1;}
+  .agent-guide{font-size:13px;line-height:1.75;color:#5a5568;background:#faf8fc;border:1px solid #ece8ee;border-radius:12px;padding:10px 13px;white-space:pre-line;}
+  .pit-item{display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid #f2eef5;font-size:12px;line-height:1.6;color:#444;}
+  .pit-item .pit-who{flex:none;color:#b0602a;font-weight:600;margin-top:1px;}
+  .pit-item .pit-t{flex:1;}
+  .pit-item .pit-date{flex:none;color:#aaa;font-size:10px;margin-top:2px;white-space:nowrap;}
+  .pit-empty{font-size:12px;color:#999;padding:8px 2px;line-height:1.7;}
+  .pit-del{flex:none;border:none;background:none;color:#c0b8ca;font-size:13px;cursor:pointer;padding:0 2px;line-height:1;}
+  .pit-del:hover{color:#a32d2d;}
 </style>
 
 <!-- force SW update -->
@@ -666,7 +688,7 @@
   <div>
     <h1>拾光</h1>
     <div class="sub" id="dateSub"></div>
-      </div>
+  </div>
   
 </div>
 
@@ -790,7 +812,9 @@
       </div>
     </div>
     <div style="padding:8px 14px 14px;display:flex;gap:8px;flex-wrap:wrap;">
-                </div>
+      <button class="fd-push-btn" onclick="pushStudyPlan()" style="flex:1;border:1px solid var(--sichen);background:#fff;color:var(--sichen);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📨 推送今日任务</button>
+      <button class="fd-push-btn" onclick="pushStudyPlan('tomorrow')" style="flex:1;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📅 推送明日任务</button>
+    </div>
   </details>
 
   <div class="card">
@@ -940,7 +964,7 @@
     <summary class="sec-title">🧠 DeepSeek 额度</summary>
     <div id="dsBox"><div class="ds-line"><span class="ds-label">查询中…</span></div></div>
     <div class="ds-topup">
-      <div class="ds-note">余额 = DeepSeek 账户里的额度，列宿的 AI 回复会从这里扣。</div>
+      <div class="ds-note" id="dsNote">余额 = DeepSeek 账户里的额度，列宿的 AI 回复会从这里扣。余额偏低时列宿自动转免费伙伴回复（@AI 可强制）。</div>
       <div class="ds-topup-btns">
         <button class="ds-reload" id="dsReload">↻ 刷新</button>
         <a class="ds-topup-btn" href="https://platform.deepseek.com/top_up" target="_blank" rel="noopener">充值 ↗</a>
@@ -1059,7 +1083,7 @@
         </div>
       </div>
     </div>
-    <div class="sc-block">
+    <div class="sc-block collapsed" id="calCard">
       <div class="sc-bt">打卡日历</div>
       <div class="cal-head">
         <div class="cal-nav"><button id="calPrev">‹</button></div>
@@ -1085,6 +1109,14 @@
     <div class="agent-avatar" id="agentAvatar"></div>
   </div>
   <div class="sc-body">
+    <div class="sc-block" id="agentGuideBlock" style="display:none">
+      <div class="sc-bt">他是谁 · 怎么用 TA</div>
+      <div class="agent-guide" id="agentGuide"></div>
+    </div>
+    <div class="sc-block">
+      <div class="sc-bt">给你点过的坑</div>
+      <div class="sc-list" id="pitList"></div>
+    </div>
     <div class="sc-block">
       <div class="sc-bt">他记录了什么</div>
       <div class="sc-list" id="agentLog"></div>
@@ -1160,19 +1192,19 @@
 <script>
 /* ---------- 角色配置 ---------- */
 const ROLES = {
-  zhao:{name:"昭",short:"昭",title:"主持·串场",color:"#1f4e4a"},
-  lv:{name:"律",short:"律",title:"督导",color:"#2f6b64"},
-  xu:{name:"序",short:"序",title:"数学导师",color:"#3a6ea5"},
-  xiang:{name:"象",short:"象",title:"物理导师",color:"#8e5aa6"},
-  bian:{name:"变",short:"变",title:"化学导师",color:"#c2703f"},
-  mai:{name:"脉",short:"脉",title:"生物导师",color:"#3f8a6d"},
-  ci:{name:"辞",short:"辞",title:"英语导师",color:"#b08a2e"},
-  wen:{name:"文",short:"文",title:"语文导师",color:"#9a5b5b"},
-  xin:{name:"心",short:"心",title:"成长教练",color:"#d08a3a"},
-  si:{name:"思",short:"思",title:"思想认知",color:"#5a6b8e"},
-  mian:{name:"眠",short:"眠",title:"作息睡眠",color:"#4a6b8a"},
-  shen:{name:"身",short:"身",title:"体态健康",color:"#6b8a4a"},
-  xing:{name:"星",short:"星",title:"愿景锚",color:"#b89b6e"}
+  zhao:{name:"昭",short:"昭",title:"主持·串场",color:"#1f4e4a",guide:"群里的主持人。不想点名时她帮把话递到对的人嘴边；想总结一段、拉人开会，@昭。"},
+  lv:{name:"律",short:"律",title:"督导",color:"#2f6b64",guide:"盯执行、不哄人。汇报进度、认领计划、怕自己糊弄时找他，他开口就问数字。"},
+  xu:{name:"序",short:"序",title:"数学导师",color:"#3a6ea5",guide:"数学地基修复师。贴题、贴错因，他带你从概念推起。别怕暴露基础差，越具体他越能给。"},
+  xiang:{name:"象",short:"象",title:"物理导师",color:"#8e5aa6",guide:"先画图、再算数。物理题卡住找他，他会先逼你描述清楚「发生了什么」。"},
+  bian:{name:"变",short:"变",title:"化学导师",color:"#c2703f",guide:"你化学有底子，他讲机理不讲死背。价态怎么变、电子怎么转，问他就行。"},
+  mai:{name:"脉",short:"脉",title:"生物导师",color:"#3f8a6d",guide:"机制链：条件→过程→结果。遗传、细胞、易混概念辨析归他。"},
+  ci:{name:"辞",short:"辞",title:"英语导师",color:"#b08a2e",guide:"你卡在词量和长句。单词量、长难句三层拆解（主干→修饰→逻辑）找辞。"},
+  wen:{name:"文",short:"文",title:"语文导师",color:"#9a5b5b",guide:"语文是你的强项，他按你的水平讲不降维。文言、答题角度、作文找他。"},
+  xin:{name:"心",short:"心",title:"成长教练",color:"#d08a3a",guide:"接情绪、不评判。内耗、想太多、孤独、动不起来——先跟他讲，他接住你再说第一步。"},
+  si:{name:"思",short:"思",title:"思想认知",color:"#5a6b8e",guide:"管底层逻辑。读到的书、刷到的观点想沉淀就丢给他，他会逼问：它为什么成立？跟你哪件事相通？"},
+  mian:{name:"眠",short:"眠",title:"作息睡眠",color:"#4a6b8a",guide:"10 小时刚需守护者，到点会顶出来。调作息、定今晚睡觉时间跟他对齐。"},
+  shen:{name:"身",short:"身",title:"体态健康",color:"#6b8a4a",guide:"一小时起身动两分钟。肩颈、驼背、坐姿归他，别等疼了才想起来。"},
+  xing:{name:"星",short:"星",title:"愿景锚",color:"#b89b6e",guide:"负责钉住「你为什么熬」。迷茫、怀疑目标、忘了 550→600 的来路时找他。"}
 };
 const ORDER = ["zhao","lv","xu","xiang","bian","mai","ci","wen","xin","si","mian","shen","xing"];
 
@@ -1182,12 +1214,12 @@ const REPLIES = {
     {k:["资料","下单","到货","书","买"],t:"资料到位是开局第一关。物理跳跳学长、化学超人、生物李林、语文陈Sir都还没到——这几天先把单下了。到了计划才排得进去。"},
     {k:["进度","落后","差距","计划","排"],t:"计划不是按章节平均排，是按你真实缺口排。开干前先摸清每科哪块是零分，再决定先啃哪。前三天只要『动起来+睡够10h』就算赢。"},
     {k:["作息","几点","起","睡"],t:"作息这条现在基本是空的，我在盯。8/20 第一天计划 8:00 推过来你得醒着。先把起床时间往前提，别等那天被计划叫不醒。"},
-    {k:["default"],t:"执行的事归我。你今天动了没？没动就别想太多，先从一个最小动作开始。"}
+    {k:["default"],t:"执行归我。今天动了没？动了多少、卡在哪——给我数字。没动就先做一个 5 分钟的最小动作，别跟感觉谈条件。"}
   ],
   xu:[
     {k:["数学","函数","集合","不等式","导数","算","题"],t:"数学23分，地基空。别贪多——一天一个15分钟网课+20道同类题，错题写『我哪理解偏了』不是抄题。先问自己卡在概念还是步骤，概念问题我带你从推导讲起。"},
     {k:["错题","不懂","卡"],t:"把卡的那一步单独拎出来：是概念没懂，还是步骤不会？概念我讲为什么成立，步骤我拆成可执行链。别整题重做，专攻那一步。"},
-    {k:["default"],t:"模块A（集合+逻辑+不等式）先起步。你INTJ自己琢磨才有劲，我只在你卡住时点一下。"}
+    {k:["default"],t:"我是干活的：你数学卡在第几步，把那步发我。概念从哪断的，我带你补到哪。"}
   ],
   xiang:[
     {k:["物理","受力","运动","能量","图像","公式"],t:"物理14分，别急着算。先建图像——受力图、运动图、能量图，能画出来再碰公式。跳跳学长网课当主线，倍速反复是你的控制权。"},
@@ -1203,7 +1235,7 @@ const REPLIES = {
   ],
   ci:[
     {k:["英语","长难句","阅读","词汇","单词","语法"],t:"英语54，核心是词不够+长句拆不开。长难句按『主干-修饰-逻辑』三层拆：先拎主谓宾，再看从句和非谓语，最后理逻辑连接。阅读定位靠同义替换，不是逐字翻译。"},
-    {k:["default"],t:"每天背多少词、累计多少，得有可见数。词汇量上去了阅读才不卡。"}
+    {k:["default"],t:"先报数：今天单词背了几个？词汇量没到，技巧都是空转。到了我们再谈拆长句。"}
   ],
   wen:[
     {k:["语文","文言","作文","阅读","答题"],t:"语文93是你最强项，按你的基础讲精准不降维。文言实词靠语境推断+积累；答题要有文本依据、角度闭环，别凭感觉。需要具体题直接贴。"},
@@ -1257,11 +1289,10 @@ function groupReply(text){
     }
   }
   if(hits.length===0){
-    const others = ORDER.filter(k=>k!=="zhao");
-    const rnd = others[Math.floor(Math.random()*others.length)];
-    return [{role:"zhao",text:"大家在，你说吧——想聊哪块，我帮你点人。"},{role:rnd,text:pickReply(rnd,text)}];
+    // 闲聊/泛谈：只由主持人昭轻接，不再随机硬拉一个伙伴（避免答非所问的刷屏）
+    return [{role:"zhao",text:"在呢。想聊学习、心情还是今天的事？说具体点，或直接提科目/关键词，对口的伙伴会出来接你。"}];
   }
-  const top = hits.slice(0,3);
+  const top = hits.slice(0,2);   // 克制：最多 2 位相关伙伴接，不搞全员抢答
   return top.map(k=>({role:k,text:pickReply(k,text)}));
 }
 
@@ -1318,7 +1349,8 @@ function groupReply(text){
 
 /* ---------- Supabase 连接（纯 fetch 直连，零外部库，避免 CDN 阻塞闪屏）---------- */
 const SUPABASE_URL="https://osmzjxuxaneqzaqtnkjj.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi6Im9zbXpqeHV4YW5lcXphcXRua2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE3MzEsImV4cCI6MjEwMjQzNzczMX0.TLZyCQIHjcu0PpTalrpL5glmXvrKfiBob1iEJzY4f_0";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zbXpqeHV4YW5lcXphcXRua2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE3MzEsImV4cCI6MjEwMjQzNzczMX0.TLZyCQIHjcu0PpTalrpL5glmXvrKfiBob1iEJzY4f_0";
+const SUPABASE_TABLE="longming_messages";
 const syncBadge = document.getElementById("syncBadge");
 
 /* 极简 Supabase REST 封装：保持 sb.from(t).select/insert/upsert/update/delete 签名，零外部依赖 */
@@ -1360,7 +1392,24 @@ function makeSb(url, key){
   return {
     from: function(table){ return build(table, {q:'', onConflict:'id'}); },
     channel: function(){ return { on:function(){ return { subscribe:function(){ return {}; } }; }, subscribe:function(){ return {}; } }; },
-    removeChannel: function(){}
+    removeChannel: function(){},
+    functions: {
+      invoke: function(name, opts){
+        const fd = SUPABASE_URL.replace(/\/$/,'') + '/functions/v1/' + name;
+        const payload = (opts && opts.body!=null) ? opts.body : {};
+        const hd = Object.assign({}, baseH, {'Content-Type':'application/json'});
+        return fetch(fd, { method:'POST', headers: hd, body: JSON.stringify(payload==null?{}:payload) })
+          .then(function(r){
+            const ct = r.headers.get('content-type')||'';
+            const j = (ct.indexOf('json')>=0) ? r.json() : r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return t; } });
+            return j.then(function(b){
+              if(!r.ok){ return { data:null, error:{ message:''+r.status, status:r.status, context:b } }; }
+              return { data: b, error: null };
+            });
+          })
+          .catch(function(e){ return { data:null, error:{ message:String(e) } }; });
+      }
+    }
   };
 }
 let sb = null;
@@ -1397,25 +1446,109 @@ function makeMsgEl(m){
   const d=document.createElement("div");
   d.className="msg "+(m.from==="user"?"user":"agent");
   d.dataset.key = (m.ts||0)+"|"+m.text;
+  d.dataset.ts = m.ts||0;
   if(m.from==="user"){
     d.textContent=m.text;
   }else{
     const who=document.createElement("div"); who.className="who";
     const r=ROLES[m.role]||ROLES.zhao;
     who.innerHTML=`<span class="rd" style="background:${r.color}"></span>${r.name}·${r.title}`;
+    who.style.cursor="pointer";
+    who.title="查看 TA 的个人页";
+    who.onclick=()=>{ if(ROLES[m.role]) showAgent(m.role); };
     const p=document.createElement("div"); p.textContent=m.text;
     d.appendChild(who); d.appendChild(p);
+    // 记坑按钮：把 TA 这条讲解存进坑档案（答疑沉淀）
+    if(m.role && m.role!=="zhao" && ROLES[m.role] && String(m.text||"").indexOf("🤔")!==0){
+      const mk=(m.ts||0)+"|"+m.text;
+      const pb=document.createElement("button");
+      pb.type="button";
+      pb.className="pit-btn"+(pitMarked(mk)?" on":"");
+      pb.textContent = pitMarked(mk) ? "✓ 已记坑" : "📌 记坑";
+      pb.onclick=function(){
+        if(pitAdd(m.role, m.text, m.ts)){
+          pb.textContent="✓ 已记坑"; pb.classList.add("on");
+          showRdBanner("已存进「"+ROLES[m.role].name+"」的坑档案，下次聊TA会想起来");
+        }
+      };
+      d.appendChild(pb);
+    }
   }
   return d;
+}
+/* 消息时间线分组：今天/昨天/M月D日 */
+function chatDayLabel(ts){
+  const d=new Date(ts); const now=new Date();
+  const t0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+  const diff=Math.floor((t0 - new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime())/86400000);
+  if(diff===0) return "今天";
+  if(diff===1) return "昨天";
+  return (d.getMonth()+1)+"月"+d.getDate()+"日";
+}
+function lastMsgTs(){
+  const kids=messagesEl.children;
+  for(let i=kids.length-1;i>=0;i--){ if(kids[i].dataset && kids[i].dataset.ts) return +kids[i].dataset.ts; }
+  return null;
 }
 function appendMsg(m, persist=true){
   const key=(m.ts||0)+"|"+m.text;
   if(rendered.has(key)) return;        // 去重（realtime 与本地 insert 可能重复）
   rendered.add(key);
+  const lastTs=lastMsgTs();
+  if(lastTs===null || chatDayLabel(m.ts)!==chatDayLabel(lastTs)){
+    const h=document.createElement("div"); h.className="msg-day"; h.textContent=chatDayLabel(m.ts);
+    messagesEl.appendChild(h);
+  }
   const e=makeMsgEl(m);
   messagesEl.appendChild(e);
   messagesEl.scrollTop = messagesEl.scrollHeight;
   if(persist && !chatLog.some(x=>(x.ts||0)+"|"+x.text===key)){ chatLog.push(m); chatSave(chatLog); }
+}
+/* ---- 列宿 v2：坑档案（答疑沉淀 · 本机 yj_pit_v1，2026-09-06 隔离加法）---- */
+const PIT_KEY="yj_pit_v1";
+function pitRead(){ try{ return JSON.parse(localStorage.getItem(PIT_KEY)||"[]"); }catch(e){ return []; } }
+function pitSave(a){ try{ localStorage.setItem(PIT_KEY, JSON.stringify(a.slice(-400))); }catch(e){} }
+function pitMarked(key){ return pitRead().some(p=>p.key===key); }
+function pitAdd(role, text, ts){
+  const arr=pitRead();
+  const brief=(text||"").replace(/\s+/g," ").trim().slice(0,80);
+  const key=(ts||0)+"|"+(text||"").slice(0,60);
+  if(arr.some(p=>p.key===key)) return false;
+  const rec={role, brief, ts:ts||Date.now(), key};
+  arr.push(rec);
+  pitSave(arr);
+  pitPush(rec);           // 尽力上云；失败留本机，下次 pull 会自动补齐云端已有记录
+  return true;
+}
+function pitRecentByRole(role, n){
+  const arr=pitRead().filter(p=>p.role===role);
+  return arr.slice(-(n||2));
+}
+/* 坑档案云同步（pit 表 · 双源，2026-09-06 加法） */
+const PIT_TABLE="pit";
+async function pitPull(){
+  if(!sb) return;
+  try{
+    const r=await sb.from(PIT_TABLE).select("role,brief,ts,key").order("ts",{ascending:true});
+    const rows=r&&r.data?r.data:null;
+    if(!Array.isArray(rows)||!rows.length) return;
+    const cur=pitRead();
+    const m={}; cur.forEach(p=>{ if(p&&p.key) m[p.key]=p; });
+    let changed=false;
+    rows.forEach(p=>{ if(p&&p.key&&!m[p.key]){ m[p.key]={role:p.role,brief:p.brief,ts:p.ts,key:p.key}; changed=true; } });
+    if(changed){ const merged=Object.values(m).sort((a,b)=>(a.ts||0)-(b.ts||0)); pitSave(merged); }
+  }catch(_){}
+}
+async function pitPush(rec){
+  if(!sb) return;
+  try{ await sb.from(PIT_TABLE).insert({role:rec.role,brief:rec.brief,ts:rec.ts,key:rec.key}); }catch(_){}
+}
+async function pitDel(key){
+  // 本地删
+  const arr=pitRead().filter(p=>p.key!==key);
+  pitSave(arr);
+  // 云端删
+  if(sb){ try{ await sb.from(PIT_TABLE).delete().eq("key",key); }catch(_){} }
 }
 
 async function renderMessages(){
@@ -1431,6 +1564,7 @@ async function renderMessages(){
       chatSave(chatLog);
       setSync(true);
       await flushPending();
+      await pitPull();   // 列宿打开时顺带把云端坑档案合并到本机（v2）
     } else { setSync(false); }
   } else { setSync(false); }
 
@@ -1515,11 +1649,37 @@ function renderActionBar(actions, msgTs){
   });
   bar.querySelector("[data-skip]").onclick = ()=>{ bar.remove(); };
 }
+/* 列宿 v2：DeepSeek 余额缓存（renderDs 成功时写入，供省钱分级用） */
+let dsBalanceCache = null;
+let dsSaveHinted = false;
+const SUBJ2ROLE=[["数学","xu"],["函数","xu"],["集合","xu"],["不等式","xu"],["导数","xu"],["数列","xu"],["三角","xu"],["逻辑","xu"],["物理","xiang"],["受力","xiang"],["运动","xiang"],["能量","xiang"],["力学","xiang"],["加速度","xiang"],["化学","bian"],["方程","bian"],["反应","bian"],["价态","bian"],["氧化还原","bian"],["摩尔","bian"],["生物","mai"],["遗传","mai"],["细胞","mai"],["基因","mai"],["英语","ci"],["单词","ci"],["词汇","ci"],["长难句","ci"],["语法","ci"],["听力","ci"],["语文","wen"],["文言","wen"],["作文","wen"],["错题","xu"]];
+function mapSubjRole(t){
+  t=(t||"").toLowerCase();
+  for(const pair of SUBJ2ROLE){ if(t.includes(pair[0])) return pair[1]; }
+  return null;
+}
+/* 判断是否「真学术求助」：只有它才调 DeepSeek（省钱分级）；@AI 前缀强制 */
+function askSignal(text){
+  const m=text.match(/^@AI[\s:：,，]*(.*)$/);
+  if(m) return {forced:true, deep:true, text:m[1]||""};
+  const SUBJ=["数学","函数","集合","不等式","导数","数列","三角","物理","受力","运动","能量","力学","化学","方程","反应","价态","氧化还原","摩尔","生物","遗传","细胞","基因","英语","单词","词汇","长难句","语法","听力","语文","文言","作文","错题","答疑","概念","题"];
+  const ASK=["为什么","怎么","如何","吗","？","?","帮","请教","不懂","卡","错","讲","分析","区别","是不是","对吗","求","解释","没懂","理解不了"];
+  const subj=SUBJ.some(w=>text.includes(w));
+  const ask=ASK.some(w=>text.includes(w));
+  return {forced:false, deep:(subj&&ask)||(text.includes("题")&&text.length>=12), text:text};
+}
 async function aiGroupReply(text){
-  // 先用关键词引擎选出"该谁回"（保持"相关的人接话"逻辑），再让 AI 以这些身份真回
-  const fallback = groupReply(text);
+  const sig=askSignal(text);
+  const fallback=groupReply(sig.text||text);
   if(!sb) return {intent:"chat", replies:fallback, actions:[]};   // 未连云端：纯关键词
   const roles = fallback.map(r=>r.role);
+  // 省钱档：余额低（<¥3）且未强制 → 一律免费关键词回复
+  if(dsBalanceCache!=null && parseFloat(dsBalanceCache)<3 && !sig.forced){
+    if(!dsSaveHinted){ dsSaveHinted=true; showRdBanner("DeepSeek 余额偏低（¥"+dsBalanceCache+"），已自动转免费伙伴回复。充值后或消息以 @AI 开头可强制 AI 作答。"); }
+    return {intent:"chat", replies:fallback, actions:[]};
+  }
+  // 省钱档：非学术求助（闲聊/汇报/寒暄）→ 免费关键词，不烧额度
+  if(!sig.deep){ return {intent:"chat", replies:fallback, actions:[]}; }
   try{
     const context = await collectContext();
     // 取最近 20 条对话历史，让 AI 记得之前聊过什么（不含当前这条）
@@ -1527,15 +1687,25 @@ async function aiGroupReply(text){
       role: m.from==="user" ? "user" : "assistant",
       content: m.text
     }));
+    // 坑档案注入（history 通道已实测 AI 能读到）：TA 记得你之前卡过的点
+    const subjRole = mapSubjRole(sig.text) || (roles.length ? roles[0] : null);
+    if(subjRole && subjRole!=="zhao"){
+      const pits = pitRecentByRole(subjRole, 2);
+      if(pits.length){
+        const nm = (ROLES[subjRole]||{}).name || subjRole;
+        history.unshift({ role:"assistant", content:"（备忘）"+nm+" 之前给若昭点过坑："+pits.map(p=>p.brief).join("；")+"。若这次相关，先点一句 TA 记得，再针对性讲。" });
+      }
+    }
     const {data, error} = await sb.functions.invoke("deepseek-chat", {
-      body:{ roles, userText:text, context, history }
+      body:{ roles, userText:sig.text, context, history }
     });
     if(error || !data || !Array.isArray(data.replies) || data.replies.length===0)
       return {intent:"chat", replies:fallback, actions:[]};
     return {
       intent: data.intent || "chat",
       replies: data.replies,
-      actions: Array.isArray(data.actions) ? data.actions : []
+      actions: Array.isArray(data.actions) ? data.actions : [],
+      pits: Array.isArray(data.pits) ? data.pits : []
     };
   }catch(_){ return {intent:"chat", replies:fallback, actions:[]}; }
 }
@@ -1568,6 +1738,20 @@ async function send(){
   // —— 求助型：出按钮（采纳/记录/继续讨论），其余类型只回话 ——
   if(res.intent==="advice" && res.actions && res.actions.length){
     renderActionBar(res.actions, Date.now());
+  }
+  // —— AI 自动沉淀坑档案（v3：模型在 replies 之外输出 pits，免手动）——
+  if(res.pits && res.pits.length){
+    let autoN=0;
+    res.pits.slice(0,3).forEach(p=>{
+      const brief=(p&&p.brief?String(p.brief):"").trim();
+      if(!brief) return;
+      const rk=(p.role && ROLES[p.role]) ? p.role : (res.replies[0] && ROLES[res.replies[0].role] ? res.replies[0].role : null);
+      if(!rk) return;
+      if(pitAdd(rk, brief, Date.now()+ (autoN*7))) autoN++;
+    });
+    if(autoN){
+      showRdBanner("已自动记住 "+(res.pits.length>1?res.pits.length+" 条":"1 条")+"坑，可到伙伴页「给你点过的坑」查看/删除");
+    }
   }
 }
 async function flushPending(){
@@ -1633,7 +1817,21 @@ let xgMode = "cat";       // "cat" 分类视图 | "time" 时间视图
 let xgSearch = "";
 let xgEditId = null;      // 正在编辑的碎碎念 id
 let xgReassignId = null;  // 正在改分类的碎碎念 id
-let xgLocal = [];         // 离线兜底
+/* ---- 隙光本机兜底（2026-09-06 隔离加法）：本机持久化镜像 + 未同步条（id 前缀 off_，联网后 renderXg 自动补传） ---- */
+const XG_CACHE_KEY = "yj_xg_notes_v1";
+function xgCacheRead(){ try{ return JSON.parse(localStorage.getItem(XG_CACHE_KEY)||"[]")||[]; }catch(e){ return []; } }
+function xgCacheWrite(arr){ try{ localStorage.setItem(XG_CACHE_KEY, JSON.stringify((arr||[]).slice(-800))); }catch(e){} }
+function xgLocalPending(rec){
+  xgLocal.push(rec); xgCacheWrite(xgLocal);
+  showRdBanner("⚠ 云端暂不可用，已存本机（联网后自动同步）");
+}
+function xgLocalEdit(id, text){
+  const i = xgLocal.findIndex(n=>n.id===id);
+  if(i>=0){ xgLocal[i].content = text; xgCacheWrite(xgLocal); }
+  else { xgLocalPending({id:"off_"+Date.now(), content:text, category:classifyXg(text), ts:Date.now()}); }
+  showRdBanner("⚠ 云端暂不可用，改动已存本机");
+}
+let xgLocal = xgCacheRead(); // 离线兜底（本机持久化，启动即读）
 let xgCache = [];         // 最近一次拉取的数据（切换视图/搜索时复用）
 
 function renderXgFilter(){
@@ -1735,12 +1933,36 @@ function renderXgFrom(notes){
 }
 
 async function renderXg(){
-  if(!sb){ renderXgFrom(xgLocal); return; }
-  const {data,error} = await sb.from(XG_TABLE).select("*").order("ts",{ascending:false});
-  if(error){ console.error(error); xgNotesEl.innerHTML='<div class="empty">隙光加载失败，稍后重试。</div>'; return; }
-  xgLocal = data || [];
+  if(!sb){ renderXgFrom(xgLocal.length ? xgLocal : xgCacheRead()); return; }
+  let data = null, error = null;
+  try{ const r = await sb.from(XG_TABLE).select("*").order("ts",{ascending:false}); data = r.data; error = r.error; }
+  catch(e){ error = e; }
+  if(error){
+    console.error(error);
+    // 云端不可用 → 降级展示本机缓存（不白屏、离线内容仍可见）
+    if(!xgLocal.length) xgLocal = xgCacheRead();
+    if(xgLocal.length){
+      renderXgFrom(xgLocal);
+      xgNotesEl.insertAdjacentHTML("afterbegin",'<div style="color:#b0602a;font-size:12px;line-height:1.5;padding:6px 10px;margin:4px 2px 8px;background:rgba(176,96,42,.08);border-radius:8px">⚠ 云端暂不可用，以下为本机缓存（联网后自动同步）。</div>');
+    } else {
+      xgNotesEl.innerHTML = '<div class="empty">隙光加载失败，且本机暂无缓存，请稍后重试。</div>';
+    }
+    return;
+  }
+  // 云端正常：先把本机暂存的（off_ 前缀）补传上云，避免离线输入丢失
+  const pend = (xgLocal||[]).filter(n => String(n.id||"").indexOf("off_") === 0);
+  const keep = [];
+  for(const n of pend){
+    try{
+      const r = await sb.from(XG_TABLE).insert({id:n.ts, content:n.content, category:n.category, ts:n.ts});
+      if(r && r.error) keep.push(n);
+    }catch(e){ keep.push(n); }
+  }
+  xgLocal = (data||[]).concat(keep);
+  xgCacheWrite(xgLocal);
   renderXgFrom(xgLocal);
 }
+window.addEventListener("online", ()=>{ if(sb){ renderXg(); } });
 
 async function sendXg(){
   const ta = document.getElementById("xgInput");
@@ -1748,8 +1970,13 @@ async function sendXg(){
   if(!text) return;
   if(xgEditId){
     const id = xgEditId;
-    if(sb){ await sb.from(XG_TABLE).update({content:text}).eq("id",id); }
-    else { const i=xgLocal.findIndex(n=>n.id===id); if(i>=0) xgLocal[i].content=text; }
+    if(sb){
+      let failed = false;
+      try{ const r = await sb.from(XG_TABLE).update({content:text}).eq("id",id); if(r && r.error) failed = true; }catch(e){ failed = true; }
+      if(failed){ xgLocalEdit(id, text); }
+    } else {
+      const i = xgLocal.findIndex(n=>n.id===id); if(i>=0){ xgLocal[i].content = text; xgCacheWrite(xgLocal); }
+    }
     cancelEdit();
     renderXg();
     return;
@@ -1758,11 +1985,14 @@ async function sendXg(){
   const cat = classifyXg(text);
   ta.value=""; ta.style.height="auto";
   if(sb){
-    await sb.from(XG_TABLE).insert({content:text, category:cat, ts});
+    let failed = false;
+    try{ const r = await sb.from(XG_TABLE).insert({content:text, category:cat, ts}); if(r && r.error) failed = true; }catch(e){ failed = true; }
+    if(failed){ xgLocalPending({id:"off_"+ts, content:text, category:cat, ts}); }
     renderXg();
   } else {
     const id = "local_"+ts;
     xgLocal.push({id, content:text, category:cat, ts});
+    xgCacheWrite(xgLocal);
     renderXg();
   }
 }
@@ -1883,12 +2113,19 @@ async function renderDs(){
       box.innerHTML='<div class="ds-line"><span class="ds-label">查询失败，点右上「刷新」重试</span></div>';
       return;
     }
+    dsBalanceCache = data.total_balance;
     box.innerHTML =
       '<div class="ds-line"><span class="ds-bal">¥ '+(data.total_balance||"0")+'</span><span class="ds-label">DeepSeek 可用余额'+(data.is_available===false?' · 不可用':'')+'</span></div>'+
       '<div class="ds-cols">'+
         '<div>充值<b>¥ '+(data.topped_up_balance||"0")+'</b></div>'+
         '<div>赠送<b>¥ '+(data.granted_balance||"0")+'</b></div>'+
       '</div>';
+    const dn=document.getElementById("dsNote");
+    if(dn){
+      dn.textContent = parseFloat(dsBalanceCache||0)<3
+        ? "余额偏低：列宿已自动转免费伙伴回复（消息以 @AI 开头仍可强制 AI 作答）。"
+        : "余额 = DeepSeek 账户额度，列宿的 AI 回复从这里扣。余额偏低时列宿自动转免费伙伴回复（@AI 可强制）。";
+    }
   }catch(e){
     box.innerHTML='<div class="ds-line"><span class="ds-label">查询失败，点右上「刷新」重试</span></div>';
   }
@@ -1899,6 +2136,8 @@ renderDs();
 /* ---------- 打卡 streak（云端 + 本机兜底） ---------- */
 const CHECKIN_TABLE = "checkin";
 const FIN_TABLE = "finance_log";
+const SICHEN_TABLE = "sichen_reports";
+const PLANS_TABLE = "sichen_plans";
 const CHECK_FIELDS = ["study","sleep","exercise","read"];
 const todayStr=()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
 let checkinCache = {};
@@ -1942,8 +2181,59 @@ function urlBase64ToUint8Array(b64){
   return out;
 }
 
+async function setupPushNotifications(){
+  const btn=document.getElementById("ntBtn");
+  if(btn) btn.textContent="⏳";
+  if(!("Notification" in window)){ alert("你的浏览器不支持通知"); if(btn) btn.textContent="🔔"; return; }
+  if(!("serviceWorker" in navigator)){ alert("不支持 Service Worker"); if(btn) btn.textContent="🔔"; return; }
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted"){
+      if(btn) btn.textContent="🔔";
+      alert("通知权限被拒绝，请在浏览器设置中允许此站点发送通知");
+      return;
+    }
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      const key=urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+      sub=await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:key });
+    }
+    // Build subscription JSON for server
+    const subJSON=JSON.stringify({
+      endpoint: sub.endpoint,
+      keys:{
+        p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("p256dh")))),
+        auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("auth"))))
+      }
+    });
+    // Store in Supabase (longming_messages table, sender=push_sub)
+    try{
+      await sb.from(SUPABASE_TABLE).delete().eq("sender","push_sub");
+      await sb.from(SUPABASE_TABLE).insert({ sender:"push_sub", name:"若昭", text:subJSON, ts:new Date().toISOString() });
+    }catch(e){
+      localStorage.setItem("push_sub", subJSON);
+    }
+    localStorage.setItem("push_sub", subJSON);
+    if(btn){ btn.textContent="✅"; btn.classList.add("on"); }
+    setTimeout(()=>{ if(btn) btn.textContent="🔔"; btn.classList.add("on"); }, 2000);
+  }catch(err){
+    console.error("Push订阅失败:", err);
+    if(btn) btn.textContent="🔔";
+    alert("Push订阅失败: "+(err.message||err.name||"未知错误")+"\n\n请截图发给我，我来排查原因。");
+  }
+}
 
 // On load: check if already subscribed, update bell icon
+async function checkPushStatus(){
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    const sub=await reg.pushManager.getSubscription();
+    const btn=document.getElementById("ntBtn");
+    if(btn && sub){ btn.classList.add("on"); }
+  }catch(e){}
+}
 async function loadCheckin(){
   let local={};
   try{ local=JSON.parse(localStorage.getItem("checkin")||"{}"); }catch(e){}
@@ -2816,7 +3106,9 @@ document.getElementById("backupFile").onchange=e=>{ if(e.target.files[0]) import
 /* ---------- init ---------- */
 document.getElementById("dateSub").textContent = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 renderCheckin();
-if(sb){ loadTodos(); loadCheckin().then(renderCheckin); loadFin(); loadReading(); updateSichenStatus(); }
+loadCheckin().then(renderCheckin);   // 本机优先：无论云端是否可达，先读本机打卡缓存
+loadTodos();                          // loadTodos 内部已处理无 sb 走本地
+if(sb){ loadFin(); loadReading(); updateSichenStatus(); }
 
 /* ---------- 高考倒计时 ---------- */
 (function(){
@@ -2869,8 +3161,6 @@ async function updateSichenStatus(){
 }
 
 /* ---------- 司辰页：复读节奏（进度 / 复盘 / 自动化动态） ---------- */
-const SICHEN_TABLE = "sichen_reports";
-const PLANS_TABLE = "sichen_plans";
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 function goSichen(){
@@ -2907,6 +3197,33 @@ async function renderAgent(k){
   curAgent = k;
   const r = ROLES[k];
   const logEl = document.getElementById("agentLog");
+  // v2：人设卡（怎么用 TA）
+  const gb=document.getElementById("agentGuideBlock");
+  const gg=document.getElementById("agentGuide");
+  if(gb && gg){ gb.style.display = r.guide ? "block" : "none"; gg.textContent = r.guide || ""; }
+  // v2：坑档案（TA 给你点过的坑）
+  const pl=document.getElementById("pitList");
+  if(pl){
+    await pitPull();   // 先并云端再显示，跨设备刚记的坑也能出现
+    const pits=pitRead().filter(p=>p.role===k);
+    if(!pits.length){
+      pl.innerHTML='<div class="pit-empty">TA 还没给你点过坑。<br>在列宿里看到 TA 讲到点子上的话，点消息上的「📌 记坑」——这里会存下来，下次聊 TA 会想起来。</div>';
+    } else {
+      pl.innerHTML = pits.slice().reverse().map(p=>{
+        const dt=p.ts?new Date(p.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+        return '<div class="pit-item"><span class="pit-who">坑</span><span class="pit-t">'+esc(p.brief)+'</span><span class="pit-date">'+dt+'</span><button class="pit-del" data-key="'+esc(p.key)+'" title="删除这条坑">✕</button></div>';
+      }).join("");
+      pl.querySelectorAll(".pit-del").forEach(btn=>{
+        btn.onclick=async ()=>{
+          const k=btn.getAttribute("data-key");
+          if(!k) return;
+          pitDel(k);
+          const item=btn.closest(".pit-item"); if(item) item.remove();
+          if(!pitRead().some(p=>p.role===curAgent)) renderAgent(curAgent);
+        };
+      });
+    }
+  }
   const cacheKey = "yj_agent_log_v1_"+k;
   const renderRows=(data)=>{
     if(!data||data.length===0){ logEl.innerHTML='<div class="empty">'+esc(r.name)+' 还没有在群里发过言。</div>'; return; }
@@ -2941,46 +3258,46 @@ async function renderSichen(){
   const prog=document.getElementById("scProg");
   const rev=document.getElementById("scReview");
   const note=document.getElementById("scProgNote");
+  // 区块A/B：复盘记录依赖云端；云端不可用 / 查询失败时降级展示，但绝不拖垮本机概览
   if(!sb){
     prog.innerHTML='<div class="empty">云端未连接，进度与动态暂不可用（仅本机）。</div>';
     rev.innerHTML=''; note.textContent='';
-    renderCalendar();
-    renderWeeklySummary();
-    return;
+  } else {
+    const {data,error}=await sb.from(SICHEN_TABLE).select("*").order("ts",{ascending:false});
+    if(error){
+      prog.innerHTML='<div class="empty">云端复盘数据暂不可用，已显示本机打卡概览。</div>';
+      rev.innerHTML=''; note.textContent='';
+    } else {
+      const rows = data || [];
+      const daySet=new Set();
+      rows.filter(r=>r.type==="复盘").forEach(r=>{
+        const d=new Date(r.ts); daySet.add(d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate());
+      });
+      let bars="";
+      for(let i=6;i>=0;i--){
+        const dt=new Date(); dt.setDate(dt.getDate()-i);
+        const key=dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate();
+        const on=daySet.has(key);
+        const label=(dt.getMonth()+1)+"/"+dt.getDate();
+        bars+=`<div class="sc-bar"><div class="sc-bar-fill ${on?"on":""}"></div><div class="sc-bar-l">${label}</div></div>`;
+      }
+      prog.innerHTML=bars;
+      const total=rows.filter(r=>r.type==="复盘").length;
+      note.textContent = total>0 ? `累计复盘 ${total} 次 · 近 7 天 ${daySet.size} 天有复盘` : "还没有复盘记录，每天 22:30 复盘后这里会亮起来";
+      const reviews=rows.filter(r=>r.type==="复盘").slice(0,12);
+      if(reviews.length===0){ rev.innerHTML='<div class="empty">还没有复盘记录。</div>'; }
+      else{
+        rev.innerHTML=reviews.map(r=>{
+          const t=new Date(r.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+          return `<div class="sc-item"><div class="sc-item-t">${t} · ${esc(r.agent||"复盘")}</div><div class="sc-item-c">${esc(r.content||"")}</div></div>`;
+        }).join("");
+      }
+    }
   }
-  const {data,error}=await sb.from(SICHEN_TABLE).select("*").order("ts",{ascending:false});
-  if(error){ prog.innerHTML='<div class="empty">加载失败，稍后重试。</div>'; return; }
-  const rows = data || [];
-
-  /* 区块A：近 7 天复盘节奏（几何柱） */
-  const daySet=new Set();
-  rows.filter(r=>r.type==="复盘").forEach(r=>{
-    const d=new Date(r.ts); daySet.add(d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate());
-  });
-  let bars="";
-  for(let i=6;i>=0;i--){
-    const dt=new Date(); dt.setDate(dt.getDate()-i);
-    const key=dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate();
-    const on=daySet.has(key);
-    const label=(dt.getMonth()+1)+"/"+dt.getDate();
-    bars+=`<div class="sc-bar"><div class="sc-bar-fill ${on?"on":""}"></div><div class="sc-bar-l">${label}</div></div>`;
-  }
-  prog.innerHTML=bars;
-  const total=rows.filter(r=>r.type==="复盘").length;
-  note.textContent = total>0 ? `累计复盘 ${total} 次 · 近 7 天 ${daySet.size} 天有复盘` : "还没有复盘记录，每天 22:30 复盘后这里会亮起来";
-
-  /* 区块B：近期复盘 */
-  const reviews=rows.filter(r=>r.type==="复盘").slice(0,12);
-  if(reviews.length===0){ rev.innerHTML='<div class="empty">还没有复盘记录。</div>'; }
-  else{
-    rev.innerHTML=reviews.map(r=>{
-      const t=new Date(r.ts).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
-      return `<div class="sc-item"><div class="sc-item-t">${t} · ${esc(r.agent||"复盘")}</div><div class="sc-item-c">${esc(r.content||"")}</div></div>`;
-    }).join("");
-  }
-
+  // 本机打卡概览始终渲染（日历 / 本周总览 / 趋势），不被云端结果拖垮
   renderCalendar();
   renderWeeklySummary();
+  if(typeof trendRender==="function") trendRender();
 }
 
 /* ---------- 司辰页：本周数据总览 ---------- */
@@ -3068,8 +3385,36 @@ function renderCalendar(){
 }
 document.getElementById("calPrev").onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); };
 document.getElementById("calNext").onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); };
+(function(){ const c=document.getElementById("calCard"); if(c){ c.querySelector(".sc-bt").onclick=()=>c.classList.toggle("collapsed"); } })();
 
 /* ---------- 主页：待办任务（云端 sichen_plans 主 + 本地 yj_todos_v1 兜底） ---------- */
+/* ---------- 高考报名固定提醒项（纯渲染，不可交互，2026-10-14 开始 / 10-30 截止） ---------- */
+function gkBaomingRemind(){
+  var start = new Date(2026,9,14);            // 10月14日 00:00
+  var end   = new Date(2026,9,30);            // 10月30日 00:00（当天含）
+  var now = new Date(); now.setHours(0,0,0,0);
+  if(now > end) return "";                     // 报名结束后不再显示
+  var inWindow = now >= start && now <= end;   // 报名进行中 → 置顶高亮
+  var daysLeft = Math.ceil((start - now)/ (24*3600*1000));
+  var wrapStyle = inWindow
+    ? 'background:#fff3e6;border:1px solid #e0913c;border-radius:8px;padding:9px 10px;'
+    : 'background:#faf6ef;border-radius:8px;padding:9px 10px;';
+  var sub = inWindow
+    ? '<div style="font-size:11px;color:#b06210;margin-top:4px;">◀ 报名正在进行（10/14–10/30）· 如未办理请尽快</div>'
+    : (daysLeft > 0
+       ? '<div style="font-size:11px;color:#8a6a2a;margin-top:4px;">⏳ 距 10/14 报名开始还有 '+daysLeft+' 天</div>'
+       : '<div style="font-size:11px;color:#b06210;margin-top:4px;">▶ 今天（10/14）高考报名开始</div>');
+  return '<div class="gk-bm" style="'+wrapStyle+'">'
+    + '<div style="flex:1;">'
+    + '<div style="font-size:13px;font-weight:600;color:#7a5230;">📝 高考报名 · 2027</div>'
+    + '<div style="font-size:12px;color:#4a5a6a;margin-top:3px;line-height:1.55;">'
+    + '窗口期 10/14–10/30（不含双休日）· 祁东县教育局二楼考试中心<br>'
+    + '带：毕业证 / 户口本 / 身份证（原件+复印件）· 咨询 0734-6259825<br>'
+    + '<em style="color:#8a6a2a;">逾期不再受理、不安排补报名</em>'
+    + '</div>'
+    + sub
+    + '</div></div>';
+}
 const TODO_LOCAL_KEY = "yj_todos_v1";
 function todoLocalRead(){
   try{ return JSON.parse(localStorage.getItem(TODO_LOCAL_KEY)||"[]")||[]; }catch(_){ return []; }
@@ -3091,8 +3436,9 @@ async function loadTodos(){
   if(!sb){
     // 云端未连 → 走本地
     const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
-    if(local.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'; return; }
-    listEl.innerHTML = local.map(p=>`
+    const gkHtml = gkBaomingRemind();
+    if(local.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」（无云端，本机暂存）。</div>'); return; }
+    listEl.innerHTML = gkHtml + local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3104,8 +3450,9 @@ async function loadTodos(){
   if(error){
     // 云端失败 → 落本地兜底
     const local = (function(){var _r=todoLocalRead();var _s=new Set();return _r.filter(p=>{var k=(p.content||"").trim().toLowerCase();if(_s.has(k))return false;_s.add(k);return true;})})();
-    if(local.length===0){ listEl.innerHTML='<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'; return; }
-    listEl.innerHTML = local.map(p=>`
+    const gkHtml = gkBaomingRemind();
+    if(local.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">待办加载失败（云端不可达，本地暂存为空）。</div>'); return; }
+    listEl.innerHTML = gkHtml + local.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3123,9 +3470,10 @@ async function loadTodos(){
   });
   // 同步一份到本地作为缓存
   todoLocalWrite(items.map(p=>({id:p.id,content:p.content,done:p.done,ts:p.ts})));
-  if(items.length===0){ listEl.innerHTML='<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'; }
+  const gkHtml = gkBaomingRemind();
+  if(items.length===0){ listEl.innerHTML = gkHtml + (gkHtml ? '' : '<div class="empty">还没有待办任务。需要新增就在主对话跟我说「加个待办：…」。</div>'); }
   else{
-    listEl.innerHTML = items.map(p=>`
+    listEl.innerHTML = gkHtml + items.map(p=>`
       <div class="plan-item" data-id="${p.id}">
         <div class="plan-check ${p.done?'on':''}">${p.done?'✓':''}</div>
         <div class="plan-txt ${p.done?'on':''}">${esc(p.content)}</div>
@@ -3444,11 +3792,11 @@ async function xgSmartSend(){
     ta.value="";ta.style.height="auto";delete ta.dataset.img;
     showRdBanner("\u2713 已记账："+parsed.amount+"元");return
   }
-  if(xgEditId){var id=xgEditId;if(sb){await sb.from(XG_TABLE).update({content:text}).eq("id",id)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0)xgLocal[i].content=text}cancelEdit();renderXg();return}
+  if(xgEditId){var id=xgEditId;if(sb){var xgUpFail=false;try{var xgUr=await sb.from(XG_TABLE).update({content:text}).eq("id",id);if(xgUr&&xgUr.error)xgUpFail=true}catch(e){xgUpFail=true}if(xgUpFail)xgLocalEdit(id,text)}else{var i=xgLocal.findIndex(function(n){return n.id===id});if(i>=0){xgLocal[i].content=text;xgCacheWrite(xgLocal)}}cancelEdit();renderXg();return}
   var ts=Date.now();var cat=classifyXg(cleanText);ta.value="";ta.style.height="auto";delete ta.dataset.img;
   var noteId=sb?ts:"local_"+ts;
-  if(sb){await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts})}
-  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts})}
+  if(sb){var xgInsFail=false;try{var xgIr=await sb.from(XG_TABLE).insert({id:noteId,content:cleanText,category:cat,ts});if(xgIr&&xgIr.error)xgInsFail=true}catch(e){xgInsFail=true}if(xgInsFail)xgLocalPending({id:"off_"+ts,content:cleanText,category:cat,ts:ts})}
+  else{xgLocal.push({id:noteId,content:cleanText,category:cat,ts:ts});xgCacheWrite(xgLocal)}
   if(imgData)await xgSaveImg(noteId,imgData);
   renderXg()
 }
@@ -3463,8 +3811,9 @@ function yjProgressInit(){
 }
 /* ===== 银简→隙光联动 ===== */
 async function yjSyncToXg(note){
-  if(!sb||!note)return;
-  try{await sb.from(XG_TABLE).insert({content:"#银简 "+note,category:"灵感想法",ts:Date.now()})}catch(e){}
+  if(!note)return;
+  if(!sb){ xgLocalPending({id:"off_"+Date.now(),content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); return; }
+  try{var yjr=await sb.from(XG_TABLE).insert({content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); if(yjr&&yjr.error)throw 0}catch(e){ xgLocalPending({id:"off_"+Date.now(),content:"#银简 "+note,category:"灵感想法",ts:Date.now()}); }
 }
 /* ===== 目标拆解 ===== */
 var GOAL_KEY="yj_goals_v1";
@@ -3596,7 +3945,61 @@ function getStudyPlanWeek(){
   return {week:4, label:'启动期结束', tasks:['启动期已过，查看拾光司辰页面的完整计划'], tip:''};
 }
 
-async 
+async function pushStudyPlan(mode){
+  const plan = getStudyPlanWeek();
+  if(plan.week === 0){
+    alert('复读计划尚未启动（8月20日开始）');
+    return;
+  }
+  
+  let title, body;
+  if(mode === 'tomorrow'){
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    title = '📅 明日任务 · ' + plan.label;
+    body = '明天（' + (tomorrow.getMonth()+1)+'/'+tomorrow.getDate()+'）的任务：\n\n' +
+      plan.tasks.join('\n') + '\n\n' + plan.tip;
+  } else {
+    title = '📨 今日任务 · ' + plan.label;
+    body = '今天的任务：\n\n' +
+      plan.tasks.join('\n') + '\n\n' + plan.tip;
+  }
+  
+  try{
+    const resp = await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
+      method: 'POST',
+      body: body,
+      headers: {
+        'Title': title,
+        'Tags': 'bell',
+        'Priority': 'high',
+        'Content-Type': 'text/plain; charset=utf-8'
+      }
+    });
+    if(resp.ok){
+      alert('✅ 已推送至手机 · ' + title);
+      // 更新所有按钮状态
+      document.querySelectorAll('.fd-push-btn').forEach(b => {
+        const orig = b.textContent;
+        b.textContent = '✓ 已推送';
+        b.style.background = 'var(--ok)';
+        b.style.color = '#fff';
+        b.style.borderColor = 'var(--ok)';
+        setTimeout(() => {
+          b.textContent = orig;
+          b.style.background = '';
+          b.style.color = '';
+          b.style.borderColor = '';
+        }, 2000);
+      });
+    } else {
+      alert('推送失败，请稍后重试');
+    }
+  } catch(e) {
+    alert('网络错误，推送失败');
+  }
+}
+
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -3632,7 +4035,6 @@ if ("serviceWorker" in navigator) {
   initAllNewFeatures();
 </script>
 <div class="rd-banner" id="rdBanner"></div>
-
 
 </body>
 </html>
