@@ -818,10 +818,6 @@
         <span>5分钟启动：不想学只承诺"看5分钟" · 完成&gt;完美 · 出门走走让DMN后台处理</span>
       </div>
     </div>
-    <div style="padding:8px 14px 14px;display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="fd-push-btn" onclick="pushStudyPlan()" style="flex:1;border:1px solid var(--sichen);background:#fff;color:var(--sichen);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📨 推送今日任务</button>
-      <button class="fd-push-btn" onclick="pushStudyPlan('tomorrow')" style="flex:1;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📅 推送明日任务</button>
-    </div>
   </details>
 
   <div class="card">
@@ -3937,9 +3933,6 @@ function initAllNewFeatures(){
   setInterval(autoSnapshot,300000)
 }
 
-/* ---------- 启动计划推送（ntfy） ---------- */
-const NTFY_TOPIC = 'ruozhao-reminders-2026';
-
 function getStudyPlanWeek(){
   const now = new Date();
   const start = new Date('2026-09-05T00:00:00');
@@ -3981,61 +3974,6 @@ function getStudyPlanWeek(){
     tip:'每日4h · 六科全开 · 起床目标10:00 · 5分钟启动 / 只盯本周 / 完成>完美'
   };
   return {week:4, label:'启动期结束', tasks:['启动期已过，查看拾光司辰页面的完整计划'], tip:''};
-}
-
-async function pushStudyPlan(mode){
-  const plan = getStudyPlanWeek();
-  if(plan.week === 0){
-    alert('复读计划尚未启动（8月20日开始）');
-    return;
-  }
-  
-  let title, body;
-  if(mode === 'tomorrow'){
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    title = '📅 明日任务 · ' + plan.label;
-    body = '明天（' + (tomorrow.getMonth()+1)+'/'+tomorrow.getDate()+'）的任务：\n\n' +
-      plan.tasks.join('\n') + '\n\n' + plan.tip;
-  } else {
-    title = '📨 今日任务 · ' + plan.label;
-    body = '今天的任务：\n\n' +
-      plan.tasks.join('\n') + '\n\n' + plan.tip;
-  }
-  
-  try{
-    const resp = await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
-      method: 'POST',
-      body: body,
-      headers: {
-        'Title': title,
-        'Tags': 'bell',
-        'Priority': 'high',
-        'Content-Type': 'text/plain; charset=utf-8'
-      }
-    });
-    if(resp.ok){
-      alert('✅ 已推送至手机 · ' + title);
-      // 更新所有按钮状态
-      document.querySelectorAll('.fd-push-btn').forEach(b => {
-        const orig = b.textContent;
-        b.textContent = '✓ 已推送';
-        b.style.background = 'var(--ok)';
-        b.style.color = '#fff';
-        b.style.borderColor = 'var(--ok)';
-        setTimeout(() => {
-          b.textContent = orig;
-          b.style.background = '';
-          b.style.color = '';
-          b.style.borderColor = '';
-        }, 2000);
-      });
-    } else {
-      alert('推送失败，请稍后重试');
-    }
-  } catch(e) {
-    alert('网络错误，推送失败');
-  }
 }
 
 /* ---------- PWA: 注册 Service Worker（支持「添加到主屏幕」） ---------- */
